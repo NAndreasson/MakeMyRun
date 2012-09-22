@@ -17,3 +17,6 @@ local.properties
 
 # Google maps fingerprint
 debug.keystore
+
+proguard-project.txt
+ant.properties
