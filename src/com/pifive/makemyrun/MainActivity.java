@@ -3,7 +3,6 @@ package com.pifive.makemyrun;
 import android.os.Bundle;
 import android.view.Menu;
 
-import com.example.maps.R;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
