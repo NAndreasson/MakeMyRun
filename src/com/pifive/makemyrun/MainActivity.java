@@ -1,5 +1,6 @@
 package com.pifive.makemyrun;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
@@ -8,7 +9,6 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Button;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -34,14 +34,6 @@ public class MainActivity extends MapActivity {
         } catch (InterruptedException e) {
         	e.printStackTrace();
         }
-        
-        try {
-        	Route route = new Route(googleRoute);
-        	Log.d("MMR",route.getdistance()+"");
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
 
     @Override
