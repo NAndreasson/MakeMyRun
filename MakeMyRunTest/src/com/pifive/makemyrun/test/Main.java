@@ -10,7 +10,7 @@ public class Main extends ActivityInstrumentationTestCase2<MainActivity> {
 	private Activity myActivity;
 	
 	public Main() {
-		super("com.pifive.makemyrun", MainActivity.class);
+		super(MainActivity.class);
 	}
 	
 	@Override
@@ -22,7 +22,4 @@ public class Main extends ActivityInstrumentationTestCase2<MainActivity> {
 		myActivity = getActivity();
 	}
 	
-	public void testMain() {
-		assertTrue(false);
-	}
 }

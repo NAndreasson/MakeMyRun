@@ -14,6 +14,7 @@ public class MainActivity extends MapActivity {
         
         MapView map = new MapView(this, "0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw");
         setContentView(map);
+        System.out.println(RouteGenerator.printableCurrentLocation(this));
     }
 
     @Override
