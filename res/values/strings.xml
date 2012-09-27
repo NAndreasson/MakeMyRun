@@ -4,7 +4,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">Make My Run!</string>
-    <string name="generate_button">Generate</string>
+    <string name="generate_button">Generate Run!</string>
     <string name="testlogo">testlogo</string>
 
 </resources>
