@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Button;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -20,12 +21,12 @@ public class MainActivity extends MapActivity {
         MapView map = new MapView(this, "0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw");
         setContentView(map);
         
-        GenerateRouteTask routeTask = new GenerateRouteTask();
+        DirectionsTask directionsTask = new DirectionsTask();
         try {
-        	routeTask.execute();
-        	JSONObject route = routeTask.get();
+        	directionsTask.execute();
+        	JSONObject googleRoute = directionsTask.get();
         
-        	Log.i("Dev", route.toString());
+        	Log.d("MMR", googleRoute.toString());
         	
         } catch (ExecutionException e) {
         	e.printStackTrace();
