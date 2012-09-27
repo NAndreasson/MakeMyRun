@@ -2,6 +2,7 @@ package com.pifive.makemyrun;
 
 import java.util.concurrent.ExecutionException;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
@@ -20,11 +21,11 @@ public class MainActivity extends MapActivity {
         
         MapView map = new MapView(this, "0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw");
         setContentView(map);
-        
+        JSONObject googleRoute = null;
         DirectionsTask directionsTask = new DirectionsTask();
         try {
         	directionsTask.execute();
-        	JSONObject googleRoute = directionsTask.get();
+        	googleRoute = directionsTask.get();
         
         	Log.d("MMR", googleRoute.toString());
         	
@@ -33,6 +34,14 @@ public class MainActivity extends MapActivity {
         } catch (InterruptedException e) {
         	e.printStackTrace();
         }
+        
+        try {
+        	Route route = new Route(googleRoute);
+        	Log.d("MMR",route.getdistance()+"");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @Override
@@ -41,7 +50,7 @@ public class MainActivity extends MapActivity {
         return true;
     }
 
-	@Override
+	@Override	
 	protected boolean isRouteDisplayed() {
 		// TODO Auto-generated method stub
 		return false;

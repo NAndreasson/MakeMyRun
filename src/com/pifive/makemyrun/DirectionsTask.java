@@ -19,7 +19,6 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject>{
 	
 	private final static String GOOGLE_URL = "http://maps.googleapis.com/maps/api/directions/json?";
 	private final static String DEFAULT_QUERY = "origin=Stockholm&destination=Gothenburg&sensor=false";
-	
 	private int cancelCause;
 
 	@Override
