@@ -10,7 +10,6 @@ import java.net.URL;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -19,6 +18,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject>{
 	
 	private final static String GOOGLE_URL = "http://maps.googleapis.com/maps/api/directions/json?";
 	private final static String DEFAULT_QUERY = "origin=Stockholm&destination=Gothenburg&sensor=false";
+	private final static String GOOGLE_QUERY_ERROR = "REQUEST_DENIED";
 	
 	private int cancelCause;
 
@@ -41,13 +41,24 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject>{
 			JSONObject json = new JSONObject(googleString);
 			
 			Log.i("MMR", "Google response stream parsed successfully to JSON");
+			
+			String googleStatus = json.getString("status");
+			Log.d("MMR", "Google response status: " + googleStatus);
+			
+			// If google can't handle it we never want to send it forward
+			if (googleStatus.equals(GOOGLE_QUERY_ERROR)) {
+				throw new DirectionsException("Google returned error REQUEST_INVALID");
+			}
 			return json;
 		} catch (MalformedURLException e) {
-			cancel(false);
 			cancelCause = R.string.url_format_failed;
+			cancel(true);
 		} catch (JSONException e) {
-			cancel(false);
 			cancelCause = R.string.json_parse_failed;
+			cancel(true);
+		} catch (DirectionsException e) {
+			cancelCause = R.string.google_rest_failed;
+			cancel(true);
 		}
 		return null;
 	}
@@ -62,17 +73,19 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject>{
 		BufferedReader in = null;
 		StringBuilder stringBuilder = new StringBuilder();
 		try {
+			// Send request to REST API
 			connection = (HttpURLConnection) url.openConnection();
 			Log.i("MMR", "Google response HTTP status: " + connection.getResponseMessage());
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			
+			// Parse response to string
 			String data;
 			Log.d("MMR", "Parsing Google response stream");
 			while ((data = in.readLine()) != null) {
 				stringBuilder.append(data);
 			}
 		} catch (IOException e) {
-			cancel(false);
+			cancel(true);
 			cancelCause = R.string.google_rest_failed;
 		} finally {
 			if (connection != null) {
@@ -87,8 +100,12 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject>{
 		return stringBuilder.toString();
 	}
 	
-	@Override
-	protected void onCancelled() {
-		// Return to generation view and print error message
+	/**
+	 * Returns the resource ID for the cancel message
+	 * @return Returns an integer ID for the string resource
+	 * describing cause of cancellation.
+	 */
+	public int getCancelCause() {
+		return cancelCause;
 	}
 }
