@@ -1,9 +1,13 @@
 package com.pifive.makemyrun.test;
 
 import junit.framework.TestCase;
+import android.app.Activity;
+import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
-import android.test.ActivityInstrumentationTestCase2;
+import android.test.IsolatedContext;
 
 import com.pifive.makemyrun.MainActivity;
 import com.pifive.makemyrun.RouteGenerator;
@@ -12,7 +16,6 @@ import com.pifive.makemyrun.RouteGenerator;
  * Test class for RouteGenerator
  */
 public class RouteGeneratorTest extends TestCase {
-
 	private static Context testContext;
 	
 	/**
@@ -21,7 +24,7 @@ public class RouteGeneratorTest extends TestCase {
 	 */
 	private Context getTestContext() {
 		if (testContext == null) {
-			testContext = new MainActivity();
+			testContext = new Activity();
 		}
 		return testContext;
 	}
@@ -42,5 +45,6 @@ public class RouteGeneratorTest extends TestCase {
 	 */
 	public void testGetCurrentLocation() {
 		Location returnLocation = RouteGenerator.getCurrentLocation(getTestContext());
+		assert(returnLocation != null);
 	}
 }
