@@ -1,5 +1,8 @@
-import java.util.ArrayList;
+package com.pifive.makemyrun;
 
+
+import java.util.ArrayList;
+import java.util.List;
 /**
  * Originally belongs to Ismail Habib @
  * http://www.geekyblogger.com/2010/12/decoding-polylines-from-google-maps.html
@@ -14,8 +17,8 @@ public class PolylineDecoder {
 	 * @param encoded String containing an encoded polyline
 	 * @return Returns a list of Locations containing geographical points.
 	 */
-	public static ArrayList decodePoly(String encoded) {
-		ArrayList poly = new ArrayList();
+	public static List<Location> decodePoly(String encoded) {
+		List<Location> poly = new ArrayList<Location>();
 		int index = 0, len = encoded.length();
 		int lat = 0, lng = 0;
 		while (index < len) {

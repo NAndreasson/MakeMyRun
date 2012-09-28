@@ -7,6 +7,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 public class Route {
 
 	private List<Location> waypoints = new ArrayList<Location>();
@@ -23,22 +25,17 @@ public class Route {
 			JSONObject leg = legs.getJSONObject(i);
 			distance += leg.getJSONObject("distance").getInt("value");
 			JSONArray steps = getLegSteps(leg);
-			addLocations(steps);
+			for(int j = 0; j < steps.length(); j++){
+				String points = steps.getJSONObject(j).
+						getJSONObject("polyline").getString("points");
+				waypoints.addAll(PolylineDecoder.decodePoly(points));
+			}
 		}
-		JSONObject lastLeg = legs.getJSONObject(legs.length()-1);
-		addLastStepLocation(lastLeg);
 	}
 	
 	private JSONArray getLegSteps(JSONObject leg) throws JSONException {
 		JSONArray stepsArray = leg.getJSONArray("steps");
 		return stepsArray;
-	}
-	
-	private void addLocations(JSONArray steps) throws JSONException {
-		for(int j = 0; j < steps.length() ; j++) { 
-			JSONObject location = steps.getJSONObject(j).getJSONObject("start_location");
-			waypoints.add(new Location(location.getDouble("lng"), location.getDouble("lat")));
-		}
 	}
 	
 	public void addLastStepLocation(JSONObject lastLeg) throws JSONException {

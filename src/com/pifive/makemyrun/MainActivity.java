@@ -34,6 +34,14 @@ public class MainActivity extends MapActivity {
         } catch (InterruptedException e) {
         	e.printStackTrace();
         }
+        try {
+			new Route(googleRoute);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        Log.d("MMR", "ALL DONE");
     }
 
     @Override

@@ -5,9 +5,15 @@ public class Location {
 	private double lat;
 	private double lng;
 	
+	private int latInt;
+	private int lngInt;
+	
 	public Location(double lat, double lng){
 		this.lat = lat;
 		this.lng = lng;
+		
+		latInt = new Double(lat).intValue();
+		lngInt = new Double(lng).intValue();
 	}
 	
 	public double getLat(){
@@ -16,5 +22,10 @@ public class Location {
 	
 	public double getLng(){
 		return lng;
+	}
+
+	@Override
+	public String toString() {
+		return "Location [lat=" + lat + ", lng=" + lng + "]";
 	}
 }
