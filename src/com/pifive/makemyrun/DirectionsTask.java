@@ -25,7 +25,7 @@ import android.widget.Toast;
 public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 
 	public final static String GOOGLE_URL = "http://maps.googleapis.com/maps/api/directions/json?";
-	public final static String TEST_QUERY = "origin=Stockholm&destination=Gothenburg&sensor=false";
+	public final static String TEST_QUERY = "origin=Friggagatan,Gothenburg,Sweden&destination=Ran%C3%A4ngsgatan,Gothenburg,Sweden&mode=walking&sensor=false";
 	public final static String GOOGLE_QUERY_ERROR = "REQUEST_DENIED";
 	public final static String GOOGLE_QUERY_SUCCESS = "OK";
 

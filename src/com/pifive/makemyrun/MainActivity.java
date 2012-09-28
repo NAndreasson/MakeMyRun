@@ -6,6 +6,9 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -23,6 +26,20 @@ public class MainActivity extends MapActivity {
         mapView.setBuiltInZoomControls(true);
 
         startDirectionsTask(DirectionsTask.TEST_QUERY);
+        
+        Button button = (Button) findViewById(R.id.generatebutton);
+        button.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				View overlay = findViewById(R.id.overlayMenu);
+				overlay.setVisibility(View.GONE);
+				mapView.requestFocus();
+				mapView.requestFocusFromTouch();
+				mapView.setClickable(true);
+			}
+        	
+        });
     }
 
     @Override

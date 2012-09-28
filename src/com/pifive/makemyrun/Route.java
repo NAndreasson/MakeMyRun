@@ -7,8 +7,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 public class Route {
 
 	private List<Location> waypoints = new ArrayList<Location>();
@@ -38,12 +36,12 @@ public class Route {
 		return stepsArray;
 	}
 	
-	public void addLastStepLocation(JSONObject lastLeg) throws JSONException {
-		JSONArray lastLegSteps = lastLeg.getJSONArray("steps");
-		JSONObject lastLegStep = lastLegSteps.getJSONObject(lastLegSteps.length()-1);
-		JSONObject endLocation = lastLegStep.getJSONObject("end_location");
-		waypoints.add(new Location(endLocation.getDouble("lng"), endLocation.getDouble("lat")));
-	}
+//	public void addLastStepLocation(JSONObject lastLeg) throws JSONException {
+//		JSONArray lastLegSteps = lastLeg.getJSONArray("steps");
+//		JSONObject lastLegStep = lastLegSteps.getJSONObject(lastLegSteps.length()-1);
+//		JSONObject endLocation = lastLegStep.getJSONObject("end_location");
+//		waypoints.add(new Location(endLocation.getDouble("lng"), endLocation.getDouble("lat")));
+//	}
 	
 	public int getDistance(){
 		return distance;

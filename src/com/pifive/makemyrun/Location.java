@@ -5,31 +5,17 @@ public class Location {
 	private double lat;
 	private double lng;
 	
-	private int latInt;
-	private int lngInt;
-	
 	public Location(double lat, double lng){
 		this.lat = lat;
 		this.lng = lng;
-		
-		latInt = new Double(lat).intValue();
-		lngInt = new Double(lng).intValue();
 	}
 	
-	public double getLat(){
-		return lat;
+	public int getMicroLat(){
+		return Double.valueOf(lat*1E6).intValue();
 	}
 	
-	public double getLng(){
-		return lng;
-	}
-	
-	public int getLatInt() {
-		return latInt;
-	}
-	
-	public int getLngInt() {
-		return lngInt;
+	public int getMicroLng(){
+		return Double.valueOf(lng*1E6).intValue();
 	}
 
 	@Override
