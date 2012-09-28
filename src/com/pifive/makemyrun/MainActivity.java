@@ -1,15 +1,12 @@
 package com.pifive.makemyrun;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapController;
-import com.google.android.maps.MapView;
 
 public class MainActivity extends MapActivity {
 
@@ -18,16 +15,16 @@ public class MainActivity extends MapActivity {
         super.onCreate(savedInstanceState);
         
         setContentView(R.layout.activity_main);
-        MapView mapView = (MapView) findViewById(R.id.mapview);
-        mapView.setBuiltInZoomControls(true);
-        MapController mc = mapView.getController();
-        mc.animateTo(new GeoPoint(57685535, 11987197));
-//        mc.setZoom(50);
-        List list = new LinkedList<int[]>();
-        list.add(new int[] {57685535, 11987197});
-        list.add(new int[] {57685306, 11990930});
-        list.add(new int[] {57684331, 11994342});
-        new RouteDrawer(mapView, list);
+        Button button = (Button) findViewById(R.id.generatebutton);
+        button.setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				View overlay = findViewById(R.id.overlayMenu);
+				overlay.setVisibility(View.GONE);
+			}
+        	
+        });
     }
 
     @Override
