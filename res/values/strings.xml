@@ -7,5 +7,7 @@
     <string name="google_rest_failed">Failed to read google REST response</string>
     <string name="json_parse_failed">Failed to parse google JSON response</string>
     <string name="url_format_failed">URL provided malformed</string>
+    <string name="generate_button">Generate Run!</string>
+    <string name="testlogo">testlogo</string>
 
 </resources>

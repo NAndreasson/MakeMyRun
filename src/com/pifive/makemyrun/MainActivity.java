@@ -1,27 +1,26 @@
 package com.pifive.makemyrun;
 
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
 public class MainActivity extends MapActivity {
+	
+	MapView mapView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        MapView map = new MapView(this, "0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw");
-        setContentView(map);
+
+        setContentView(R.layout.activity_main);
+        mapView = (MapView) findViewById(R.id.mapview);
+        mapView.setBuiltInZoomControls(true);
 
         startDirectionsTask(DirectionsTask.TEST_QUERY);
     }
@@ -47,12 +46,12 @@ public class MainActivity extends MapActivity {
         JSONObject googleRoute = directionsTask.simpleGet(query);
         
         try {
-			new Route(googleRoute);
+			Route route = new Route(googleRoute);
+			RouteDrawer drawer = new RouteDrawer(mapView, route.getWaypoints());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
         Log.d("MMR", "ALL DONE");
 
 	}

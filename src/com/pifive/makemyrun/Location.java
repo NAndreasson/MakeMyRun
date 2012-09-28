@@ -23,6 +23,14 @@ public class Location {
 	public double getLng(){
 		return lng;
 	}
+	
+	public int getLatInt() {
+		return latInt;
+	}
+	
+	public int getLngInt() {
+		return lngInt;
+	}
 
 	@Override
 	public String toString() {
