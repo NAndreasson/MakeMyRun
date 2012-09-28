@@ -39,8 +39,7 @@ public class PolylineDecoder {
 			} while (b >= 0x20);
 			int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
 			lng += dlng;
-			Location p = new Location((((double) lat / 1E5)),
-					(((double) lng / 1E5)));
+			Location p = new Location(lat,lng);
 			poly.add(p);
 		}
 		return poly;

@@ -1,19 +1,12 @@
 package com.pifive.makemyrun;
 
 public class Location {
-
-	private double lat;
-	private double lng;
+	private int lat;
+	private int lng;
 	
-	private int latInt;
-	private int lngInt;
-	
-	public Location(double lat, double lng){
+	public Location(int lat, int lng){
 		this.lat = lat;
 		this.lng = lng;
-		
-		latInt = new Double(lat).intValue();
-		lngInt = new Double(lng).intValue();
 	}
 	
 	public double getLat(){

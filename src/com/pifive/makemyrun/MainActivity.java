@@ -1,6 +1,5 @@
 package com.pifive.makemyrun;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
