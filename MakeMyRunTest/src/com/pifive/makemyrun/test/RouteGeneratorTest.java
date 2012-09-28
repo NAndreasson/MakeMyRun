@@ -47,4 +47,16 @@ public class RouteGeneratorTest extends TestCase {
 		Location returnLocation = RouteGenerator.getCurrentLocation(getTestContext());
 		assert(returnLocation != null);
 	}
+	
+	public void testGetRandomLocation() {
+		com.pifive.makemyrun.Location location = new com.pifive.makemyrun.Location(68, 68);
+		com.pifive.makemyrun.Location randomLocation = RouteGenerator.
+															generateRandomLocation(location);
+		assertTrue(location.getLat() <= randomLocation.getLat());
+		assertTrue(location.getLng() <= randomLocation.getLng());
+		assertTrue(randomLocation.getLat() >= (location.getLat() + 0.003));
+		assertTrue(randomLocation.getLat() <= location.getLat() + 0.007);
+		assertTrue(randomLocation.getLng() >= location.getLng() + 0.003);
+		assertTrue(randomLocation.getLng() <= location.getLng() + 0.007);
+	}
 }
