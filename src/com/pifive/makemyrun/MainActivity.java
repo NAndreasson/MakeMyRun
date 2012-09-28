@@ -39,29 +39,7 @@ public class MainActivity extends MapActivity {
 	 * @param query The query to execute DirectionsTask with.
 	 */
 	private void startDirectionsTask(String query) {
-        DirectionsTask directionsTask = new DirectionsTask();
-        try {
-        	directionsTask.execute();
-        	
-        	if (!directionsTask.isCancelled()) {
-        		JSONObject googleRoute = directionsTask.get();        		
-        		Log.d("MMR", googleRoute.toString());
-        	} else {
-        		int msgID = directionsTask.getCancelCause();
-        		Toast.makeText(getBaseContext(), msgID, Toast.LENGTH_LONG).show();
-        	}
-        } catch (ExecutionException e) {
-        	e.printStackTrace();
-        } catch (InterruptedException e) {
-        	if (directionsTask.isCancelled()) {
-        		// Maybe we got cancelled from within the task ?
-        		Toast.makeText(getBaseContext(),
-        						directionsTask.getCancelCause(),
-        						Toast.LENGTH_LONG).show();
-        	} else {
-        		// If task is not cancelled we do not know what happened ?
-        		e.printStackTrace();        		
-        	}
-        }
+        DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL);
+        directionsTask.simpleGet(DirectionsTask.TEST_QUERY);
 	}
 }
