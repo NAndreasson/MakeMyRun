@@ -11,6 +11,7 @@ import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 /**
  *	RouteGenerator
@@ -25,20 +26,32 @@ public class RouteGenerator {
 		
 	}
 	
-	public static List<Location> generateRoute(final Location startEndLoc) {
+	public static String generateRoute(final PiLocation startEndLoc) {		
+		// build the beginning of the google query
+		StringBuilder stringBuilder = new StringBuilder("origin=");
+		stringBuilder.append(startEndLoc.getLat());
+		stringBuilder.append(",");
+		stringBuilder.append(startEndLoc.getLng());
+		stringBuilder.append("&destination=");
+		stringBuilder.append(startEndLoc.getLat());
+		stringBuilder.append(",");
+		stringBuilder.append(startEndLoc.getLng());
+		stringBuilder.append("&waypoints=");
 		
-		// generate centerpoint in the 'circle' 
-
-
-		return null;
-
-		// calculate distance 
+		// get the centerpoint of the 'circle'
+		PiLocation centerLocation = generateRandomLocation(startEndLoc);
+		List<PiLocation> waypoints = getCircle(centerLocation, startEndLoc, 6);
+		for (PiLocation waypoint : waypoints) {
+			stringBuilder.append(waypoint.getLat());
+			stringBuilder.append(",");
+			stringBuilder.append(waypoint.getLng());
+			stringBuilder.append("|");
+		}
+		// remove the last |
+		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+		stringBuilder.append("&avoid=highways&sensor=true");
 		
-		// use sin and cos x to calculate a number of new waypoints
-		
-		// add the waypoints to lists
-		
-		// return the list
+		return stringBuilder.toString();
 	}
 	
 	/**
@@ -52,7 +65,7 @@ public class RouteGenerator {
 		Random random = new Random();
 		double randomNumber = 0.003 + random.nextDouble() * 0.004;
 		double centerLatitude = location.getLat() + randomNumber;
-		double centerLongitude = location.getLat() + randomNumber;
+		double centerLongitude = location.getLng() + randomNumber;
 		
 		return new PiLocation(centerLatitude, centerLongitude);
 	}
@@ -91,9 +104,7 @@ public class RouteGenerator {
 		double angle = (Math.PI * 2) / (double) points;
 		double longDiff = start.getLng() - center.getLng();
 		double latDiff = start.getLat() - center.getLat();
-		double radius = Math.sqrt(Math.pow(longDiff, longDiff) + Math.pow(latDiff, latDiff));
-		
-		locations.add(start);
+		double radius = Math.sqrt(Math.pow(longDiff, 2) + Math.pow(latDiff, 2));
 		
 		for(int i=1; i<points; i++) {
 			locations.add(new PiLocation(center.getLat() + Math.cos(angle*i)*radius, 
