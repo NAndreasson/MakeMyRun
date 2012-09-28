@@ -5,6 +5,7 @@ package com.pifive.makemyrun;
 
 import java.util.List;
 import java.util.Random;
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.location.Criteria;
@@ -57,10 +58,36 @@ public class RouteGenerator {
 	}
 	
 	/**
-	 * Class to print current location to console.
+	 * Method to print current location to console.
 	 */
 	public static String printableCurrentLocation(Context context) {
 		Location location = getCurrentLocation(context);
 		return "" + location.getLatitude() + " and " + location.getLongitude();
+	}
+	
+	/**
+	 * Returns X number of points in a circle, all with the same distance from center.
+	 */
+	public static List<PiLocation> getCircle(PiLocation center, PiLocation start, int points) {
+		if (points < 2) {
+			throw new IllegalArgumentException("At least two points are needed");
+		} else if (points > 10) {
+			throw new IllegalArgumentException("No more than 10 points");
+		}
+		
+		List<PiLocation> locations = new ArrayList<PiLocation>();
+		double angle = (Math.PI * 2) / (double) points;
+		double longDiff = start.getLng() - center.getLng();
+		double latDiff = start.getLat() - center.getLat();
+		double radius = Math.sqrt(Math.pow(longDiff, longDiff) + Math.pow(latDiff, latDiff));
+		
+		locations.add(start);
+		
+		for(int i=1; i<points; i++) {
+			locations.add(new PiLocation(center.getLat() + Math.cos(angle*i)*radius, 
+									   center.getLng() + Math.sin(angle*i)*radius));
+		}
+		
+		return locations;
 	}
 }
