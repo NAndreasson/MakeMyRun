@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -21,27 +22,8 @@ public class MainActivity extends MapActivity {
         
         MapView map = new MapView(this, "0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw");
         setContentView(map);
-        JSONObject googleRoute = null;
-        DirectionsTask directionsTask = new DirectionsTask();
-        try {
-        	directionsTask.execute();
-        	googleRoute = directionsTask.get();
-        
-        	Log.d("MMR", googleRoute.toString());
-        	
-        } catch (ExecutionException e) {
-        	e.printStackTrace();
-        } catch (InterruptedException e) {
-        	e.printStackTrace();
-        }
-        try {
-			new Route(googleRoute);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        
-        Log.d("MMR", "ALL DONE");
+
+        startDirectionsTask(DirectionsTask.TEST_QUERY);
     }
 
     @Override
@@ -54,5 +36,24 @@ public class MainActivity extends MapActivity {
 	protected boolean isRouteDisplayed() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	/**
+	 * Queries Google Directions with supplied query through a task.
+	 * @param query The query to execute DirectionsTask with.
+	 */
+	private void startDirectionsTask(String query) {
+        DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL);
+        JSONObject googleRoute = directionsTask.simpleGet(query);
+        
+        try {
+			new Route(googleRoute);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        Log.d("MMR", "ALL DONE");
+
 	}
 }
