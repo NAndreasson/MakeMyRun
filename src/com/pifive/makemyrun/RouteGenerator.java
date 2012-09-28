@@ -27,12 +27,8 @@ public class RouteGenerator {
 	
 	public static List<Location> generateRoute(final Location startEndLoc) {
 		
-		// generate centerpoint in the 'cicle' 
-		// create another location approx 0.003 - 0.007 from the current
-		Random random = new Random();
-		double randomNumber = 0.003 + random.nextDouble() * 0.004;
-		double centerLatitude = startEndLoc.getLatitude() + randomNumber;
-		double centerLongitude = startEndLoc.getLatitude() + randomNumber;
+		// generate centerpoint in the 'circle' 
+
 
 		return null;
 
@@ -43,6 +39,22 @@ public class RouteGenerator {
 		// add the waypoints to lists
 		
 		// return the list
+	}
+	
+	/**
+	 * Generates a location with coordinates 0.003 - 0.007 latitude and 
+	 * longitude from the passed location
+	 * @param location
+	 * @return
+	 */
+	public static PiLocation generateRandomLocation(PiLocation location) {
+		// create another location approx 0.003 - 0.007 from the current
+		Random random = new Random();
+		double randomNumber = 0.003 + random.nextDouble() * 0.004;
+		double centerLatitude = location.getLat() + randomNumber;
+		double centerLongitude = location.getLat() + randomNumber;
+		
+		return new PiLocation(centerLatitude, centerLongitude);
 	}
 	
 	/**
