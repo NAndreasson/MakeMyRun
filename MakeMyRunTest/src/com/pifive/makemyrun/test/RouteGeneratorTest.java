@@ -17,12 +17,17 @@ public class RouteGeneratorTest extends TestCase {
 	 * Passes is string is returned
 	 */
 	public void testGenerateRoute() {
-		assert(RouteGenerator.generateRoute(new PiLocation(57.7000, 12.0000)) != null);
+		String coordinates = "\\d+.\\d+,\\d+.\\d+";
+		String optionalWaypoints = "(&waypoints=" + coordinates + "(\\|" + coordinates + ")*)?";
+		String regEx = "origin=" + coordinates +  "&destination=" + 
+				coordinates + optionalWaypoints + 
+				"&avoid=highways&sensor=true&mode=walking";
+		assert(RouteGenerator.generateRoute(new PiLocation(57.7000, 12.0000)).matches(regEx));
 	}
 	
 	/**
 	 * Passes if:
-	 * 2 ² points ² 10
+	 * 2 ï¿½ points ï¿½ 10
 	 * Each returned value doesn't equal the one before
 	 * Number of returned PiLocations equals the number of points sent in
 	 */
