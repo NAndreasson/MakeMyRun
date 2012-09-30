@@ -74,20 +74,16 @@ public class RouteGenerator {
 	 * Returns current Location
 	 * @param context
 	 * @return
+	 * @throws NoLocationException 
 	 */
-	public static Location getCurrentLocation(Context context) {
+	public static Location getCurrentLocation(Context context) throws NoLocationException {
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		String provider = locationManager.getBestProvider(new Criteria(), false);
-		
-		return locationManager.getLastKnownLocation(provider);
-	}
-	
-	/**
-	 * Method to print current location to console.
-	 */
-	public static String printableCurrentLocation(Context context) {
-		Location location = getCurrentLocation(context);
-		return "" + location.getLatitude() + " and " + location.getLongitude();
+		Location location = locationManager.getLastKnownLocation(provider);
+		if (location == null) {
+			throw new NoLocationException("Location unavailable");
+		}
+		return location;
 	}
 	
 	/**

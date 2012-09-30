@@ -15,7 +15,6 @@ public class MainActivity extends MapActivity {
         
         MapView map = new MapView(this, "0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw");
         setContentView(map);
-        //System.out.println(RouteGenerator.printableCurrentLocation(this));
         String query = RouteGenerator.generateRoute(new PiLocation(57.714676, 12.028987));
         Log.d("MMR", query);
     }
