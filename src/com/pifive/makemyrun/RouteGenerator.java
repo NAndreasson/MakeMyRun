@@ -25,7 +25,7 @@ public class RouteGenerator {
 		
 	}
 	
-	public static String generateRoute(final PiLocation startEndLoc) {		
+	public static String generateRoute(final com.pifive.makemyrun.Location startEndLoc) {		
 		// build the beginning of the google query
 		StringBuilder stringBuilder = new StringBuilder("origin=");
 		stringBuilder.append(startEndLoc.getLat());
@@ -38,9 +38,9 @@ public class RouteGenerator {
 		stringBuilder.append("&waypoints=");
 		
 		// get the centerpoint of the 'circle'
-		PiLocation centerLocation = generateRandomLocation(startEndLoc);
-		List<PiLocation> waypoints = getCircle(centerLocation, startEndLoc, 6);
-		for (PiLocation waypoint : waypoints) {
+		com.pifive.makemyrun.Location centerLocation = generateRandomLocation(startEndLoc);
+		List<com.pifive.makemyrun.Location> waypoints = getCircle(centerLocation, startEndLoc, 6);
+		for (com.pifive.makemyrun.Location waypoint : waypoints) {
 			stringBuilder.append(waypoint.getLat());
 			stringBuilder.append(",");
 			stringBuilder.append(waypoint.getLng());
@@ -59,14 +59,14 @@ public class RouteGenerator {
 	 * @param location
 	 * @return
 	 */
-	public static PiLocation generateRandomLocation(PiLocation location) {
+	public static com.pifive.makemyrun.Location generateRandomLocation(com.pifive.makemyrun.Location location) {
 		// create another location approx 0.003 - 0.007 from the current
 		Random random = new Random();
 		double randomNumber = 0.003 + random.nextDouble() * 0.004;
 		double centerLatitude = location.getLat() + randomNumber;
 		double centerLongitude = location.getLng() + randomNumber;
 		
-		return new PiLocation(centerLatitude, centerLongitude);
+		return new com.pifive.makemyrun.Location(centerLatitude, centerLongitude);
 	}
 	
 	/**
@@ -88,21 +88,22 @@ public class RouteGenerator {
 	/**
 	 * Returns X number of points in a circle, all with the same distance from center.
 	 */
-	public static List<PiLocation> getCircle(PiLocation center, PiLocation start, int points) {
+	public static List<com.pifive.makemyrun.Location> getCircle(com.pifive.makemyrun.Location center, 
+			com.pifive.makemyrun.Location start, int points) {
 		if (points < 2) {
 			throw new IllegalArgumentException("At least two points are needed");
 		} else if (points > 10) {
 			throw new IllegalArgumentException("No more than 10 points");
 		}
 		
-		List<PiLocation> locations = new ArrayList<PiLocation>();
+		List<com.pifive.makemyrun.Location> locations = new ArrayList<com.pifive.makemyrun.Location>();
 		double angle = (Math.PI * 2) / (double) points;
 		double longDiff = start.getLng() - center.getLng();
 		double latDiff = start.getLat() - center.getLat();
 		double radius = Math.sqrt(Math.pow(longDiff, 2) + Math.pow(latDiff, 2));
 		
 		for(int i=1; i<points; i++) {
-			locations.add(new PiLocation(center.getLat() + Math.cos(angle*i)*radius, 
+			locations.add(new com.pifive.makemyrun.Location(center.getLat() + Math.cos(angle*i)*radius, 
 									   center.getLng() + Math.sin(angle*i)*radius));
 		}
 		

@@ -10,12 +10,12 @@ public class Location {
 		this.lng = lng;
 	}
 	
-	public int getMicroLat(){
-		return Double.valueOf(lat*1E6).intValue();
+	public double getLat() {
+		return lat;
 	}
 	
-	public int getMicroLng(){
-		return Double.valueOf(lng*1E6).intValue();
+	public double getLng() {
+		return lng;
 	}
 	
 	public int getMicroLat(){

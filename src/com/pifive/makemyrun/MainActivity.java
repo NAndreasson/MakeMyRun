@@ -33,7 +33,7 @@ public class MainActivity extends MapActivity {
         		try {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
         			System.out.println(location.toString());
-        			String query = RouteGenerator.generateRoute(new PiLocation(location.getLatitude(), location.getLongitude()));
+        			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
         	        System.out.println(query);
         			startDirectionsTask(query);
         		} catch (NoLocationException e) {

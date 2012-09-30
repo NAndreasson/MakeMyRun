@@ -8,7 +8,6 @@ public class LocationTest extends TestCase {
 
 	private Location testLoc = new Location(57.043, 31.32);
 	
-	
 	public void testGetLng(){
 		assertTrue(testLoc.getLat() == 57.043);
 	}
