@@ -10,7 +10,7 @@ public class RouteTest extends TestCase{
 	
 	@Override
 	protected void setUp() {
-		testObj = new Route();
+		// testObj = new Route();
 	}
 }
 	

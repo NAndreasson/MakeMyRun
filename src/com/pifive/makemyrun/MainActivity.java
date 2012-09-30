@@ -26,12 +26,11 @@ public class MainActivity extends MapActivity {
         mapView.setBuiltInZoomControls(true);
 
         startDirectionsTask(DirectionsTask.TEST_QUERY);
-        
-        Button button = (Button) findViewById(R.id.generatebutton);
-        button.setOnClickListener(new OnClickListener(){
 
-			@Override
-			public void onClick(View v) {
+        Button button = (Button) findViewById(R.id.generatebutton);
+        button.setOnClickListener(new OnClickListener() {
+			
+        	public void onClick(View v) {
 				View overlay = findViewById(R.id.overlayMenu);
 				overlay.setVisibility(View.GONE);
 				mapView.requestFocus();
@@ -40,6 +39,7 @@ public class MainActivity extends MapActivity {
 			}
         	
         });
+        
     }
 
     @Override
