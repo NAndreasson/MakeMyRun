@@ -23,12 +23,24 @@ public class MainActivity extends MapActivity {
 
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
-        
-        Button button = (Button) findViewById(R.id.generatebutton);
-        button.setOnClickListener(new OnClickListener(){
+        mapView.setBuiltInZoomControls(true);
 
-			@Override
-			public void onClick(View v) {
+        Button button = (Button) findViewById(R.id.generatebutton);
+        button.setOnClickListener(new OnClickListener() {
+			
+        	public void onClick(View v) {
+        		
+        		try {
+        			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
+        			System.out.println(location.toString());
+        			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
+        	        System.out.println(query);
+        			startDirectionsTask(query);
+        		} catch (NoLocationException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+        		
 				View overlay = findViewById(R.id.overlayMenu);
 				overlay.setVisibility(View.GONE);
 				mapView.requestFocus();
@@ -37,6 +49,7 @@ public class MainActivity extends MapActivity {
 			}
         	
         });
+        
     }
 
     @Override

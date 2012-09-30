@@ -1,11 +1,11 @@
 package com.pifive.makemyrun;
 
-public class Location {
+public class PiLocation {
 
 	private double lat;
 	private double lng;
 	
-	public Location(double lat, double lng){
+	public PiLocation(double lat, double lng) {
 		this.lat = lat;
 		this.lng = lng;
 	}
@@ -18,12 +18,12 @@ public class Location {
 		return lng;
 	}
 	
-	public int getMicroLat(){
-		return (int) (lat*1E6);
+	public int getMicroLat() {
+		return Double.valueOf(lat*1E6).intValue();
 	}
 	
-	public int getMicroLng(){
-		return (int) (lng*1E6);
+	public int getMicroLng() {
+		return Double.valueOf(lng*1E6).intValue();
 	}
 
 	@Override
