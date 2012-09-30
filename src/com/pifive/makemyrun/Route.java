@@ -12,10 +12,6 @@ public class Route {
 	private List<Location> waypoints = new ArrayList<Location>();
 	private int distance ;
 	
-	public Route(List<Location> waypoints){
-		this.waypoints = waypoints;
-	}
-	
 	/**
 	 * 
 	 * @param directions A json respond from google. with the structure:
@@ -23,7 +19,8 @@ public class Route {
 	 * @throws JSONException
 	 */
 	public Route(JSONObject directions) throws JSONException {
-		JSONObject route = directions.getJSONArray("routes").getJSONObject(0);
+		JSONArray routes = directions.getJSONArray("routes");
+		JSONObject route = routes.getJSONObject(0);
 		JSONArray legs = route.getJSONArray("legs");
 		for(int i = 0 ; i < legs.length(); i ++) {
 			JSONObject leg = legs.getJSONObject(i);

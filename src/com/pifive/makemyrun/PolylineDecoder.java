@@ -10,7 +10,7 @@ import java.util.List;
  * Decodes a polyline from Google Directions to GeoPoints
  *
  */
-public class PolylineDecoder {
+public abstract class PolylineDecoder {
 	
 	/**
 	 * Decodes provided String to a list of Locations
@@ -39,7 +39,7 @@ public class PolylineDecoder {
 			} while (b >= 0x20);
 			int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
 			lng += dlng;
-			Location p = new Location(lat,lng);
+			Location p = new Location((double)(lat/1E5),(double)(lng/1E5));
 			poly.add(p);
 		}
 		return poly;
