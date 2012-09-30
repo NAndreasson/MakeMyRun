@@ -49,7 +49,7 @@ public class RouteGenerator {
 		}
 		// remove the last |
 		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-		stringBuilder.append("&avoid=highways&sensor=true");
+		stringBuilder.append("&avoid=highways&sensor=true&mode=walking");
 		
 		return stringBuilder.toString();
 	}
