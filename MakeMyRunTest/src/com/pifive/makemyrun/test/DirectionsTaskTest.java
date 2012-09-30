@@ -14,11 +14,6 @@ public class DirectionsTaskTest extends AndroidTestCase {
 	private DirectionsTask task = new DirectionsTask(getContext(),
 			DirectionsTask.GOOGLE_URL);
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-	}
-
 	/**
 	 * Tests asyncTask execution isolated
 	 */

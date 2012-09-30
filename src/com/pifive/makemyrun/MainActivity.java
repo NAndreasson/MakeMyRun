@@ -15,7 +15,7 @@ import com.google.android.maps.MapView;
 
 public class MainActivity extends MapActivity {
 	
-	MapView mapView;
+	private MapView mapView;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -23,9 +23,6 @@ public class MainActivity extends MapActivity {
 
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
-        mapView.setBuiltInZoomControls(true);
-
-        startDirectionsTask(DirectionsTask.TEST_QUERY);
         
         Button button = (Button) findViewById(R.id.generatebutton);
         button.setOnClickListener(new OnClickListener(){

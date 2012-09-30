@@ -8,9 +8,9 @@ public class RouteTest extends TestCase{
 	Route testObj;
 	private static String testCase = "";
 	
-	@Override
-	protected void setUp() {
-		testObj = new Route();
-	}
+//	@Override
+//	protected void setUp() {
+//		testObj = new Route();
+//	}
 }
 	
