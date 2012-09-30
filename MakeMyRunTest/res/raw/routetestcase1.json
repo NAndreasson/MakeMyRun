@@ -22,7 +22,7 @@ duration: {
 text: "5 mins",
 value: 270
 },
-end_address: "Ranängsgatan, Stampen, Gothenburg, Sweden",
+end_address: "Ranangsgatan, Stampen, Gothenburg, Sweden",
 end_location: {
 lat: 57.71212000000001,
 lng: 11.99173
@@ -46,7 +46,7 @@ end_location: {
 lat: 57.71252,
 lng: 11.99058
 },
-html_instructions: "Head <b>northeast</b> on <b>Friggagatan</b> toward <b>Alströmergatan</b>",
+html_instructions: "Head <b>northeast</b> on <b>Friggagatan</b> toward <b>Alstromergatan</b>",
 polyline: {
 points: "}sf_JmgdhAa@cA_@aAKSoCwGcAqCg@qA"
 },
@@ -69,7 +69,7 @@ end_location: {
 lat: 57.71212000000001,
 lng: 11.99173
 },
-html_instructions: "Turn <b>right</b> onto <b>Ranängsgatan</b><div style="font-size:0.9em">Destination will be on the right</div>",
+html_instructions: "Turn <b>right</b> onto <b>Ranangsgatan</b><div style=\"font-size:0.9em\">Destination will be on the right</div>",
 polyline: {
 points: "g~f_Jc|dhAVa@d@oCPs@"
 },
@@ -86,7 +86,7 @@ via_waypoint: [ ]
 overview_polyline: {
 points: "}sf_JmgdhAaAeC{CkHkBcFVa@d@oCPs@"
 },
-summary: "Friggagatan and Ranängsgatan",
+summary: "Friggagatan and Ranangsgatan",
 warnings: [
 "Walking directions are in beta.    Use caution – This route may be missing sidewalks or pedestrian paths."
 ],

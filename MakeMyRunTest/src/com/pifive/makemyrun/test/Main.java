@@ -21,4 +21,8 @@ public class Main extends ActivityInstrumentationTestCase2<MainActivity> {
 		
 		myActivity = getActivity();
 	}
+	
+	public void testMain() {
+		assertTrue(true);
+	}
 }

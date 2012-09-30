@@ -12,12 +12,15 @@ public class Route {
 	private List<Location> waypoints = new ArrayList<Location>();
 	private int distance ;
 	
-	public Route(List<Location> waypoints){
-		this.waypoints = waypoints;
-	}
-	
+	/**
+	 * 
+	 * @param directions A json respond from google. with the structure:
+	 * 					route->legs[]->steps[]->polyline->points
+	 * @throws JSONException
+	 */
 	public Route(JSONObject directions) throws JSONException {
-		JSONObject route = directions.getJSONArray("routes").getJSONObject(0);
+		JSONArray routes = directions.getJSONArray("routes");
+		JSONObject route = routes.getJSONObject(0);
 		JSONArray legs = route.getJSONArray("legs");
 		for(int i = 0 ; i < legs.length(); i ++) {
 			JSONObject leg = legs.getJSONObject(i);
@@ -35,13 +38,6 @@ public class Route {
 		JSONArray stepsArray = leg.getJSONArray("steps");
 		return stepsArray;
 	}
-	
-//	public void addLastStepLocation(JSONObject lastLeg) throws JSONException {
-//		JSONArray lastLegSteps = lastLeg.getJSONArray("steps");
-//		JSONObject lastLegStep = lastLegSteps.getJSONObject(lastLegSteps.length()-1);
-//		JSONObject endLocation = lastLegStep.getJSONObject("end_location");
-//		waypoints.add(new Location(endLocation.getDouble("lng"), endLocation.getDouble("lat")));
-//	}
 	
 	public int getDistance(){
 		return distance;

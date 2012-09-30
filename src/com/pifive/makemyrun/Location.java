@@ -17,6 +17,14 @@ public class Location {
 	public int getMicroLng(){
 		return Double.valueOf(lng*1E6).intValue();
 	}
+	
+	public int getMicroLat(){
+		return (int) (lat*1E6);
+	}
+	
+	public int getMicroLng(){
+		return (int) (lng*1E6);
+	}
 
 	@Override
 	public String toString() {
