@@ -25,6 +25,11 @@ public class RouteGenerator {
 		
 	}
 	
+	/**
+	 * Returns a string containing a google query with generated waypoints 
+	 * @param startEndLoc - Current location that the generated route will start and end at
+	 * @return a google query with which you can query google for more steps
+	 */
 	public static String generateRoute(final com.pifive.makemyrun.Location startEndLoc) {		
 		// build the beginning of the google query
 		StringBuilder stringBuilder = new StringBuilder("origin=");
