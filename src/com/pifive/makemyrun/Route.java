@@ -13,10 +13,10 @@ public class Route {
 	private int distance ;
 	
 	/**
-	 * 
-	 * @param directions A json respond from google. with the structure:
+	 * Creates a route from a JSONObject handed out from Google Directions
+	 * @param directions A JSON respond from google. with the structure:
 	 * 					route->legs[]->steps[]->polyline->points
-	 * @throws JSONException
+	 * @throws JSONException if the strucutre of the JSON is unexpected
 	 */
 	public Route(JSONObject directions) throws JSONException {
 		JSONArray routes = directions.getJSONArray("routes");
@@ -39,10 +39,18 @@ public class Route {
 		return stepsArray;
 	}
 	
+	/**
+	 * 
+	 * @return The route's distance 
+	 */
 	public int getDistance(){
 		return distance;
 	}	
 	
+	/**
+	 * 
+	 * @return The route's waypoint Locations
+	 */
 	public List<Location> getWaypoints() {
 		return waypoints;
 	}
