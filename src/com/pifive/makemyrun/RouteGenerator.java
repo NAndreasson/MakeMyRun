@@ -16,7 +16,7 @@ import android.location.LocationManager;
  *	RouteGenerator
  *	Class with static methods for route generation.
  */
-public class RouteGenerator {
+public abstract class RouteGenerator {
 
 	/**
 	 * Private constructor to prevent from being instantiated

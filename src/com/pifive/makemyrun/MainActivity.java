@@ -3,6 +3,9 @@ package com.pifive.makemyrun;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.location.Criteria;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -12,6 +15,8 @@ import android.widget.Button;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.pifive.makemyrun.drawing.MyLocationDrawer;
+import com.pifive.makemyrun.drawing.RouteDrawer;
 
 public class MainActivity extends MapActivity {
 	
@@ -75,11 +80,34 @@ public class MainActivity extends MapActivity {
         try {
 			Route route = new Route(googleRoute);
 			RouteDrawer drawer = new RouteDrawer(mapView, route.getWaypoints());
+			
+			displayCurrentLocation();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         Log.d("MMR", "ALL DONE");
 
+	}
+	
+	/**
+	 * Constructs a MyLocationDrawer to draw current location.
+	 */
+	private void displayCurrentLocation() {
+		
+		// Get location manager from system
+		LocationManager locManager = 
+				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	
+		// Fetch last known location to provide as best guess
+		String provider = locManager.getBestProvider(new Criteria(), false);
+		android.location.Location bestGuess = 
+					locManager.getLastKnownLocation(provider);
+		
+		// Construct our drawer
+		MyLocationDrawer locationDrawer = 
+					new MyLocationDrawer(mapView, bestGuess);
+		
+		locManager.requestLocationUpdates(1000, 5, new Criteria(), locationDrawer, getMainLooper());
 	}
 }

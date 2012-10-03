@@ -1,4 +1,4 @@
-package com.pifive.makemyrun;
+package com.pifive.makemyrun.drawing;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -14,11 +14,12 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.Projection;
+import com.pifive.makemyrun.Location;
 
 public class RouteDrawer {
 
-	MapView mapView;
-	List<GeoPoint> geoList = new LinkedList<GeoPoint>();
+	private MapView mapView;
+	private List<GeoPoint> geoList = new LinkedList<GeoPoint>();
 
 	/**
 	 * Constructs a RouteDrawer from the provided MapView
