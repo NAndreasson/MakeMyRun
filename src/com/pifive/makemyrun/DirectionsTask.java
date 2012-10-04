@@ -28,10 +28,12 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	public final static String TEST_QUERY = "origin=Friggagatan,Gothenburg,Sweden&destination=Ran%C3%A4ngsgatan,Gothenburg,Sweden&mode=walking&sensor=false";
 	public final static String GOOGLE_QUERY_ERROR = "REQUEST_DENIED";
 	public final static String GOOGLE_QUERY_SUCCESS = "OK";
+	public final static String LOADING_MESSAGE = "Loading data from Google";
 
 	private Context context;
 	private int cancelCause;
 	private final String restAPI;
+	private LoadingStatus progBar;
 	
 	/**
 	 * A constructor which enables us to create task with custom host API.
@@ -39,9 +41,10 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * using it with other restful APIs will probably fail.
 	 * @param restAPI The API to contact for each request.
 	 */
-	public DirectionsTask(Context context, String restAPI) {
+	public DirectionsTask(Context context, String restAPI, LoadingStatus progBar) {
 		this.context = context;
 		this.restAPI = restAPI;
+		this.progBar = progBar;
 	}
 	
 	/**
@@ -70,6 +73,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * or an empty JSONObjectif we fail to parse JSON from REST response.
 	 */
 	protected JSONObject doInBackground(String... query) {
+		progBar.setMessage(LOADING_MESSAGE);
 		String myQuery = TEST_QUERY;
 		if (query.length == 1) {
 			myQuery = query[0];
@@ -90,8 +94,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 				cancelCause = R.string.google_rest_failed;				
 			}
 			cancel(true);
-		} 
-		
+		}
 		return json;
 	}
 
@@ -188,4 +191,12 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	public int getCancelCause() {
 		return cancelCause;
 	}
+
+	@Override
+	protected void onPostExecute(JSONObject result) {
+		super.onPostExecute(result);
+		progBar.loadingDone();
+	}
+	
+	
 }

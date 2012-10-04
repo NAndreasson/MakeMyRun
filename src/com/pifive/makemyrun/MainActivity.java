@@ -16,6 +16,7 @@ import com.google.android.maps.MapView;
 public class MainActivity extends MapActivity {
 	
 	private MapView mapView;
+	LoadingStatus ls;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,8 @@ public class MainActivity extends MapActivity {
         button.setOnClickListener(new OnClickListener() {
 			
         	public void onClick(View v) {
-        		
+        		        		
+        		ls = new LoadingStatus(mapView.getContext());
         		try {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
         			System.out.println(location.toString());
@@ -46,6 +48,7 @@ public class MainActivity extends MapActivity {
 				mapView.requestFocus();
 				mapView.requestFocusFromTouch();
 				mapView.setClickable(true);
+				
 			}
         	
         });
@@ -69,7 +72,7 @@ public class MainActivity extends MapActivity {
 	 * @param query The query to execute DirectionsTask with.
 	 */
 	private void startDirectionsTask(String query) {
-        DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL);
+        DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL, ls);
         JSONObject googleRoute = directionsTask.simpleGet(query);
         
         try {

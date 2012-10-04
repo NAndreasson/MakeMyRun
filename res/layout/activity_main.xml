@@ -9,35 +9,34 @@
         android:layout_height="match_parent"
         android:apiKey="0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw" />
 
+    <FrameLayout
+        android:id="@+id/overlayMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="20dp"
+        android:background="#99000000" >
+
+        <ImageView
+            android:id="@+id/pi5logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:alpha="1"
+            android:contentDescription="@string/testlogo"
+            android:src="@drawable/testpic" />
+
+        <Button
+            android:id="@+id/generatebutton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#FFFFFF"
+            android:clickable="true"
+            android:onClick="generateRoute"
+            android:text="@string/generate_button" />
+
+        
+    </FrameLayout>
 
 
-	<FrameLayout
-	    android:id="@+id/overlayMenu"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:background="#99000000"
-	    android:layout_margin="20dp" >
-	    
-	    
-		<ImageView 
-		    android:id="@+id/pi5logo"
-		    android:contentDescription="@string/testlogo"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:alpha="1"
-		    android:layout_gravity="right"
-		    android:src="@drawable/testpic" />
-		
-		<Button
-		    android:id="@+id/generatebutton"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:clickable="true"
-		    android:background="#FFFFFF"
-		    android:layout_gravity="bottom"
-		    android:text="@string/generate_button"
-		    android:onClick="generateRoute" />
-		
-	</FrameLayout>
-	
 </FrameLayout>
