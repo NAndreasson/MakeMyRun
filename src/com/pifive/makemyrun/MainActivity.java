@@ -7,7 +7,6 @@ import android.content.Context;
 import android.location.Criteria;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,21 +14,28 @@ import android.widget.Button;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
-import com.pifive.makemyrun.drawing.MyLocationDrawer;
-import com.pifive.makemyrun.drawing.RouteDrawer;
+import com.pifive.makemyrun.drawing.CurrentLocationArtist;
+import com.pifive.makemyrun.drawing.MapDrawer;
+import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class MainActivity extends MapActivity {
 	
 	private MapView mapView;
+	private MapDrawer mapDrawer;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Setup view correctly
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
+        
+        // Enable map-drawing
+        mapDrawer = new MapDrawer(mapView);
 
+        // Listen for generate-click
         Button button = (Button) findViewById(R.id.generatebutton);
         button.setOnClickListener(new OnClickListener() {
 			
@@ -37,10 +43,11 @@ public class MainActivity extends MapActivity {
         		
         		try {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-        			System.out.println(location.toString());
+
         			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
-        	        System.out.println(query);
+
         			startDirectionsTask(query);
+        			displayCurrentLocation();
         		} catch (NoLocationException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
@@ -48,8 +55,6 @@ public class MainActivity extends MapActivity {
         		
 				View overlay = findViewById(R.id.overlayMenu);
 				overlay.setVisibility(View.GONE);
-				mapView.requestFocus();
-				mapView.requestFocusFromTouch();
 				mapView.setClickable(true);
 			}
         	
@@ -79,15 +84,12 @@ public class MainActivity extends MapActivity {
         
         try {
 			Route route = new Route(googleRoute);
-			RouteDrawer drawer = new RouteDrawer(mapView, route.getWaypoints());
-			
-			displayCurrentLocation();
+			RouteArtist routeArtist = new RouteArtist(route.getWaypoints());
+			mapDrawer.addArtist(routeArtist);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        Log.d("MMR", "ALL DONE");
-
 	}
 	
 	/**
@@ -104,10 +106,17 @@ public class MainActivity extends MapActivity {
 		android.location.Location bestGuess = 
 					locManager.getLastKnownLocation(provider);
 		
-		// Construct our drawer
-		MyLocationDrawer locationDrawer = 
-					new MyLocationDrawer(mapView, bestGuess);
+		// Construct our location artist
+		CurrentLocationArtist locationArtist = 
+					new CurrentLocationArtist(bestGuess);
+		mapDrawer.addArtist(locationArtist);
 		
-		locManager.requestLocationUpdates(1000, 5, new Criteria(), locationDrawer, getMainLooper());
+		// Make it aware of location updates every seconds
+		locManager.requestLocationUpdates(
+				LocationManager.GPS_PROVIDER,
+				0, 
+				0, 
+				locationArtist);
+		
 	}
 }

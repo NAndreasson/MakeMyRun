@@ -4,14 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.pifive.makemyrun.Location;
 import com.pifive.makemyrun.MainActivity;
-import com.pifive.makemyrun.RouteDrawer;
+import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class RouteDrawerTest extends ActivityInstrumentationTestCase2<MainActivity>{
 
@@ -19,7 +18,7 @@ public class RouteDrawerTest extends ActivityInstrumentationTestCase2<MainActivi
 		super(MainActivity.class);
 	}
 
-	private RouteDrawer drawer;
+	private RouteArtist drawer;
 	private MapView mapView;
 	private List<Overlay> overlays;
 	private List<Location> list = new LinkedList<Location>();
@@ -44,7 +43,7 @@ public class RouteDrawerTest extends ActivityInstrumentationTestCase2<MainActivi
 	 * starting location for the list provided.
 	 */
 	public void testOverlayAdding() {
-		drawer = new RouteDrawer(mapView, list);
+		drawer = new RouteArtist(mapView, list);
 		Overlay myOverlay = overlays.get(overlays.size() - 1);
 
 		assertEquals("Verify that we have added a RouteOverlay after construction", 
