@@ -7,16 +7,18 @@ import android.widget.TextView;
 import com.pifive.makemyrun.Timer;
 
 public class TimerTest extends AndroidTestCase {
-	
 	public void test() {
-		Timer timer = new Timer(new TextView(getContext()));
+		Timer testTimer = new Timer(new TextView(getContext()));
+		Thread teg = new Thread();
+		teg.start();
 		try {
-			Thread.sleep(2000);
+			teg.sleep(2000);
 		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Log.d("MMR", "Time: " + timer.getTime());
-		assertTrue(timer.getTime() == 2);
+		Log.d("MMR", "HALAAAAA: " + testTimer.getTime());
+		assertTrue(testTimer.getTime() != 0);
 	}
 
 }
