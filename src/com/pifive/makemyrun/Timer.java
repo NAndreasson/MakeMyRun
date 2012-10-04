@@ -20,8 +20,9 @@ public class Timer {
 				timeElapsed= (int) (((System.currentTimeMillis() - startTime)/1000) + 0.5);
 				int sec = timeElapsed % 60;
 				int min = timeElapsed / 60;
-				Log.d("MMR",""+timeElapsed);
-				clockText.setText("Time ran:\n" + (min < 10 ? "0" + min : min)
+				int hour = timeElapsed / 3600;
+				clockText.setText("Time ran:\n" + (hour < 10 ? "0" + hour : hour)
+						+ ":" + (min < 10 ? "0" + min : min)
 						+ ":" + (sec < 10 ? "0" + sec : sec));
 
 				handler.postDelayed(this, 100);
