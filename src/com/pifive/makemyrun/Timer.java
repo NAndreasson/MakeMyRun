@@ -1,22 +1,38 @@
 package com.pifive.makemyrun;
 
 import android.os.Handler;
+import android.widget.TextView;
 
 public class Timer {
 	
-	Handler handler = new Handler();
-	long start = 0;
+	private Handler handler = new Handler();
+	private long startTime;
+	private int timeElapsed;
 	
-	protected Timer() {
+	public Timer(final TextView clockText) {
+		startTime = System.currentTimeMillis();
 		Runnable run = new Runnable() {
 
 			@Override
 			public void run() {
-				long millis = System.currentTimeMillis() - start;
-				int seconds = (int) millis/1000;
-				int min = seconds/60;
-				seconds = seconds % 60;
+				
+				timeElapsed= (int) (((System.currentTimeMillis() - startTime)/1000) + 0.5);
+				int sec = timeElapsed % 60;
+				int min = timeElapsed / 60;
+				
+				clockText.setText("Time ran:\n" + (min < 10 ? "0" + min : min)
+						+ ":" + (sec < 10 ? "0" + sec : sec));
+
+				handler.postDelayed(this, 100);
 			}
 		};
+		run.run();
+	}
+	
+	/**
+	 * @return time in seconds
+	 */
+	public int getTime() {
+		return timeElapsed;
 	}
 }
