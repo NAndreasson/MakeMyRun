@@ -34,7 +34,7 @@ import com.google.android.maps.Overlay;
  * the overlay.
  * To reduce process time we draw on the same overlay.
  */
-public class MapDrawer {
+public class MapDrawer implements Drawer {
 
 	private MapView mapView;
 	private MapOverlay overlay;
@@ -51,7 +51,7 @@ public class MapDrawer {
 	}
 
 	/**
-	 * Add an artist to our overlay
+	 * Add an artist to our overlay and forces mapview to redraw
 	 * (and if needed attach the overlay again).
 	 * @param artist The artist we will allow to draw with us.
 	 */
@@ -60,6 +60,7 @@ public class MapDrawer {
 			mapView.getOverlays().add(overlay);
 		}
 		overlay.addArtist(artist);
+		mapView.postInvalidate();
 	}
 
 	/**
@@ -72,6 +73,14 @@ public class MapDrawer {
 		if (overlay.getNumberofArtists() == 0) {
 			mapView.getOverlays().remove(overlay);
 		}
+	}
+	
+	/**
+	 * Removes all artists from the overlay and the overlay from the MapView.
+	 */
+	public void clearDrawer() {
+		overlay.clearArtists();
+		mapView.getOverlays().remove(overlay);
 	}
 
 	/**
@@ -104,6 +113,13 @@ public class MapDrawer {
 		protected void removeArtist(OverlayArtist artist) {
 			artists.remove(artist);
 		}
+		
+		/**
+		 * Removes all artists from the overlay
+		 */
+		protected void clearArtists() {
+			artists.clear();
+		}
 
 		/**
 		 * Draws the canvas with help from all our artists.
@@ -116,5 +132,13 @@ public class MapDrawer {
 				artist.draw(canvas, mapView, shadow);
 			}
 		}
+	}
+
+	/**
+	 * Calls invalidate on the MapView associated with this MapDrawer.
+	 */
+	@Override
+	public void reDraw() {
+		mapView.postInvalidate();
 	}
 }

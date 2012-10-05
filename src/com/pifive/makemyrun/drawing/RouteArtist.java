@@ -40,19 +40,29 @@ import com.pifive.makemyrun.Location;
 public class RouteArtist extends AbstractOverlayArtist {
 
 	private List<GeoPoint> geoList = new LinkedList<GeoPoint>();
-	private List<Path> paths = new LinkedList<Path>();
+	private Path path = new Path();
 
 	/**
 	 * Constructs a RouteArtist to  draw a route on a MapOverlay
 	 * @param list A list with geologic locations to construct a Path from.
 	 */
 	public RouteArtist(List<Location> list) {
-		
+		if (list.isEmpty()) {
+			throw new EmptyRouteException();
+		}
 		// Create a list to draw from
 		for (Location p : list) {
 			geoList.add(new GeoPoint(p.getMicroLat(), p.getMicroLng()));
 		}
 		Log.d("MMR", "Amount of GeoPoints to draw per frame: " + geoList.size());
+	}
+	
+	/**
+	 * Returns a copy of the path being drawn by this artist.
+	 * @return Returns the Path being drawn from current GeoPoints.
+	 */
+	public Path getPath() {
+		return new Path(path);
 	}
 
 	/**
@@ -62,7 +72,7 @@ public class RouteArtist extends AbstractOverlayArtist {
 		if (!shadow) {
 
 			// Construct a path and set its starting location
-			Path path = new Path();
+			path.rewind();
 			Point firstPoint = new Point();
 			mapView.getProjection().toPixels(geoList.get(0), firstPoint);
 			path.moveTo(firstPoint.x, firstPoint.y);

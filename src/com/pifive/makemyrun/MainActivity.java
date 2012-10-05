@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.pifive.makemyrun.drawing.CurrentLocationArtist;
@@ -105,6 +106,15 @@ public class MainActivity extends MapActivity {
         
         try {
 			Route route = new Route(googleRoute);
+
+			// Center on our starting point
+			Location location = route.getWaypoints().get(0);
+			GeoPoint geoPoint = new GeoPoint(
+									location.getMicroLat(),
+									location.getMicroLng());
+			mapView.getController().animateTo(geoPoint);
+			
+			// Add an artist to draw our route
 			RouteArtist routeArtist = new RouteArtist(route.getWaypoints());
 			mapDrawer.addArtist(routeArtist);
 		} catch (JSONException e) {
@@ -129,7 +139,7 @@ public class MainActivity extends MapActivity {
 		
 		// Construct our location artist
 		CurrentLocationArtist locationArtist = 
-					new CurrentLocationArtist(bestGuess);
+					new CurrentLocationArtist(bestGuess, mapDrawer);
 		mapDrawer.addArtist(locationArtist);
 		
 		// Make it aware of location updates every seconds

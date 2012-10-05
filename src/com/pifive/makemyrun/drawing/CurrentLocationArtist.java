@@ -28,12 +28,9 @@ import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
-import com.google.android.maps.Projection;
 
 /**
  * 	A simple class for drawing current location on a MapOverlay.
@@ -42,28 +39,24 @@ import com.google.android.maps.Projection;
 public class CurrentLocationArtist extends AbstractOverlayArtist implements
 		LocationListener {
 
+	private Drawer drawer;
+	
+	// Variables to keep track of, trace and draw the actual position 
 	private Location myLocation;
 	private GeoPoint myGeoPoint;
-	private float locationSize = 5.0f;
+	private Point point = new Point();
+	
+	private float locationSize = 20.0f;
 
 	/**
 	 * Sets current location to a best guess provided by creator.
 	 * @param initialGuess Our best guess at current location atm.
+	 * @param drawer The Drawer we will force to redraw on changes.
 	 */
-	public CurrentLocationArtist(Location initialGuess) {
+	public CurrentLocationArtist(Location initialGuess, Drawer drawer) {
+		this.drawer = drawer;
 		myLocation = new Location(initialGuess);
 		myGeoPoint = toGeoPoint(myLocation);
-	}
-
-	/**
-	 * A dark grey 80% opaque paint.
-	 */
-	@Override
-	protected void setupMapPaint() {
-		super.setupMapPaint();
-		paint.setColor(Color.DKGRAY);
-		paint.setAlpha(220);
-		paint.setStyle(Paint.Style.FILL);
 	}
 
 	/**
@@ -71,11 +64,30 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 * @param location The location to convert to GeoPoint.
 	 * @return Returns the same geographical position provided as a GeoPoint.
 	 */
-	private GeoPoint toGeoPoint(Location location) {
+	public static GeoPoint toGeoPoint(Location location) {
 		return new GeoPoint((int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6));
 	}
+
+	/**
+	 * A green 80% opaque paint.
+	 */
+	@Override
+	protected void setupMapPaint() {
+		super.setupMapPaint();
+		paint.setColor(Color.GREEN);
+		paint.setAlpha(220);
+		paint.setStyle(Paint.Style.FILL);
+	}
 	
+	/**
+	 * Returns a copy of the point being drawn atm.
+	 * @return Returns a copy of the point being drawn.
+	 */
+	public Point getPoint() {
+		return new Point(point);
+	}
+
 	/**
 	 * Draws our current position on the MapOverlay(s) we're attached to.
 	 * @param canvas
@@ -85,22 +97,26 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	@Override
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 		if (!shadow) {
-			Point point = new Point();
 			mapView.getProjection().toPixels(myGeoPoint, point);
-			canvas.drawCircle(point.x, point.y, locationSize, paint);
+			canvas.drawCircle(point.x, point.y, 
+								locationSize*mapView.getZoomLevel(), paint);
 		}
 	}
 
 	/**
 	 * Updates our stored location with the new location from LocationManager
+	 * if the new location's accuracy is great enough.
 	 * @param location The new location we assume is most correct.
 	 */
 	@Override
 	public void onLocationChanged(Location location) {
-		myLocation = location;
-
-		// Update the actual location we're drawing each frame
-		myGeoPoint = toGeoPoint(myLocation);
+		if (myLocation.distanceTo(location) > location.getAccuracy()) {				
+			myLocation = location;
+	
+			// Update the actual location we're drawing each frame
+			myGeoPoint = toGeoPoint(myLocation);
+			drawer.reDraw();
+		}
 	}
 
 	/**
