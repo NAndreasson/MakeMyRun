@@ -1,5 +1,7 @@
 package com.pifive.makemyrun.test;
 
+import java.util.TimerTask;
+
 import android.test.AndroidTestCase;
 import android.util.Log;
 import android.widget.TextView;
@@ -7,12 +9,27 @@ import android.widget.TextView;
 import com.pifive.makemyrun.Timer;
 
 public class TimerTest extends AndroidTestCase {
+	
 	public void test() {
-		Timer testTimer = new Timer(new TextView(getContext()));
-		Thread teg = new Thread();
-		teg.start();
-		Log.d("MMR", "HALAAAAA: " + testTimer.getTime());
-		assertTrue(testTimer.getTime() != 0);
+		
+		
+		final Timer testTimer = new Timer(new TextView(getContext()));
+		
+		java.util.Timer javaTimer = new java.util.Timer();
+		javaTimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				Log.d("MMR", "TIME NOW!: " + testTimer.getTime());
+				assertEquals(2, testTimer.getTime());				
+			}
+		}, 2000);
+		try {
+			synchronized (this) {
+				this.wait(3000);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

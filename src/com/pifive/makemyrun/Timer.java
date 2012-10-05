@@ -6,14 +6,14 @@ import android.widget.TextView;
 
 public class Timer {
 	
-	private Handler handler = new Handler();
 	private long startTime;
 	private int timeElapsed;
 	
 	public Timer(final TextView clockText) {
 		startTime = System.currentTimeMillis();
-		new Runnable() {
+		new Thread(new Runnable() {
 
+			private Handler handler = new Handler();
 			@Override
 			public void run() {
 				
@@ -27,14 +27,13 @@ public class Timer {
 
 				handler.postDelayed(this, 100);
 			}
-		}.run();
+		}).start();
 	}
 	
 	/**
 	 * @return time in seconds
 	 */
 	public int getTime() {
-		Log.d("MMR", "Time: " + timeElapsed);
 		return timeElapsed;
 	}
 }
