@@ -46,7 +46,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	private GeoPoint myGeoPoint;
 	private Point point = new Point();
 	
-	private float locationSize = 20.0f;
+	private float locationSize = 0.7f;
 
 	/**
 	 * Sets current location to a best guess provided by creator.
