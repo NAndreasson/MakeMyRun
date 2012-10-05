@@ -28,7 +28,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
