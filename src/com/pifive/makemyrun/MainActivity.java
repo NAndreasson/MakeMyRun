@@ -34,55 +34,114 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewStub;
 import android.widget.Button;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 
 public class MainActivity extends MapActivity {
-	
 	private MapView mapView;
-
+	private View overlay;
+	private ViewStub viewStub;
+	private boolean inCatchBackState = false;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
-        LocationManager locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
-        String provider = locationManager.getBestProvider(new Criteria(), false);
-        locationManager.requestSingleUpdate(provider, pendingIntent);
-        
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
+        viewStub = (ViewStub) findViewById(R.id.viewStub1);
+        overlay = findViewById(R.id.overlayMenu);
+        updatePosition();
+        showStartScreen();
+    }
+    
+    /**
+     * Shows the start screen (entry point for application)
+     */
+    private void showStartScreen() {
         mapView.setBuiltInZoomControls(true);
-
+        overlay.setVisibility(View.VISIBLE);
         Button button = (Button) findViewById(R.id.generatebutton);
         button.setOnClickListener(new OnClickListener() {
 			
         	public void onClick(View v) {
-        		
+				overlay.setVisibility(View.GONE);
+				
         		try {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-        			System.out.println(location.toString());
         			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
-        	        System.out.println(query);
         			startDirectionsTask(query);
         		} catch (NoLocationException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
         		
-				View overlay = findViewById(R.id.overlayMenu);
-				overlay.setVisibility(View.GONE);
-				mapView.requestFocus();
-				mapView.requestFocusFromTouch();
-				mapView.setClickable(true);
+        		showMiddleScreen();
 			}
         	
         });
-        
+    }
+    
+    /**
+     * Shows the middle screen and activates the state where back button takes you backwards
+     */
+    private void showMiddleScreen() {
+    	inCatchBackState = true;
+        viewStub.setVisibility(View.VISIBLE);
+        Button runButton = (Button) findViewById(R.id.runbutton);
+        runButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				((Button)arg0).setVisibility(View.GONE);
+				startRun();
+			}
+        	
+        });
+    }
+    
+    /**
+     * Starting the run
+     */
+    private void startRun() {
+    	viewStub.setVisibility(View.GONE);
+    	mapView.requestFocus();
+		mapView.requestFocusFromTouch();
+		mapView.setClickable(true);
+    }
+    
+    /**
+     * Makes the phone get new GPS position so that we can use it later to generate route from accurate position
+     */
+    private void updatePosition() {
+    	PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
+        LocationManager locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
+        String provider = locationManager.getBestProvider(new Criteria(), false);
+        locationManager.requestSingleUpdate(provider, pendingIntent);
+    }
+    
+    /**
+     * Catches back button when we want it to just step back in application
+     */
+    @Override
+    public void onBackPressed() {
+    	if(inCatchBackState) {
+    		this.
+    		stepBackwards();
+    	} else {
+    		finish();
+    	}
     }
 
+    private void stepBackwards() {
+    	inCatchBackState = false;
+   		mapView.getOverlays().clear();
+   		mapView.setClickable(false);
+   		mapView.clearFocus();
+		showStartScreen();
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -105,6 +164,7 @@ public class MainActivity extends MapActivity {
         
         try {
 			Route route = new Route(googleRoute);
+			@SuppressWarnings("unused")
 			RouteDrawer drawer = new RouteDrawer(mapView, route.getWaypoints());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

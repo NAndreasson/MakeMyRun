@@ -9,5 +9,6 @@
     <string name="title_activity_main">Make My Run!</string>
     <string name="generate_button">Generate Run!</string>
     <string name="testlogo">testlogo</string>
+    <string name="run_button">Run</string>
 
 </resources>
