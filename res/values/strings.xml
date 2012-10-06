@@ -9,6 +9,7 @@
     <string name="title_activity_main">Make My Run!</string>
     <string name="generate_button">Generate Run!</string>
     <string name="testlogo">testlogo</string>
-    <string name="loading_message">Requesting data from Google&#8230;</string>
+    <string name="directions_loading_message">Requesting data from Google&#8230;</string>
+    <string name="directions_finished_message">Got directions!</string>
 
 </resources>

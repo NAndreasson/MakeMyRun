@@ -30,6 +30,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -60,8 +61,9 @@ public class MainActivity extends MapActivity {
         	        System.out.println(query);
         			startDirectionsTask(query);
         		} catch (NoLocationException e) {
-        			// TODO Auto-generated catch block
-        			e.printStackTrace();
+        			loadingStatus.cancel();
+        			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
+        			return;
         		}
         		
 				View overlay = findViewById(R.id.overlayMenu);
@@ -93,7 +95,8 @@ public class MainActivity extends MapActivity {
 	 * @param query The query to execute DirectionsTask with.
 	 */
 	private void startDirectionsTask(String query) {
-        DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL, loadingStatus);
+        DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL);
+        directionsTask.setLoadingStatus(loadingStatus);
         JSONObject googleRoute = directionsTask.simpleGet(query);
         
         try {

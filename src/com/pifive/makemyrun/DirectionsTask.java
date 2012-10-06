@@ -49,12 +49,13 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	public final static String TEST_QUERY = "origin=Friggagatan,Gothenburg,Sweden&destination=Ran%C3%A4ngsgatan,Gothenburg,Sweden&mode=walking&sensor=false";
 	public final static String GOOGLE_QUERY_ERROR = "REQUEST_DENIED";
 	public final static String GOOGLE_QUERY_SUCCESS = "OK";
-	public final String loadingMessage;
 
+	private final String loadingMessage;
+	private final String finishedMessage;
 	private Context context;
 	private int cancelCause;
 	private final String restAPI;
-	private LoadingStatus progBar;
+	private LoadingStatus loadingStatus;
 	
 	/**
 	 * A constructor which enables us to create task with custom host API.
@@ -62,14 +63,37 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * using it with other restful APIs will probably fail.
 	 * @param restAPI The API to contact for each request.
 	 */
-	public DirectionsTask(Context context, String restAPI, LoadingStatus progBar) {
+	public DirectionsTask(Context context, String restAPI) {
 		
 		this.context = context;
 		this.restAPI = restAPI;
-		this.progBar = progBar;
-		loadingMessage = this.context.getResources().getString(R.string.loading_message);
+		loadingMessage = this.context.getResources().getString(R.string.directions_loading_message);
+		finishedMessage = this.context.getResources().getString(R.string.directions_finished_message);
 	}
 	
+	/**
+	 * Adds a loadingStatus ProgressDialog. 
+	 * You may want to run addItem() from here
+	 * @param loadingStatus a loadingStatus.
+	 */
+	public void setLoadingStatus(LoadingStatus loadingStatus){
+		this.loadingStatus = loadingStatus;
+		this.loadingStatus.addItem();
+	}
+	
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		updateLoadingStage(loadingMessage, false);
+	}
+	
+	private void updateLoadingStage(String message, boolean finishedMessage) {
+		if(loadingStatus != null){
+			loadingStatus.setLoadingStage(loadingMessage, finishedMessage);
+		}
+		
+	}
+
 	/**
 	 * Adds an abstractionlayer to the super.get() method
 	 * and returns its result or an empty JSONObject if we're interrupted.
@@ -78,8 +102,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	public JSONObject simpleGet(String query) {
 		execute(query);
 		JSONObject obj = new JSONObject();
-		progBar.setMessage(loadingMessage);
-        try {
+		try {
         	obj = get();
         	
     	// We have already handled printing of user-errors. Flood the log!
@@ -218,7 +241,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	@Override
 	protected void onPostExecute(JSONObject result) {
 		super.onPostExecute(result);
-		progBar.loadingDone();
+		updateLoadingStage(finishedMessage, true);
 	}
 	
 	

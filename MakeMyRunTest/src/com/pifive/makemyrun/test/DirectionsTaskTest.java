@@ -29,6 +29,7 @@ import android.test.AndroidTestCase;
 
 import com.pifive.makemyrun.DirectionsException;
 import com.pifive.makemyrun.DirectionsTask;
+import com.pifive.makemyrun.LoadingStatus;
 
 public class DirectionsTaskTest extends AndroidTestCase {
 
@@ -44,6 +45,15 @@ public class DirectionsTaskTest extends AndroidTestCase {
 
 	}
 
+	/**
+	 * Tests that our loadingStatus is set and used.
+	 */
+	public void testSetLoadingStauts() {
+		LoadingStatus status = new LoadingStatus(getContext());
+		task.setLoadingStatus(status);
+		task.simpleGet(DirectionsTask.TEST_QUERY);
+		assertTrue(!status.getMessage().equals(""));
+	}
 	/**
 	 * Tests asyncTask's get() isolated
 	 */
