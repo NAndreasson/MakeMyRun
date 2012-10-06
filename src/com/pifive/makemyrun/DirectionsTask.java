@@ -81,12 +81,24 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		this.loadingStatus.addItem();
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * sets loading message for LoadingStatus
+	 */
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
 		updateLoadingStage(loadingMessage, false);
 	}
 	
+	/**
+	 * Updates LoadingStatus if one is set.
+	 * @param message 
+	 * 				Message to be shown
+	 * @param finishedMessage
+	 * 				Set to true if the task is completed
+	 */
 	private void updateLoadingStage(String message, boolean finishedMessage) {
 		if(loadingStatus != null){
 			loadingStatus.setLoadingStage(loadingMessage, finishedMessage);

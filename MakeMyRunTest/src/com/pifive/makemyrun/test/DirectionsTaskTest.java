@@ -54,6 +54,7 @@ public class DirectionsTaskTest extends AndroidTestCase {
 		task.simpleGet(DirectionsTask.TEST_QUERY);
 		assertTrue(!status.getMessage().equals(""));
 	}
+	
 	/**
 	 * Tests asyncTask's get() isolated
 	 */

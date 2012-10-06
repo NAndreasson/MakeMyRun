@@ -14,6 +14,10 @@ public class LoadingStatus {
 	private int tasksInProgress;
 	private String message = "";
 	
+	/**
+	 * creates a new LoadingStatus displaying a ProgresDialog.
+	 * @param context
+	 */
 	public LoadingStatus(Context context) {
 		progress = ProgressDialog.show(context, "Generating Run!", message, true);
 	}
