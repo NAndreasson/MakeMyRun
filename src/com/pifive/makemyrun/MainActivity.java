@@ -21,17 +21,22 @@
 
 package com.pifive.makemyrun;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.location.Criteria;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -40,10 +45,11 @@ import com.pifive.makemyrun.drawing.CurrentLocationArtist;
 import com.pifive.makemyrun.drawing.MapDrawer;
 import com.pifive.makemyrun.drawing.RouteArtist;
 
-public class MainActivity extends MapActivity {
+public class MainActivity extends MapActivity implements Observer {
 	
 	private MapView mapView;
 	private MapDrawer mapDrawer;
+	private DistanceTracker distanceTracker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,7 +62,6 @@ public class MainActivity extends MapActivity {
         
         // Enable map-drawing
         mapDrawer = new MapDrawer(mapView);
-
         // Listen for generate-click
         Button button = (Button) findViewById(R.id.generatebutton);
         button.setOnClickListener(new OnClickListener() {
@@ -65,23 +70,29 @@ public class MainActivity extends MapActivity {
         		
         		try {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-
         			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
-
         			startDirectionsTask(query);
         			displayCurrentLocation();
+  
+        			// Test distanceTracker, should be started when you press run
+        			// but that's for the future
+        	        trackDistance();
+        	        distanceTracker.addObserver(MainActivity.this);
         		} catch (NoLocationException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
-        		
 				View overlay = findViewById(R.id.overlayMenu);
 				overlay.setVisibility(View.GONE);
+
+				View distance = findViewById(R.id.distance);
+				distance.setVisibility(View.VISIBLE);
+				mapView.requestFocus();
+				mapView.requestFocusFromTouch();
 				mapView.setClickable(true);
 			}
         	
         });
-        
     }
 
     @Override
@@ -133,9 +144,9 @@ public class MainActivity extends MapActivity {
 				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 	
 		// Fetch last known location to provide as best guess
-		String provider = locManager.getBestProvider(new Criteria(), false);
+		LocationProvider provider = locManager.getProvider(LocationManager.GPS_PROVIDER);
 		android.location.Location bestGuess = 
-					locManager.getLastKnownLocation(provider);
+					locManager.getLastKnownLocation(provider.getName());
 		
 		// Construct our location artist
 		CurrentLocationArtist locationArtist = 
@@ -148,6 +159,29 @@ public class MainActivity extends MapActivity {
 				0, 
 				0, 
 				locationArtist);
-		
+	}
+	
+	/**
+	 * Constructs a DistanceTracker to track distance
+	 */
+	private void trackDistance() {
+		// Get location manager from system
+		LocationManager locManager = 
+				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	
+		// Get the starting position
+		String provider = LocationManager.GPS_PROVIDER;
+		android.location.Location currentLocation = 
+					locManager.getLastKnownLocation(provider);
+			
+		distanceTracker = new DistanceTracker(currentLocation);
+		// set distanceTracker to retrieve location updates
+		locManager.requestLocationUpdates(provider, 0, 0, distanceTracker);
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		TextView distance = (TextView) findViewById(R.id.distance);
+		distance.setText("Distance: " + Math.round(distanceTracker.getTotalDistance()) + " m");
 	}
 }
