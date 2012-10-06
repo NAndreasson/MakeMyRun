@@ -28,6 +28,7 @@ import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -75,8 +76,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	@Override
 	protected void setupMapPaint() {
 		super.setupMapPaint();
-		paint.setColor(Color.GREEN);
-		paint.setAlpha(220);
+		paint.setARGB(255, 230, 50, 50);
 		paint.setStyle(Paint.Style.FILL);
 	}
 	
@@ -125,8 +125,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void onProviderDisabled(String provider) {
-		// TODO Print GPS lost message, ghost the dot
-
+		Log.d("MMR", "Warning: GPS provider disabled");
 	}
 
 	/**
@@ -135,8 +134,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void onProviderEnabled(String provider) {
-		// TODO Start drawing normally again
-
+		Log.d("MMR", "GPS provider enabled! :)");
 	}
 
 	/**
@@ -147,7 +145,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
-		// TODO Maybe we somehow display on the dot which provider we have?
+		// TODO Maybe we somehow display on the dot which provider we have in the future?
 
 	}
 
