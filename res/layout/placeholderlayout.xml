@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <Button
+        android:id="@+id/stoprunbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="24dp"
+        android:clickable="true"
+		android:background="#FFFFFF"
+		android:layout_gravity="bottom"
+	    android:onClick="generateRoute"
+        android:text="Stop Run"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/distancetext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:text="10.2km"
+        android:textAppearance="?android:attr/textAppearanceLarge" 
+        android:background="#000000"
+        android:textColor="#E0671B"
+        android:alpha="0.3"
+        android:padding="5dp"/>
+
+    <TextView
+        android:id="@+id/clocktext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/distancetext"
+        android:layout_alignBottom="@+id/distancetext"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:text="00:00:00"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:background="#000000"
+        android:textColor="#E0671B"
+        android:alpha="0.3"
+        android:padding="5dp" />
+
+</RelativeLayout>

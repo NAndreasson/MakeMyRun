@@ -44,6 +44,8 @@ public class MainActivity extends MapActivity {
 	private MapView mapView;
 	private View overlay;
 	private ViewStub viewStub;
+	private ViewStub runViewStub;
+	private Button stopRunButton;
 	private boolean inCatchBackState = false;
 	
     @Override
@@ -52,6 +54,7 @@ public class MainActivity extends MapActivity {
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
         viewStub = (ViewStub) findViewById(R.id.viewStub1);
+        runViewStub = (ViewStub) findViewById(R.id.viewStub2);
         overlay = findViewById(R.id.overlayMenu);
         updatePosition();
         showStartScreen();
@@ -106,6 +109,16 @@ public class MainActivity extends MapActivity {
      */
     private void startRun() {
     	viewStub.setVisibility(View.GONE);
+    	runViewStub.setVisibility(View.VISIBLE);
+
+        stopRunButton = (Button) findViewById(R.id.stoprunbutton);
+    	stopRunButton.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View arg0) {
+				stepBackwards();
+			}
+		});
+    	
     	mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
@@ -115,8 +128,10 @@ public class MainActivity extends MapActivity {
      * Makes the phone get new GPS position so that we can use it later to generate route from accurate position
      */
     private void updatePosition() {
-    	PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
-        LocationManager locationManager = (LocationManager) getBaseContext().getSystemService(Context.LOCATION_SERVICE);
+    	PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 
+    						 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
+        LocationManager locationManager = (LocationManager) getBaseContext().
+        							  getSystemService(Context.LOCATION_SERVICE);
         String provider = locationManager.getBestProvider(new Criteria(), false);
         locationManager.requestSingleUpdate(provider, pendingIntent);
     }
@@ -127,15 +142,19 @@ public class MainActivity extends MapActivity {
     @Override
     public void onBackPressed() {
     	if(inCatchBackState) {
-    		this.
     		stepBackwards();
     	} else {
     		finish();
     	}
     }
 
+    /**
+     * Process for stepping backwards and resetting application state.
+     */
     private void stepBackwards() {
     	inCatchBackState = false;
+    	viewStub.setVisibility(View.GONE);
+    	runViewStub.setVisibility(View.GONE);
    		mapView.getOverlays().clear();
    		mapView.setClickable(false);
    		mapView.clearFocus();
