@@ -92,7 +92,7 @@ public class MainActivity extends MapActivity implements Observer {
         		loadingStatus = new LoadingStatus(mapView.getContext());
         		try {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-        			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
+        			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.geo.Location(location.getLatitude(), location.getLongitude()));
         			startDirectionsTask(query);
         			displayCurrentLocation();
         		} catch (RuntimeException e) {
@@ -201,7 +201,7 @@ public class MainActivity extends MapActivity implements Observer {
     	try {
 			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
 			System.out.println(location.toString());
-			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
+			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.geo.Location(location.getLatitude(), location.getLongitude()));
 	        System.out.println(query);
 			startDirectionsTask(query);
 		} catch (NoLocationException e) {
@@ -254,7 +254,7 @@ public class MainActivity extends MapActivity implements Observer {
 			Route route = new Route(googleRoute);
 
 			// Center on our starting point
-			Location location = route.getWaypoints().get(0);
+			com.pifive.makemyrun.geo.Location location = route.getWaypoints().get(0);
 			GeoPoint geoPoint = new GeoPoint(
 									location.getMicroLat(),
 									location.getMicroLng());

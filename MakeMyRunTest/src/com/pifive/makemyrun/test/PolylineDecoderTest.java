@@ -25,7 +25,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import com.pifive.makemyrun.Location;
+import com.pifive.makemyrun.geo.Location;
 import com.pifive.makemyrun.PolylineDecoder;
 
 public class PolylineDecoderTest extends TestCase{

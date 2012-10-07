@@ -29,7 +29,7 @@ import android.graphics.Path;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.google.android.maps.MapView;
-import com.pifive.makemyrun.Location;
+import com.pifive.makemyrun.geo.Location;
 import com.pifive.makemyrun.MainActivity;
 import com.pifive.makemyrun.drawing.EmptyRouteException;
 import com.pifive.makemyrun.drawing.RouteArtist;
