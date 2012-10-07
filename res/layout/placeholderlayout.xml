@@ -13,8 +13,7 @@
         android:clickable="true"
 		android:background="#FFFFFF"
 		android:layout_gravity="bottom"
-	    android:onClick="generateRoute"
-        android:text="Stop Run"
+        android:text="@string/stop_run_text"
         android:padding="5dp" />
 
     <TextView
@@ -25,7 +24,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"
-        android:text="10.2km"
+        android:text="@string/distance"
         android:textAppearance="?android:attr/textAppearanceLarge" 
         android:background="#000000"
         android:textColor="#E0671B"
