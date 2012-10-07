@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -66,8 +67,8 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		
 		this.context = context;
 		this.restAPI = restAPI;
-		loadingMessage = this.context.getResources().getString(R.string.directions_loading_message);
-		finishedMessage = this.context.getResources().getString(R.string.directions_finished_message);
+		loadingMessage = context.getResources().getString(R.string.directions_loading_message);
+		finishedMessage = context.getResources().getString(R.string.directions_finished_message);
 	}
 	
 	/**
