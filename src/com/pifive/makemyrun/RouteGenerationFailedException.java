@@ -22,9 +22,9 @@
 package com.pifive.makemyrun;
 
 @SuppressWarnings("serial")
-public class NoLocationException extends RuntimeException {
-
-	public NoLocationException(String detailMessage) {
+public class RouteGenerationFailedException extends RuntimeException {
+	
+	public RouteGenerationFailedException(String detailMessage) {
 		super(detailMessage);
 	}
 

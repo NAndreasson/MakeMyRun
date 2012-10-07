@@ -34,13 +34,14 @@ import android.location.Criteria;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
+import android.widget.Toast;
 import android.widget.TextView;
-
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -58,6 +59,7 @@ public class MainActivity extends MapActivity implements Observer {
 	private MapDrawer mapDrawer;
 	private DistanceTracker distanceTracker;
     private Timer timer;
+	private LoadingStatus loadingStatus;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,16 +89,17 @@ public class MainActivity extends MapActivity implements Observer {
 			
         	public void onClick(View v) {
 				overlay.setVisibility(View.GONE);
-				
+        		loadingStatus = new LoadingStatus(mapView.getContext());
         		try {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
         			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
         			startDirectionsTask(query);
         			displayCurrentLocation();
-  
-        		} catch (NoLocationException e) {
-        			// TODO Auto-generated catch block
+        		} catch (RuntimeException e) {
+        			loadingStatus.remove();
+        			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
         			e.printStackTrace();
+        			return;
         		}
         		
         		showMiddleScreen();
@@ -107,6 +110,7 @@ public class MainActivity extends MapActivity implements Observer {
 				mapView.requestFocus();
 				mapView.requestFocusFromTouch();
 				mapView.setClickable(true);
+				
 			}
         	
         });
@@ -243,6 +247,7 @@ public class MainActivity extends MapActivity implements Observer {
 	 */
 	private void startDirectionsTask(String query) {
         DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL);
+        directionsTask.setLoadingStatus(loadingStatus);
         JSONObject googleRoute = directionsTask.simpleGet(query);
         
         try {

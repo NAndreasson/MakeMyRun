@@ -27,10 +27,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -40,7 +42,6 @@ import android.widget.Toast;
  * Automatically requests directions by a query, default through Google
  * Directions. Response is converted to JSON and returned by user calling .get()
  * 
- * @author atamon
  * 
  */
 public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
@@ -50,9 +51,11 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	public final static String GOOGLE_QUERY_ERROR = "REQUEST_DENIED";
 	public final static String GOOGLE_QUERY_SUCCESS = "OK";
 
+	private final String loadingMessage;
+	private final String finishedMessage;
 	private Context context;
-	private int cancelCause;
 	private final String restAPI;
+	private LoadingStatus loadingStatus;
 	
 	/**
 	 * A constructor which enables us to create task with custom host API.
@@ -61,10 +64,48 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * @param restAPI The API to contact for each request.
 	 */
 	public DirectionsTask(Context context, String restAPI) {
+		
 		this.context = context;
 		this.restAPI = restAPI;
+		loadingMessage = context.getResources().getString(R.string.directions_loading_message);
+		finishedMessage = context.getResources().getString(R.string.directions_finished_message);
 	}
 	
+	/**
+	 * Adds a loadingStatus ProgressDialog. 
+	 * You may want to run addItem() from here
+	 * @param loadingStatus a loadingStatus.
+	 */
+	public void setLoadingStatus(LoadingStatus loadingStatus){
+		this.loadingStatus = loadingStatus;
+		this.loadingStatus.addItem();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * sets loading message for LoadingStatus
+	 */
+	@Override
+	protected void onPreExecute() {
+		super.onPreExecute();
+		updateLoadingStage(loadingMessage, false);
+	}
+	
+	/**
+	 * Updates LoadingStatus if one is set.
+	 * @param message 
+	 * 				Message to be shown
+	 * @param finishedMessage
+	 * 				Set to true if the task is completed
+	 */
+	private void updateLoadingStage(String message, boolean finishedMessage) {
+		if(loadingStatus != null){
+			loadingStatus.setLoadingStage(loadingMessage, finishedMessage);
+		}
+		
+	}
+
 	/**
 	 * Adds an abstractionlayer to the super.get() method
 	 * and returns its result or an empty JSONObject if we're interrupted.
@@ -73,12 +114,13 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	public JSONObject simpleGet(String query) {
 		execute(query);
 		JSONObject obj = new JSONObject();
-        try {
-        	obj = get();
+		try {
+        	obj = get(10, TimeUnit.SECONDS);
         	
     	// We have already handled printing of user-errors. Flood the log!
         } catch (Exception e) {
-        	Log.w("MMR", e.getStackTrace().toString());
+        	cancel(true);
+        	throw new RouteGenerationFailedException("Couldn't reach Google");
         }
         return obj;
 	}
@@ -103,16 +145,10 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 			String googleString = requestData(url);
 
 			json = parseJSONString(googleString);
-		} catch (MalformedURLException e) {
-			cancelCause = R.string.url_format_failed;
+		} catch (Exception e) {
 			cancel(true);
-		} catch (DirectionsException e) {
-			if (cancelCause == 0) {
-				cancelCause = R.string.google_rest_failed;				
-			}
-			cancel(true);
-		} 
-		
+			throw new RouteGenerationFailedException(e.getMessage());
+		}
 		return json;
 	}
 
@@ -145,8 +181,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 			}
 			// Catch IOException and close connection and stream.
 		} catch (IOException e) {
-			cancel(true);
-			cancelCause = R.string.google_rest_failed;
+			throw new RouteGenerationFailedException(e.getMessage());
 		} finally {
 			if (connection != null) {
 				connection.disconnect();
@@ -155,6 +190,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 				try {
 					in.close();
 				} catch (IOException e) {
+					//Do nothing
 				}
 			}
 		}
@@ -184,30 +220,15 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 			
 			return json;
 		} catch (JSONException e) {
-			cancelCause = R.string.json_parse_failed;
-			cancel(true);
 			throw new DirectionsException("Response from Google was invalid JSON");
 		}
 	}
-	
-	/**
-	 * Displays a toast with an error message to the end-user.
-	 */
-	@Override
-	protected void onCancelled() {
-		
-		if (cancelCause != 0) {
-    		Toast.makeText(context, cancelCause, Toast.LENGTH_LONG).show();
-    	}
-	}
 
-	/**
-	 * Returns the resource ID for the cancel message
-	 * 
-	 * @return Returns an integer ID for the string resource describing cause of
-	 *         cancellation.
-	 */
-	public int getCancelCause() {
-		return cancelCause;
+	@Override
+	protected void onPostExecute(JSONObject result) {
+		super.onPostExecute(result);
+		updateLoadingStage(finishedMessage, true);
 	}
+	
+	
 }

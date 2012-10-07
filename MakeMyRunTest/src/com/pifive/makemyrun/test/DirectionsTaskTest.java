@@ -24,16 +24,33 @@ package com.pifive.makemyrun.test;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.os.AsyncTask;
-import android.test.AndroidTestCase;
+import android.test.ActivityInstrumentationTestCase2;
 
 import com.pifive.makemyrun.DirectionsException;
 import com.pifive.makemyrun.DirectionsTask;
+import com.pifive.makemyrun.LoadingStatus;
+import com.pifive.makemyrun.MainActivity;
+import com.pifive.makemyrun.RouteGenerationFailedException;
 
-public class DirectionsTaskTest extends AndroidTestCase {
+public class DirectionsTaskTest extends
+		ActivityInstrumentationTestCase2<MainActivity> {
 
-	private DirectionsTask task = new DirectionsTask(getContext(),
-			DirectionsTask.GOOGLE_URL);
+	private Context activity;
+	private DirectionsTask task;
+
+	public DirectionsTaskTest() {
+		super(MainActivity.class);
+	}
+
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+
+		activity = getActivity();
+		task = new DirectionsTask(activity, DirectionsTask.GOOGLE_URL);
+	}
 
 	/**
 	 * Tests asyncTask execution isolated
@@ -42,6 +59,16 @@ public class DirectionsTaskTest extends AndroidTestCase {
 		task.execute();
 		assertTrue(task.getStatus() == AsyncTask.Status.RUNNING);
 
+	}
+
+	/**
+	 * Tests that our loadingStatus is set and used.
+	 */
+	public void testSetLoadingStauts() {
+		LoadingStatus status = new LoadingStatus(activity);
+		task.setLoadingStatus(status);
+		task.simpleGet(DirectionsTask.TEST_QUERY);
+		assertTrue(!status.getMessage().equals(""));
 	}
 
 	/**
@@ -64,7 +91,7 @@ public class DirectionsTaskTest extends AndroidTestCase {
 	 * Test abstraction method simpleGet()
 	 */
 	public void testSimpleGet() {
-		task = new DirectionsTask(getContext(), DirectionsTask.GOOGLE_URL);
+		task = new DirectionsTask(activity, DirectionsTask.GOOGLE_URL);
 		JSONObject json = task.simpleGet(DirectionsTask.TEST_QUERY);
 		try {
 			assertEquals("Verify that we received correct status message",
@@ -79,18 +106,17 @@ public class DirectionsTaskTest extends AndroidTestCase {
 	 * Make sure we can cancel a task
 	 */
 	public void testCancelOnException() {
-		task = new DirectionsTask(getContext(), DirectionsTask.GOOGLE_URL);
-		task.simpleGet("MockQueryThatShouldReturnNothingOfValue");
+		task = new DirectionsTask(activity, DirectionsTask.GOOGLE_URL);
 		try {
-			assertTrue("Verify that trying to contact google "
-					+ "with invalid response sets error message to user",
-					task.isCancelled());
-
-			assertEquals("Verify that we can force a google fail response",
-					com.pifive.makemyrun.R.string.google_rest_failed,
-					task.getCancelCause());
-		} catch (Exception e) {
+			task.simpleGet("MockQueryThatShouldReturnNothingOfValue");
+			fail();
+		} catch (RouteGenerationFailedException e) {
+			assertTrue("If we get here our test succeeded", true);
 		}
+		assertTrue("Verify that trying to contact google "
+				+ "with invalid response sets error message to user",
+				task.isCancelled());
+
 	}
 
 	/**
@@ -98,22 +124,24 @@ public class DirectionsTaskTest extends AndroidTestCase {
 	 * malformed URL does not crash on us)
 	 */
 	public void testMalformedURL() {
-		task = new DirectionsTask(getContext(), "\345DFSB://google.com?");
-		task.simpleGet("DSFDS");
+		task = new DirectionsTask(activity, "\345DFSB://google.com?");
+		try {
+			task.simpleGet("DSFDS");
+			fail();
+		} catch (RouteGenerationFailedException e) {
+			assertTrue("If we get here our test succeeded", true);
+		}
 
 		// Try to throw an URL Exception
 		assertTrue("Verify task cancelled after malformed URL",
 				task.isCancelled());
-		assertEquals("Verify that we can catch malformed URLs",
-				com.pifive.makemyrun.R.string.url_format_failed,
-				task.getCancelCause());
 	}
 
 	/**
 	 * Test that we do not die on JSONException when parsing from string
 	 */
 	public void testJSONExceptionFromString() {
-		task = new DirectionsTask(getContext(), DirectionsTask.GOOGLE_URL);
+		task = new DirectionsTask(activity, DirectionsTask.GOOGLE_URL);
 
 		try {
 			task.parseJSONString("ThisAin't no valid JSON");
