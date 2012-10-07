@@ -19,7 +19,7 @@
  *     under the License.
  */
 
-package com.pifive.makemyrun;
+package com.pifive.makemyrun.geo;
 
 /**
  * A location defined by a latitude and longitue angles

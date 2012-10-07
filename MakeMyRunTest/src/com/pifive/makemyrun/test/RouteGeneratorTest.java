@@ -28,9 +28,9 @@ import android.content.Context;
 import android.location.LocationManager;
 import android.test.AndroidTestCase;
 
-import com.pifive.makemyrun.Location;
 import com.pifive.makemyrun.NoLocationException;
 import com.pifive.makemyrun.RouteGenerator;
+import com.pifive.makemyrun.geo.Location;
 
 /**
  * Test class for RouteGenerator
