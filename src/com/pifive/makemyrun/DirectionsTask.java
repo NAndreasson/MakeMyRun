@@ -129,6 +129,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		StringBuilder stringBuilder = new StringBuilder();
 		try {
 			// Send request to REST API
+			Log.d("MMR", url.getPath());
 			connection = (HttpURLConnection) url.openConnection();
 			Log.i("MMR",
 					"Google response HTTP status: "

@@ -19,30 +19,29 @@
  *     under the License.
  */
 
-package com.pifive.makemyrun.test;
+package com.pifive.makemyrun.drawing.test;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import android.graphics.Canvas;
+import android.graphics.Path;
 import android.test.ActivityInstrumentationTestCase2;
-import android.util.Log;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.google.android.maps.Overlay;
 import com.pifive.makemyrun.Location;
 import com.pifive.makemyrun.MainActivity;
-import com.pifive.makemyrun.RouteDrawer;
+import com.pifive.makemyrun.drawing.EmptyRouteException;
+import com.pifive.makemyrun.drawing.RouteArtist;
 
-public class RouteDrawerTest extends ActivityInstrumentationTestCase2<MainActivity>{
+public class RouteArtistTest extends ActivityInstrumentationTestCase2<MainActivity>{
 
-	public RouteDrawerTest() {
+	public RouteArtistTest() {
 		super(MainActivity.class);
 	}
 
-	private RouteDrawer drawer;
+	private RouteArtist routeArtist;
 	private MapView mapView;
-	private List<Overlay> overlays;
 	private List<Location> list = new LinkedList<Location>();
 
 	/**
@@ -52,31 +51,37 @@ public class RouteDrawerTest extends ActivityInstrumentationTestCase2<MainActivi
 	public void setUp() throws Exception {
 		super.setUp();
 		
+		mapView = (MapView) getActivity().findViewById(com.pifive.makemyrun.R.id.mapview);
+		
 		// Mock locations
 		list.add(new Location(1.0, 2.0));
 		list.add(new Location(1.1, 2.0));
+	}
+
+	/**
+	 * Asserts some lightweight data on the path used by draw
+	 */
+	public void testDraw() {
+		routeArtist = new RouteArtist(list);
+		Canvas canvas = new Canvas();
+		routeArtist.draw(canvas, mapView, false);
 		
-		mapView = (MapView) getActivity().findViewById(com.pifive.makemyrun.R.id.mapview);
-		overlays = mapView.getOverlays();
+		Path path = routeArtist.getPath();
+		assertFalse("Verify that the path drawn has content.", 
+				path.isEmpty());
 	}
 	
 	/**
-	 * Tests that provided mapview gets a new overlay and that center is set from
-	 * starting location for the list provided.
+	 * Asserts that we can not construct the artist with a zero size list.
+	 * Expect an EmptyRouteException.
 	 */
-	public void testOverlayAdding() {
-		drawer = new RouteDrawer(mapView, list);
-		Overlay myOverlay = overlays.get(overlays.size() - 1);
-
-		assertEquals("Verify that we have added a RouteOverlay after construction", 
-				"class com.pifive.makemyrun.RouteDrawer$RouteOverlay",
-				myOverlay.getClass().toString());
-	}
-	
-	public void testMapCentering() {
-		Location firstPoint = list.get(0);
-		assertEquals("Verify that we have centered on startlocation", 
-				new GeoPoint(firstPoint.getMicroLat(), firstPoint.getMicroLng()),
-				mapView.getMapCenter());
+	public void testListConsistency() {
+		try {
+			routeArtist = new RouteArtist(new LinkedList<Location>());
+			fail("Verify that we throw an exception when trying to draw an empty route");
+		} catch (EmptyRouteException e) {
+			assertTrue("Verify that we can catch an EmptyRouteException", 
+					e.getClass() == EmptyRouteException.class);
+		}
 	}
 }

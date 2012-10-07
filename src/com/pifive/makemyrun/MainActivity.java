@@ -21,6 +21,9 @@
 
 package com.pifive.makemyrun;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,28 +32,37 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.Criteria;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.pifive.makemyrun.drawing.CurrentLocationArtist;
+import com.pifive.makemyrun.drawing.MapDrawer;
+import com.pifive.makemyrun.drawing.RouteArtist;
 
-public class MainActivity extends MapActivity {
+public class MainActivity extends MapActivity implements Observer {
 	private MapView mapView;
 	private View overlay;
 	private ViewStub viewStub;
 	private ViewStub runViewStub;
 	private Button stopRunButton;
 	private boolean inCatchBackState = false;
-	
+	private MapDrawer mapDrawer;
+	private DistanceTracker distanceTracker;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Setup view correctly
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
         viewStub = (ViewStub) findViewById(R.id.viewStub1);
@@ -66,6 +78,11 @@ public class MainActivity extends MapActivity {
     private void showStartScreen() {
         mapView.setBuiltInZoomControls(true);
         overlay.setVisibility(View.VISIBLE);
+        
+        // Enable map-drawing
+        mapDrawer = new MapDrawer(mapView);
+        // Listen for generate-click
+
         Button button = (Button) findViewById(R.id.generatebutton);
         button.setOnClickListener(new OnClickListener() {
 			
@@ -76,12 +93,21 @@ public class MainActivity extends MapActivity {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
         			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
         			startDirectionsTask(query);
+        			displayCurrentLocation();
+  
         		} catch (NoLocationException e) {
         			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
         		
         		showMiddleScreen();
+
+				View overlay = findViewById(R.id.overlayMenu);
+				overlay.setVisibility(View.GONE);
+
+				mapView.requestFocus();
+				mapView.requestFocusFromTouch();
+				mapView.setClickable(true);
 			}
         	
         });
@@ -99,6 +125,7 @@ public class MainActivity extends MapActivity {
 			public void onClick(View arg0) {
 				((Button)arg0).setVisibility(View.GONE);
 				startRun();
+				
 			}
         	
         });
@@ -118,6 +145,10 @@ public class MainActivity extends MapActivity {
 				stepBackwards();
 			}
 		});
+    	
+    	// Start to track the distance and sets this activity to recieve distance updates
+    	trackDistance();
+        distanceTracker.addObserver(MainActivity.this);
     	
     	mapView.requestFocus();
 		mapView.requestFocusFromTouch();
@@ -184,12 +215,72 @@ public class MainActivity extends MapActivity {
         try {
 			Route route = new Route(googleRoute);
 			@SuppressWarnings("unused")
-			RouteDrawer drawer = new RouteDrawer(mapView, route.getWaypoints());
+			MapDrawer drawer = new MapDrawer(mapView);
+
+			// Center on our starting point
+			Location location = route.getWaypoints().get(0);
+			GeoPoint geoPoint = new GeoPoint(
+									location.getMicroLat(),
+									location.getMicroLng());
+			mapView.getController().animateTo(geoPoint);
+			
+			// Add an artist to draw our route
+			RouteArtist routeArtist = new RouteArtist(route.getWaypoints());
+			mapDrawer.addArtist(routeArtist);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        Log.d("MMR", "ALL DONE");
+	}
+	
+	/**
+	 * Constructs a MyLocationDrawer to draw current location.
+	 */
+	private void displayCurrentLocation() {
+		
+		// Get location manager from system
+		LocationManager locManager = 
+				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	
+		// Fetch last known location to provide as best guess
+		LocationProvider provider = locManager.getProvider(LocationManager.GPS_PROVIDER);
+		android.location.Location bestGuess = 
+					locManager.getLastKnownLocation(provider.getName());
+		
+		// Construct our location artist
+		CurrentLocationArtist locationArtist = 
+					new CurrentLocationArtist(bestGuess, mapDrawer);
+		mapDrawer.addArtist(locationArtist);
+		
+		// Make it aware of location updates every seconds
+		locManager.requestLocationUpdates(
+				LocationManager.GPS_PROVIDER,
+				0, 
+				0, 
+				locationArtist);
+	}
+	
+	/**
+	 * Constructs a DistanceTracker to track distance
+	 */
+	private void trackDistance() {
+		// Get location manager from system
+		LocationManager locManager = 
+				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	
+		// Get the starting position
+		String provider = LocationManager.GPS_PROVIDER;
+		android.location.Location currentLocation = 
+					locManager.getLastKnownLocation(provider);
+			
+		distanceTracker = new DistanceTracker(currentLocation);
+		// set distanceTracker to retrieve location updates
+		locManager.requestLocationUpdates(provider, 0, 0, distanceTracker);
+	}
 
+	@Override
+	public void update(Observable observable, Object data) {
+		TextView distance = (TextView) findViewById(R.id.distancetext);
+		distance.setText(Math.round(distanceTracker.getTotalDistanceInMeters()) + " m");
 	}
 }
