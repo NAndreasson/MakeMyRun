@@ -11,5 +11,6 @@
     <string name="testlogo">testlogo</string>
     <string name="directions_loading_message">Requesting data from Google&#8230;</string>
     <string name="directions_finished_message">Got directions!</string>
+    <string name="directions_failed_message">Failed to load data from Google</string>
 
 </resources>

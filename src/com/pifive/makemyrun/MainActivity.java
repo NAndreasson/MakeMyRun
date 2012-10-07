@@ -60,7 +60,7 @@ public class MainActivity extends MapActivity {
         			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.Location(location.getLatitude(), location.getLongitude()));
         	        System.out.println(query);
         			startDirectionsTask(query);
-        		} catch (NoLocationException e) {
+        		} catch (RuntimeException e) {
         			loadingStatus.cancel();
         			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
         			return;

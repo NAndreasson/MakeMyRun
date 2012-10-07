@@ -2,6 +2,8 @@ package com.pifive.makemyrun;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.view.View;
+import android.view.View.OnClickListener;
 
 /**
  * Handles a ProgressDialog object. For each task running, addItem() should be

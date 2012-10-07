@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,7 +41,6 @@ import android.widget.Toast;
  * Automatically requests directions by a query, default through Google
  * Directions. Response is converted to JSON and returned by user calling .get()
  * 
- * @author atamon
  * 
  */
 public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
@@ -52,8 +52,8 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 
 	private final String loadingMessage;
 	private final String finishedMessage;
+	private final String failedMessage;
 	private Context context;
-	private int cancelCause;
 	private final String restAPI;
 	private LoadingStatus loadingStatus;
 	
@@ -69,6 +69,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		this.restAPI = restAPI;
 		loadingMessage = this.context.getResources().getString(R.string.directions_loading_message);
 		finishedMessage = this.context.getResources().getString(R.string.directions_finished_message);
+		failedMessage = this.context.getResources().getString(R.string.directions_failed_message);
 	}
 	
 	/**
@@ -115,11 +116,12 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		execute(query);
 		JSONObject obj = new JSONObject();
 		try {
-        	obj = get();
+        	obj = get(10, TimeUnit.SECONDS);
         	
     	// We have already handled printing of user-errors. Flood the log!
         } catch (Exception e) {
-        	Log.w("MMR", e.getStackTrace().toString());
+        	cancel(true);
+        	throw new RouteGenerationFailedException("Couldn't reach Google");
         }
         return obj;
 	}
@@ -144,14 +146,9 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 			String googleString = requestData(url);
 
 			json = parseJSONString(googleString);
-		} catch (MalformedURLException e) {
-			cancelCause = R.string.url_format_failed;
+		} catch (Exception e) {
 			cancel(true);
-		} catch (DirectionsException e) {
-			if (cancelCause == 0) {
-				cancelCause = R.string.google_rest_failed;				
-			}
-			cancel(true);
+			throw new RouteGenerationFailedException(e.getMessage());
 		}
 		return json;
 	}
@@ -184,8 +181,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 			}
 			// Catch IOException and close connection and stream.
 		} catch (IOException e) {
-			cancel(true);
-			cancelCause = R.string.google_rest_failed;
+			throw new RouteGenerationFailedException(e.getMessage());
 		} finally {
 			if (connection != null) {
 				connection.disconnect();
@@ -194,6 +190,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 				try {
 					in.close();
 				} catch (IOException e) {
+					//Do nothing
 				}
 			}
 		}
@@ -206,7 +203,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * @param string The string which should contain valid JSON formatted text.
 	 * @return Returns a JSONObject parsed from the string sent in.
 	 */
-	public JSONObject parseJSONString(String string) throws DirectionsException {
+	private JSONObject parseJSONString(String string) throws DirectionsException {
 		try {
 			JSONObject json = new JSONObject(string);
 
@@ -223,8 +220,6 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 			
 			return json;
 		} catch (JSONException e) {
-			cancelCause = R.string.json_parse_failed;
-			cancel(true);
 			throw new DirectionsException("Response from Google was invalid JSON");
 		}
 	}
@@ -234,20 +229,8 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 */
 	@Override
 	protected void onCancelled() {
-		
-		if (cancelCause != 0) {
-    		Toast.makeText(context, cancelCause, Toast.LENGTH_LONG).show();
-    	}
-	}
-
-	/**
-	 * Returns the resource ID for the cancel message
-	 * 
-	 * @return Returns an integer ID for the string resource describing cause of
-	 *         cancellation.
-	 */
-	public int getCancelCause() {
-		return cancelCause;
+		super.onCancelled();
+		updateLoadingStage(failedMessage, true);
 	}
 
 	@Override
