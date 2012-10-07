@@ -92,7 +92,7 @@ public class RouteTest extends android.test.InstrumentationTestCase{
 	}
 	
 	public void testWaypoints(){
-		List<com.pifive.makemyrun.Location> wps = testRoute.getWaypoints();
+		List<com.pifive.makemyrun.geo.Location> wps = testRoute.getWaypoints();
 		assertTrue(wps.size() == 11);
 	}
 }

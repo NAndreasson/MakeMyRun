@@ -3,6 +3,8 @@ package com.pifive.makemyrun;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.pifive.makemyrun.geo.Location;
 /**
  * Originally belongs to Ismail Habib @
  * http://www.geekyblogger.com/2010/12/decoding-polylines-from-google-maps.html

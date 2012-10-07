@@ -31,7 +31,7 @@ import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.pifive.makemyrun.Location;
+import com.pifive.makemyrun.geo.Location;
 
 /**
  * An OverlayArtist that draws a route (Android Path) on a MapOverlay.

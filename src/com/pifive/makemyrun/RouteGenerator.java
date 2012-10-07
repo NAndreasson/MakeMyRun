@@ -52,7 +52,7 @@ public abstract class RouteGenerator {
 	 * @param startEndLoc - Current location that the generated route will start and end at
 	 * @return a google query with which you can query google for more steps
 	 */
-	public static String generateRoute(final com.pifive.makemyrun.Location startEndLoc) {		
+	public static String generateRoute(final com.pifive.makemyrun.geo.Location startEndLoc) {		
 		// build the beginning of the google query
 		StringBuilder stringBuilder = new StringBuilder("origin=");
 		stringBuilder.append(startEndLoc.getLat());
@@ -65,9 +65,9 @@ public abstract class RouteGenerator {
 		stringBuilder.append("&waypoints=");
 		
 		// get the centerpoint of the 'circle'
-		com.pifive.makemyrun.Location centerLocation = generateRandomLocation(startEndLoc);
-		List<com.pifive.makemyrun.Location> waypoints = getCircle(centerLocation, startEndLoc, 6);
-		for (com.pifive.makemyrun.Location waypoint : waypoints) {
+		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(startEndLoc);
+		List<com.pifive.makemyrun.geo.Location> waypoints = getCircle(centerLocation, startEndLoc, 6);
+		for (com.pifive.makemyrun.geo.Location waypoint : waypoints) {
 			stringBuilder.append(waypoint.getLat());
 			stringBuilder.append(",");
 			stringBuilder.append(waypoint.getLng());
@@ -86,14 +86,14 @@ public abstract class RouteGenerator {
 	 * @param location
 	 * @return
 	 */
-	public static com.pifive.makemyrun.Location generateRandomLocation(com.pifive.makemyrun.Location location) {
+	public static com.pifive.makemyrun.geo.Location generateRandomLocation(com.pifive.makemyrun.geo.Location location) {
 		// create another location approx 0.003 - 0.007 from the current
 		Random random = new Random();
 		double randomNumber = 0.003 + random.nextDouble() * 0.004;
 		double centerLatitude = location.getLat() + randomNumber;
 		double centerLongitude = location.getLng() + randomNumber;
 		
-		return new com.pifive.makemyrun.Location(centerLatitude, centerLongitude);
+		return new com.pifive.makemyrun.geo.Location(centerLatitude, centerLongitude);
 	}
 	
 	/**
@@ -116,22 +116,22 @@ public abstract class RouteGenerator {
 	/**
 	 * Returns X number of points in a circle, all with the same distance from center.
 	 */
-	public static List<com.pifive.makemyrun.Location> getCircle(com.pifive.makemyrun.Location center, 
-			com.pifive.makemyrun.Location start, int points) {
+	public static List<com.pifive.makemyrun.geo.Location> getCircle(com.pifive.makemyrun.geo.Location center, 
+			com.pifive.makemyrun.geo.Location start, int points) {
 		if (points < 2) {
 			throw new IllegalArgumentException("At least two points are needed");
 		} else if (points > 10) {
 			throw new IllegalArgumentException("No more than 10 points");
 		}
 		
-		List<com.pifive.makemyrun.Location> locations = new ArrayList<com.pifive.makemyrun.Location>();
+		List<com.pifive.makemyrun.geo.Location> locations = new ArrayList<com.pifive.makemyrun.geo.Location>();
 		double angle = (Math.PI * 2) / (double) points;
 		double longDiff = start.getLng() - center.getLng();
 		double latDiff = start.getLat() - center.getLat();
 		double radius = Math.sqrt(Math.pow(longDiff, 2) + Math.pow(latDiff, 2));
 		
 		for(int i=1; i<points; i++) {
-			locations.add(new com.pifive.makemyrun.Location(center.getLat() + Math.cos(angle*i)*radius, 
+			locations.add(new com.pifive.makemyrun.geo.Location(center.getLat() + Math.cos(angle*i)*radius, 
 									   center.getLng() + Math.sin(angle*i)*radius));
 		}
 		

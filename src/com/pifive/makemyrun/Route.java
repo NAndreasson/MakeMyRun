@@ -28,6 +28,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pifive.makemyrun.geo.Location;
+
 public class Route {
 
 	private List<Location> waypoints = new ArrayList<Location>();

@@ -21,7 +21,7 @@
 
 package com.pifive.makemyrun.test;
 
-import com.pifive.makemyrun.Location;
+import com.pifive.makemyrun.geo.Location;
 
 import junit.framework.TestCase;
 
