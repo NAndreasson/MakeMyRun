@@ -30,6 +30,7 @@ import android.test.AndroidTestCase;
 import com.pifive.makemyrun.DirectionsException;
 import com.pifive.makemyrun.DirectionsTask;
 import com.pifive.makemyrun.LoadingStatus;
+import com.pifive.makemyrun.RouteGenerationFailedException;
 
 public class DirectionsTaskTest extends AndroidTestCase {
 
@@ -86,22 +87,22 @@ public class DirectionsTaskTest extends AndroidTestCase {
 		}
 	}
 
+	
 	/**
 	 * Make sure we can cancel a task
 	 */
 	public void testCancelOnException() {
 		task = new DirectionsTask(getContext(), DirectionsTask.GOOGLE_URL);
-		task.simpleGet("MockQueryThatShouldReturnNothingOfValue");
 		try {
-			assertTrue("Verify that trying to contact google "
-					+ "with invalid response sets error message to user",
-					task.isCancelled());
+			task.simpleGet("MockQueryThatShouldReturnNothingOfValue");
+			fail();
+		} catch( RouteGenerationFailedException e ){
+			assertTrue("If we get here our test succeeded",true);
+		}	
+		assertTrue("Verify that trying to contact google "
+				+ "with invalid response sets error message to user",
+				task.isCancelled());
 
-			assertEquals("Verify that we can force a google fail response",
-					com.pifive.makemyrun.R.string.google_rest_failed,
-					task.getCancelCause());
-		} catch (Exception e) {
-		}
 	}
 
 	/**
@@ -110,14 +111,16 @@ public class DirectionsTaskTest extends AndroidTestCase {
 	 */
 	public void testMalformedURL() {
 		task = new DirectionsTask(getContext(), "\345DFSB://google.com?");
-		task.simpleGet("DSFDS");
+		try {
+			task.simpleGet("DSFDS");
+			fail();
+		} catch( RouteGenerationFailedException e ){
+			assertTrue("If we get here our test succeeded",true);
+		}
 
 		// Try to throw an URL Exception
 		assertTrue("Verify task cancelled after malformed URL",
 				task.isCancelled());
-		assertEquals("Verify that we can catch malformed URLs",
-				com.pifive.makemyrun.R.string.url_format_failed,
-				task.getCancelCause());
 	}
 
 	/**

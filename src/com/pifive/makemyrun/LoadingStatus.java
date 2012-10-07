@@ -1,5 +1,8 @@
 package com.pifive.makemyrun;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.view.View;
@@ -42,8 +45,10 @@ public class LoadingStatus {
 	/**
 	 * dismisses the ProgressDialog
 	 */
-	public void cancel(){
-		progress.dismiss();
+	public void remove(){
+		
+		progress.dismiss();				
+
 	}
 	/**
 	 * Sets loading stage. When all tasks are finished, dismiss the
@@ -58,7 +63,7 @@ public class LoadingStatus {
 		this.message = message+" - "+tasksInProgress+" left";
 		progress.setMessage(this.message);
 		if (taskFinished && --tasksInProgress <= 0) {
-			progress.dismiss();
+			remove();
 		}
 	}
 }

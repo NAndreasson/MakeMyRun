@@ -61,7 +61,7 @@ public class MainActivity extends MapActivity {
         	        System.out.println(query);
         			startDirectionsTask(query);
         		} catch (RuntimeException e) {
-        			loadingStatus.cancel();
+        			loadingStatus.remove();
         			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
         			return;
         		}

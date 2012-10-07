@@ -52,7 +52,6 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 
 	private final String loadingMessage;
 	private final String finishedMessage;
-	private final String failedMessage;
 	private Context context;
 	private final String restAPI;
 	private LoadingStatus loadingStatus;
@@ -69,7 +68,6 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		this.restAPI = restAPI;
 		loadingMessage = this.context.getResources().getString(R.string.directions_loading_message);
 		finishedMessage = this.context.getResources().getString(R.string.directions_finished_message);
-		failedMessage = this.context.getResources().getString(R.string.directions_failed_message);
 	}
 	
 	/**
@@ -203,7 +201,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * @param string The string which should contain valid JSON formatted text.
 	 * @return Returns a JSONObject parsed from the string sent in.
 	 */
-	private JSONObject parseJSONString(String string) throws DirectionsException {
+	public JSONObject parseJSONString(String string) throws DirectionsException {
 		try {
 			JSONObject json = new JSONObject(string);
 
@@ -222,15 +220,6 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		} catch (JSONException e) {
 			throw new DirectionsException("Response from Google was invalid JSON");
 		}
-	}
-	
-	/**
-	 * Displays a toast with an error message to the end-user.
-	 */
-	@Override
-	protected void onCancelled() {
-		super.onCancelled();
-		updateLoadingStage(failedMessage, true);
 	}
 
 	@Override
