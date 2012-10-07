@@ -11,5 +11,8 @@
     <string name="testlogo">testlogo</string>
     <string name="defaultStartTime">00:00:00</string>
     <string name="run_button">Run</string>
+    <string name="stop_run_text">Stop Run</string>
+    <string name="distance">00.0km</string>
+    <string name="clockText">00:00:00</string>
 
 </resources>
