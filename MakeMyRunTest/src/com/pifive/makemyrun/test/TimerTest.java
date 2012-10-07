@@ -1,27 +1,36 @@
 package com.pifive.makemyrun.test;
 
-import java.util.TimerTask;
-
 import android.test.AndroidTestCase;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.pifive.makemyrun.Timer;
 
 public class TimerTest extends AndroidTestCase {
-	
-	public void test() {
+
+	Timer testTimer;
+
+	/**
+	 * Tests that we can start a timer
+	 */
+	public void testStartAndRun() {
+		testTimer = new Timer(new TextView(getContext()));
+		testTimer.start();
+
+		assertEquals("Verify that a started timer is running",
+				true, testTimer.isRunning());
+	}
+
+	/**
+	 * Test that we can stop the timer running.
+	 */
+	public void testStop() {
+		testTimer = new Timer(new TextView(getContext()));
+		testTimer.start();
+		testTimer.stop();
 		
-		final Timer testTimer = new Timer(new TextView(getContext()));
-		
-		java.util.Timer javaTimer = new java.util.Timer();
-		javaTimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				Log.d("MMR", "TIME NOW!: " + testTimer.getTime());
-				assertEquals(2, testTimer.getTime());				
-			}
-		}, 2000);
+		assertEquals("Verify that a stopped timer is not running anymore",
+				false, testTimer.isRunning());
+
 	}
 
 }

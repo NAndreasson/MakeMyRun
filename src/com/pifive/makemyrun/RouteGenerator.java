@@ -24,20 +24,21 @@
  */
 package com.pifive.makemyrun;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.ArrayList;
 
 import android.content.Context;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
 
 /**
  *	RouteGenerator
  *	Class with static methods for route generation.
  */
-public class RouteGenerator {
+public abstract class RouteGenerator {
 
 	/**
 	 * Private constructor to prevent from being instantiated
@@ -104,6 +105,7 @@ public class RouteGenerator {
 	public static Location getCurrentLocation(Context context) throws NoLocationException {
 		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		String provider = locationManager.getBestProvider(new Criteria(), false);
+		Log.d("MMRTest", "Loc Provider: " + provider);
 		Location location = locationManager.getLastKnownLocation(provider);
 		if (location == null) {
 			throw new NoLocationException("Location unavailable");

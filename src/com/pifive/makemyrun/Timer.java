@@ -3,44 +3,83 @@ package com.pifive.makemyrun;
 import android.os.Handler;
 import android.widget.TextView;
 
+/**
+ * Displays and updates a stopwatch for a running interface
+ * for as long as this object exists.
+ */
 public class Timer {
 
 	private long startTime;
 	private int timeElapsed;
 
-	public Timer(final TextView clockText) {
-		startTime = System.currentTimeMillis();
-		new Thread(new Runnable() {
-
-			private Handler handler = new Handler();
-
-			@Override
-			public void run() {
-
-				timeElapsed = (int) (((System.currentTimeMillis() - startTime) / 1000) + 0.5);
-				final int sec = timeElapsed % 60;
-				final int min = timeElapsed / 60;
-				final int hour = timeElapsed / 3600;
-				clockText.post(new Runnable() {
-					public void run() {
-						clockText.setText("Time ran:\n"
-								+ (hour < 10 ? "0" + hour : hour) + ":"
-								+ (min < 10 ? "0" + min : min) + ":"
-								+ (sec < 10 ? "0" + sec : sec));
-
-					}
-				});
-
-				handler.postDelayed(this, 100); // ask current thread to rerun
-												// after 100 ms
-			}
-		}).start();
-	}
-
+	private final Thread timerThread;
+	private final TimerRunnable timerRunnable;
+	
 	/**
-	 * @return time in seconds
+	 * Creates a stopwatch which continuously updates its clockText
+	 * with current time since start.
+	 * @param clockText The GUI view to print the text on.
 	 */
-	public int getTime() {
-		return timeElapsed;
+	public Timer(final TextView clockText) {
+		timerRunnable = new TimerRunnable(clockText);
+		timerThread = new Thread(timerRunnable);
+	}
+	
+	/**
+	 * Starts the stopwatch
+	 */
+	public void start(){
+		startTime = System.currentTimeMillis();
+		timerThread.start();
+	}
+	
+	/**
+	 * Stops the stopwatch
+	 */
+	public void stop() {
+		timerRunnable.running = false;
+	}
+	
+	public boolean isRunning() {
+		return timerRunnable.running;
+	}
+	
+	/**
+	 * A runnable which can be stopped like a timer.
+	 */
+	private class TimerRunnable implements Runnable {
+		
+		private final TextView clockText;
+		private Handler handler = new Handler();
+		private boolean running = true;
+		
+		protected TimerRunnable(TextView view) {
+			this.clockText = view;
+		}
+		
+		/**
+		 * Continuously updates Timer's clockText with time elapsed since start.
+		 */
+		@Override
+		public void run() {
+
+			timeElapsed = (int) (((System.currentTimeMillis() - startTime) / 1000) + 0.5);
+			final int sec = timeElapsed % 60;
+			final int min = timeElapsed / 60;
+			final int hour = timeElapsed / 3600;
+			clockText.post(new Runnable() {
+				public void run() {
+					clockText.setText(
+							  (hour < 10 ? "0" + hour : hour) + ":"
+							+ (min < 10 ? "0" + min : min) + ":"
+							+ (sec < 10 ? "0" + sec : sec));
+				}
+			});
+
+			if (running) {
+				// ask current thread to rerun after 100 ms
+				handler.postDelayed(this, 100); 
+			}					
+		}
 	}
 }

@@ -19,28 +19,35 @@
  *     under the License.
  */
 
-package com.pifive.makemyrun.test;
+package com.pifive.makemyrun.drawing;
 
-import android.location.Location;
-import android.test.AndroidTestCase;
+import android.graphics.Color;
+import android.graphics.Paint;
 
-import com.pifive.makemyrun.NoLocationException;
-import com.pifive.makemyrun.RouteGenerator;
-
-public class RouteGeneratorOtherTests extends
-		AndroidTestCase {
+/**
+ * Abstract class to setup default paint for OverlayArtists
+ */
+public abstract class AbstractOverlayArtist implements OverlayArtist{
+	
+	protected Paint paint = new Paint();
 	
 	/**
-	 * Should throw exception due to no location available in tests
+	 * Sets up initial paint to use.
 	 */
-	public void testGetCurrentRoute() {
-		try {
-			Location returnedLocation = RouteGenerator.getCurrentLocation(getContext());
-			fail("No exception = fail");
-		} catch (NoLocationException e) {
-			assert(true);
-		}
-		
+	public AbstractOverlayArtist() {
+		setupMapPaint();
+	}
+	
+	/**
+	 * Sets up a simple paint to minimize code repetition
+	 */
+	protected void setupMapPaint() {
+		paint.setDither(true);
+		paint.setColor(Color.BLUE);
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeJoin(Paint.Join.ROUND);
+		paint.setStrokeCap(Paint.Cap.ROUND);
+		paint.setStrokeWidth(5);
 	}
 
 }

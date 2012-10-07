@@ -24,15 +24,18 @@ package com.pifive.makemyrun.test;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
+import android.content.Context;
+import android.location.LocationManager;
+import android.test.AndroidTestCase;
 
-import com.pifive.makemyrun.RouteGenerator;
 import com.pifive.makemyrun.Location;
+import com.pifive.makemyrun.NoLocationException;
+import com.pifive.makemyrun.RouteGenerator;
 
 /**
  * Test class for RouteGenerator
  */
-public class RouteGeneratorTest extends TestCase {
+public class RouteGeneratorTest extends AndroidTestCase {
 	
 	/**
 	 * Passes is string is returned
@@ -100,5 +103,36 @@ public class RouteGeneratorTest extends TestCase {
 		assertTrue(randomLocation.getLat() <= location.getLat() + 0.007);
 		assertTrue(randomLocation.getLng() >= location.getLng() + 0.003);
 		assertTrue(randomLocation.getLng() <= location.getLng() + 0.007);
+	}
+	
+	/**
+	 * Should throw exception due to no location available in tests
+	 */
+	public void testGetCurrentRoute() {
+		
+		// Create a mock location
+		LocationManager locationManager = (LocationManager) getContext()
+							.getSystemService(Context.LOCATION_SERVICE);
+		android.location.Location mockLocation = 
+				new android.location.Location("gps");
+		
+		// Set its values
+		mockLocation.setLatitude(15);
+		mockLocation.setLongitude(15);
+		locationManager.addTestProvider("gps", 
+						false, false, false, 
+						false, false, false, 
+						false, 1, 1);
+		locationManager.setTestProviderLocation("gps", mockLocation);
+		
+		// Verify that it is returned
+		try {
+			android.location.Location returnedLocation = RouteGenerator.getCurrentLocation(getContext());
+			assertEquals("Verify that correct location is returned from getCurrentLocation()",
+				mockLocation, returnedLocation);
+		} catch (NoLocationException e) {
+			fail("Verify that we can get current location from RouteGenerator");
+		}
+		
 	}
 }
