@@ -52,5 +52,5 @@
 		    android:onClick="generateRoute" />
 		
 	</FrameLayout>
-	
 </RelativeLayout>
+
