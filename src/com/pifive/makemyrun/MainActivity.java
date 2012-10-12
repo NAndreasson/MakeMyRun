@@ -74,13 +74,13 @@ public class MainActivity extends MapActivity implements Observer {
         mapDrawer = new MapDrawer(mapView);
         updatePosition();
         showStartScreen();
+        displayCurrentLocation();
     }
     
     /**
      * Shows the start screen (entry point for application)
      */
     private void showStartScreen() {
-        mapView.setBuiltInZoomControls(true);
         overlay.setVisibility(View.VISIBLE);
         
         // Listen for generate-click
@@ -94,7 +94,6 @@ public class MainActivity extends MapActivity implements Observer {
         			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
         			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.geo.Location(location.getLatitude(), location.getLongitude()));
         			startDirectionsTask(query);
-        			displayCurrentLocation();
         		} catch (RuntimeException e) {
         			loadingStatus.remove();
         			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
