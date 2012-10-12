@@ -261,8 +261,7 @@ public class MainActivity extends MapActivity implements Observer {
 					locManager.getLastKnownLocation(provider.getName());
 		
 		// Construct our location artist
-		CurrentLocationArtist locationArtist = 
-					new CurrentLocationArtist(bestGuess, mapDrawer);
+		CurrentLocationArtist locationArtist = new CurrentLocationArtist(mapDrawer);
 		mapDrawer.addArtist(locationArtist);
 		
 		// Make it aware of location updates every seconds
