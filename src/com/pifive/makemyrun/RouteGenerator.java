@@ -97,23 +97,6 @@ public abstract class RouteGenerator {
 	}
 	
 	/**
-	 * Returns current Location
-	 * @param context
-	 * @return
-	 * @throws NoLocationException 
-	 */
-	public static Location getCurrentLocation(Context context) throws NoLocationException {
-		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		String provider = locationManager.getBestProvider(new Criteria(), false);
-		Log.d("MMRTest", "Loc Provider: " + provider);
-		Location location = locationManager.getLastKnownLocation(provider);
-		if (location == null) {
-			throw new NoLocationException("Location unavailable");
-		}
-		return location;
-	}
-	
-	/**
 	 * Returns X number of points in a circle, all with the same distance from center.
 	 */
 	public static List<com.pifive.makemyrun.geo.Location> getCircle(com.pifive.makemyrun.geo.Location center, 

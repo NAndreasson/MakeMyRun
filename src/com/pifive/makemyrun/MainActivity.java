@@ -27,21 +27,19 @@ import java.util.Observer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
-import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -72,7 +70,6 @@ public class MainActivity extends MapActivity implements Observer {
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         overlay = findViewById(R.id.overlayMenu);
         mapDrawer = new MapDrawer(mapView);
-        updatePosition();
         showStartScreen();
         displayCurrentLocation();
     }
@@ -81,38 +78,23 @@ public class MainActivity extends MapActivity implements Observer {
      * Shows the start screen (entry point for application)
      */
     private void showStartScreen() {
-        overlay.setVisibility(View.VISIBLE);
-        
-        // Listen for generate-click
-        Button button = (Button) findViewById(R.id.generatebutton);
-        button.setOnClickListener(new OnClickListener() {
-			
-        	public void onClick(View v) {
-				overlay.setVisibility(View.GONE);
-        		loadingStatus = new LoadingStatus(mapView.getContext());
-        		try {
-        			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-        			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.geo.Location(location.getLatitude(), location.getLongitude()));
-        			startDirectionsTask(query);
-        		} catch (RuntimeException e) {
-        			loadingStatus.remove();
-        			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
-        			e.printStackTrace();
-        			return;
-        		}
-        		
-        		showMiddleScreen();
-
-				View overlay = findViewById(R.id.overlayMenu);
-				overlay.setVisibility(View.GONE);
-
-				mapView.requestFocus();
-				mapView.requestFocusFromTouch();
-				mapView.setClickable(true);
-				
-			}
-        	
-        });
+        overlay.setVisibility(View.VISIBLE);     
+    }
+    
+    private Location getCurrentLocation() {
+		// Get location manager from system
+		LocationManager locManager = 
+				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	
+		// Fetch last known location to provide as best guess
+		LocationProvider provider = locManager.getProvider(LocationManager.GPS_PROVIDER);
+		android.location.Location currentLocation = 
+					locManager.getLastKnownLocation(provider.getName());
+    	
+		if (currentLocation == null) {
+			throw new NoLocationException("Location unavailable");
+		}
+		return currentLocation;
     }
     
     /**
@@ -171,17 +153,6 @@ public class MainActivity extends MapActivity implements Observer {
     	timer.stop();
     }
     
-    /**
-     * Makes the phone get new GPS position so that we can use it later to generate route from accurate position
-     */
-    private void updatePosition() {
-    	PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 
-    						 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
-        LocationManager locationManager = (LocationManager) getBaseContext().
-        							  getSystemService(Context.LOCATION_SERVICE);
-        String provider = locationManager.getBestProvider(new Criteria(), false);
-        locationManager.requestSingleUpdate(provider, pendingIntent);
-    }
     
     /**
      * Catches back button when we want it to just step back in application
@@ -197,22 +168,30 @@ public class MainActivity extends MapActivity implements Observer {
     }
     
     public void generateRoute(View v) {
-    	try {
-			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-			System.out.println(location.toString());
-			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.geo.Location(location.getLatitude(), location.getLongitude()));
-	        System.out.println(query);
+    	overlay.setVisibility(View.GONE);
+		loadingStatus = new LoadingStatus(mapView.getContext());
+		try {
+			// send the current location to routegenerator
+			Location currentLocation = getCurrentLocation();
+			String query = RouteGenerator.generateRoute(
+							new com.pifive.makemyrun.geo.Location(currentLocation.getLatitude(), currentLocation.getLongitude()));
 			startDirectionsTask(query);
-		} catch (NoLocationException e) {
-			// TODO Auto-generated catch block
+			displayCurrentLocation();
+		} catch (RuntimeException e) {
+			loadingStatus.remove();
+			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
+			return;
 		}
+		
+		showMiddleScreen();
 		
 		View overlay = findViewById(R.id.overlayMenu);
 		overlay.setVisibility(View.GONE);
 		mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
+		
     }
 
     /**
@@ -263,7 +242,6 @@ public class MainActivity extends MapActivity implements Observer {
 			RouteArtist routeArtist = new RouteArtist(route.getWaypoints());
 			mapDrawer.addArtist(routeArtist);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
