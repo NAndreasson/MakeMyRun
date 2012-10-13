@@ -25,7 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import android.graphics.Canvas;
+import android.util.Log;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
@@ -131,6 +133,17 @@ public class MapDrawer implements Drawer {
 			for (OverlayArtist artist : artists) {
 				artist.draw(canvas, mapView, shadow);
 			}
+		}
+		
+		@Override
+		public boolean onTap(GeoPoint geoPoint, MapView mapView) {
+			for (OverlayArtist artist : artists) {
+				if (artist instanceof MapTapListener) {
+					((MapTapListener) artist).onTap(geoPoint, mapView);
+				}
+			}
+
+			return true;
 		}
 	}
 

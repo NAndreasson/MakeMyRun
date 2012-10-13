@@ -28,10 +28,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,6 +48,9 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.pifive.makemyrun.drawing.CurrentLocationArtist;
 import com.pifive.makemyrun.drawing.MapDrawer;
+import com.pifive.makemyrun.drawing.PositionPin;
+import com.pifive.makemyrun.drawing.PositionPlacerArtist;
+import com.pifive.makemyrun.drawing.PositionPlacerArtist.PinState;
 import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class MainActivity extends MapActivity implements Observer {
@@ -168,6 +174,73 @@ public class MainActivity extends MapActivity implements Observer {
     	}
     }
     
+    //TODO metod
+    public void chooseStartEndPoints(View v) {
+    	boolean startPointButtonPressed = false;
+    	boolean endPointButtonPressed = false;
+    	
+    	overlay.setVisibility(View.GONE);
+    	
+    	ViewStub startEndViewStub = (ViewStub) findViewById(R.id.startEndPointButtons);
+    	startEndViewStub.setVisibility(View.VISIBLE);
+    	Location currentLocation = getCurrentLocation(); 
+
+    	
+    	Bitmap pinBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
+    	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
+    	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
+    	
+    	final PositionPlacerArtist positionPlacerArtist = 
+    			new PositionPlacerArtist(startPin, endPin, mapDrawer);
+    	displayCurrentLocation();
+    	mapDrawer.addArtist(positionPlacerArtist);
+    	mapView.setClickable(true);
+    	
+    	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
+    	startPointButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				positionPlacerArtist.setpinState(PinState.START);
+			}
+		});
+    	
+    	Button endPointButton = (Button) findViewById(R.id.endpointbutton);
+    	endPointButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				positionPlacerArtist.setpinState(PinState.END);
+			}
+		});
+    	// alert positionplacerartist about the state 
+    	
+    	// show another overlay with buttons? 
+    	
+    	// those buttons should have click listeners
+    	
+    	// when you click on of those buttons the map should have focus for you to be able
+    	// to place the points
+    	
+    	
+    	/*
+        mapView.requestFocus();
+		mapView.requestFocusFromTouch();
+		mapView.setClickable(true);
+		*/
+    }
+
+	/**
+	 * Converts an (Android) Location to a Geographical point (GeoPoint).
+	 * @param location The location to convert to GeoPoint.
+	 * @return Returns the same geographical position provided as a GeoPoint.
+	 */
+	public static GeoPoint toGeoPoint(Location location) {
+		return new GeoPoint((int) (location.getLatitude() * 1E6),
+				(int) (location.getLongitude() * 1E6));
+	}
+	
     public void generateRoute(View v) {
     	overlay.setVisibility(View.GONE);
 		loadingStatus = new LoadingStatus(mapView.getContext());
@@ -177,7 +250,7 @@ public class MainActivity extends MapActivity implements Observer {
 			String query = RouteGenerator.generateRoute(
 							new com.pifive.makemyrun.geo.Location(currentLocation.getLatitude(), currentLocation.getLongitude()));
 			startDirectionsTask(query);
-			displayCurrentLocation();
+			
 		} catch (RuntimeException e) {
 			loadingStatus.remove();
 			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();

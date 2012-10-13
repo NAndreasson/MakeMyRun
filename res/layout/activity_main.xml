@@ -25,6 +25,14 @@
 		android:inflatedId="@+id/placeholderlayout"
 		android:layout="@layout/placeholderlayout" />
 	
+	<ViewStub
+	    android:id="@+id/startEndPointButtons"
+	    android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_centerInParent="true"
+		android:inflatedId="@+id/startendpointlayout"
+		android:layout="@layout/startendpointlayout" />
+	
 	<FrameLayout
 	    android:id="@+id/overlayMenu"
 	    android:layout_width="match_parent"
@@ -42,14 +50,14 @@
 		    android:src="@drawable/testpic" />
 		
 		<Button
-		    android:id="@+id/generatebutton"
+		    android:id="@+id/generate_new_route_button"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:clickable="true"
 		    android:background="#FFFFFF"
 		    android:layout_gravity="bottom"
-		    android:text="@string/generate_button"
-		    android:onClick="generateRoute" />
+		    android:text="@string/generate_new_route_button"
+		    android:onClick="chooseStartEndPoints" />
 		
 	</FrameLayout>
 	
