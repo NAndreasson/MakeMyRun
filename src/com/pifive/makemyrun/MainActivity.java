@@ -34,6 +34,7 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -66,7 +67,8 @@ public class MainActivity extends MapActivity implements Observer {
 	private LoadingStatus loadingStatus;
 	
 	private GeoPoint startPoint; 
-	private GeoPoint destination;
+	private GeoPoint destinationPoint;
+	private ViewStub startEndViewStub;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,7 @@ public class MainActivity extends MapActivity implements Observer {
         mapView = (MapView) findViewById(R.id.mapview);
         viewStub = (ViewStub) findViewById(R.id.postGeneratedStub);
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
+        startEndViewStub = (ViewStub) findViewById(R.id.startEndPointButtons);
         overlay = findViewById(R.id.overlayMenu);
         mapDrawer = new MapDrawer(mapView);
         
@@ -181,21 +184,23 @@ public class MainActivity extends MapActivity implements Observer {
     
     public void chooseStartEndPoints(View v) {    	
     	overlay.setVisibility(View.GONE);
+    	Log.d("MMR", "Test1");
     	
-    	ViewStub startEndViewStub = (ViewStub) findViewById(R.id.startEndPointButtons);
+    	Log.d("MMR", "Test1.3");
     	startEndViewStub.setVisibility(View.VISIBLE);
+    	Log.d("MMR", "Test1.5");
     	Location currentLocation = getCurrentLocation(); 
-    	
+    	Log.d("MMR", "Test2");
     	Bitmap pinBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
     	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
-    	
+    	Log.d("MMR", "Test3");
     	final PositionPlacerArtist positionPlacerArtist = 
     			new PositionPlacerArtist(startPin, endPin, mapDrawer);
     	displayCurrentLocation();
     	mapDrawer.addArtist(positionPlacerArtist);
     	mapView.setClickable(true);
-    	
+    	Log.d("MMR", "Test4");
     	ImageButton startPointButton = (ImageButton) findViewById(R.id.startpointbutton);
     	startPointButton.setOnClickListener(new OnClickListener() {
 			
@@ -215,6 +220,18 @@ public class MainActivity extends MapActivity implements Observer {
 		});
     	
     	Button generateButton = (Button) findViewById(R.id.generateRouteButton);
+    	generateButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// set start point 
+				// TODO naming conventions, destination or end
+				startPoint = positionPlacerArtist.getStartPoint();
+				destinationPoint = positionPlacerArtist.getEndPoint();
+				startEndViewStub.setVisibility(View.GONE);
+				generateRoute(v);
+			}
+		});
     	
     }
 
@@ -232,11 +249,8 @@ public class MainActivity extends MapActivity implements Observer {
     	overlay.setVisibility(View.GONE);
 		loadingStatus = new LoadingStatus(mapView.getContext());
 		try {
-			// send the current location to routegenerator
-			Location currentLocation = getCurrentLocation();
 			String query = RouteGenerator.generateRoute(
-							new GeoPoint((int)(currentLocation.getLatitude() * 1E6), (int)(currentLocation.getLongitude() * 1E6)),
-							new GeoPoint((int)(currentLocation.getLatitude() * 1E6), (int)(currentLocation.getLongitude() * 1E6)));
+							startPoint, destinationPoint);
 			startDirectionsTask(query);
 			
 		} catch (RuntimeException e) {

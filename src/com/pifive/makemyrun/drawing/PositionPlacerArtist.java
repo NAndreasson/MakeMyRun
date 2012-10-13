@@ -10,8 +10,6 @@ import android.graphics.Point;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
-// should be aware about the buttonstate
-
 public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTapListener {
 	private Map<PinState, PositionPin> positionPins = 
 			new EnumMap<PinState, PositionPin>(PinState.class);
@@ -20,7 +18,6 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 	public enum PinState { START, END, NONE }
 	private PinState pinState; 
 	 
-	// enum? for pinState? 
 	
 	// should the type of markers be sent here? 
 	public PositionPlacerArtist(PositionPin startPin, PositionPin destinationPin, MapDrawer drawer) {
@@ -43,6 +40,13 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 		}		
 	}
 	
+	public GeoPoint getStartPoint() {
+		return positionPins.get(PinState.START).getGeoPoint();
+	}
+	
+	public GeoPoint getEndPoint() {
+		return positionPins.get(PinState.END).getGeoPoint();
+	}
 	
 	public void setpinState(PinState pinState) {
 		this.pinState = pinState; 
