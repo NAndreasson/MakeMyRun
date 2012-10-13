@@ -4,8 +4,8 @@ import android.os.Handler;
 import android.widget.TextView;
 
 /**
- * Displays and updates a stopwatch for a running interface
- * for as long as this object exists.
+ * Displays and updates a stopwatch for a running interface for as long as this
+ * object exists.
  */
 public class Timer {
 
@@ -14,36 +14,38 @@ public class Timer {
 
 	private final Thread timerThread;
 	private final TimerRunnable timerRunnable;
-	
+
 	/**
-	 * Creates a stopwatch which continuously updates its clockText
-	 * with current time since start.
-	 * @param clockText The GUI view to print the text on.
+	 * Creates a stopwatch which continuously updates its clockText with current
+	 * time since start.
+	 * 
+	 * @param clockText
+	 *            The GUI view to print the text on.
 	 */
 	public Timer(final TextView clockText) {
 		timerRunnable = new TimerRunnable(clockText);
 		timerThread = new Thread(timerRunnable);
 	}
-	
+
 	/**
 	 * Starts the stopwatch
 	 */
-	public void start(){
+	public void start() {
 		startTime = System.currentTimeMillis();
 		timerThread.start();
 	}
-	
+
 	/**
 	 * Stops the stopwatch
 	 */
 	public void stop() {
 		timerRunnable.running = false;
 	}
-	
+
 	public boolean isRunning() {
 		return timerRunnable.running;
 	}
-	
+
 	/**
 	 * 
 	 * @return Unix Time in seconds when the timer was started
@@ -51,19 +53,20 @@ public class Timer {
 	public long getStartTime() {
 		return startTime;
 	}
+
 	/**
 	 * A runnable which can be stopped like a timer.
 	 */
 	private class TimerRunnable implements Runnable {
-		
+
 		private final TextView clockText;
 		private Handler handler = new Handler();
 		private boolean running = true;
-		
+
 		protected TimerRunnable(TextView view) {
 			this.clockText = view;
 		}
-		
+
 		/**
 		 * Continuously updates Timer's clockText with time elapsed since start.
 		 */
@@ -76,8 +79,7 @@ public class Timer {
 			final int hour = timeElapsed / 3600;
 			clockText.post(new Runnable() {
 				public void run() {
-					clockText.setText(
-							  (hour < 10 ? "0" + hour : hour) + ":"
+					clockText.setText((hour < 10 ? "0" + hour : hour) + ":"
 							+ (min < 10 ? "0" + min : min) + ":"
 							+ (sec < 10 ? "0" + sec : sec));
 				}
@@ -85,8 +87,8 @@ public class Timer {
 
 			if (running) {
 				// ask current thread to rerun after 100 ms
-				handler.postDelayed(this, 100); 
-			}					
+				handler.postDelayed(this, 100);
+			}
 		}
 	}
 }

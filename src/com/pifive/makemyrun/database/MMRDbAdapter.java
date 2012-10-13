@@ -10,8 +10,8 @@ import android.util.Log;
 
 /**
  * The MMRDbAdapter handles a database containing two tables:
- * runs: id | routeId(reference to routes) | dateStart(start date in unix time seconds) |
- * dateEnd(end date in unix time seconds) | distanceRan | completed (1 = true, 0
+ * runs: id | routeId(reference to routes) | dateStart(start date in unix time milliseconds) |
+ * dateEnd(end date in unix time milliseconds) | distanceRan | completed (1 = true, 0
  * = false)
  * 
  * routes: id | polyline (string containing encoded coordinates)
@@ -130,14 +130,14 @@ public class MMRDbAdapter {
 	 * @param route
 	 *            A route polyline
 	 * @param startTime
-	 *            The time when route was started
+	 *            The time when route was started in ms since 00:00 01-01-1970
 	 * @param distanceRan
 	 *            The distance ran
 	 * @param wasCompleted
 	 *            Completed/Cancelled
 	 * @return the row ID of the newly inserted row, or -1 if an error
 	 */
-	public int createRun(String route, int startTime, int distanceRan,
+	public int createRun(String route, long startTime, long distanceRan,
 			boolean wasCompleted) {
 		int routeId = getRouteIdFromPolyline(route);
 		if (routeId == -1) {
@@ -147,7 +147,7 @@ public class MMRDbAdapter {
 		ContentValues values = new ContentValues();
 		values.put(KEY_RUN_ROUTE, routeId);
 		values.put(KEY_RUN_DATE_STARTED, startTime);
-		values.put(KEY_RUN_DATE_COMPLETED, System.currentTimeMillis() / 1000);
+		values.put(KEY_RUN_DATE_COMPLETED, System.currentTimeMillis());
 		values.put(KEY_RUN_DISTANCE_RAN, distanceRan);
 		values.put(KEY_RUN_COMPLETED, wasCompleted ? 1 : 0);
 		Log.d(TAG, routeId+","+startTime+","+distanceRan);

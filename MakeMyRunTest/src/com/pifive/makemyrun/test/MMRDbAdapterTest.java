@@ -80,6 +80,7 @@ public class MMRDbAdapterTest extends android.test.AndroidTestCase {
 	public void testFetchAllRunsJoinRoutes(){
 		testAdapter.createRun("aabbccddeeff", 123123123, 100, true);
 		Cursor cursor = testAdapter.fetchAllRunsJoinRoutes();
+		assertTrue(cursor.getCount() > 0);
 		assertEquals(cursor.getColumnCount(), 7);
 	}
 }
