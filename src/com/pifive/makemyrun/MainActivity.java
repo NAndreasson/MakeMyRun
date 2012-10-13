@@ -34,7 +34,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -67,7 +66,7 @@ public class MainActivity extends MapActivity implements Observer {
 	private LoadingStatus loadingStatus;
 	
 	private GeoPoint startPoint; 
-	private GeoPoint destinationPoint;
+	private GeoPoint endPoint;
 	private ViewStub startEndViewStub;
 
     @Override
@@ -217,10 +216,9 @@ public class MainActivity extends MapActivity implements Observer {
 			
 			@Override
 			public void onClick(View v) {
-				// set start point 
 				// TODO naming conventions, destination or end
 				startPoint = positionPlacerArtist.getStartPoint();
-				destinationPoint = positionPlacerArtist.getEndPoint();
+				endPoint = positionPlacerArtist.getEndPoint();
 				startEndViewStub.setVisibility(View.GONE);
 				generateRoute(v);
 			}
@@ -233,6 +231,10 @@ public class MainActivity extends MapActivity implements Observer {
 	 * @param location The location to convert to GeoPoint.
 	 * @return Returns the same geographical position provided as a GeoPoint.
 	 */
+    /*
+     * TODO same method exists inside the RouteArtist class, should GeoPoints be sent to it
+     * instead of locations, or the other way around? 
+     */
 	public static GeoPoint toGeoPoint(Location location) {
 		return new GeoPoint((int) (location.getLatitude() * 1E6),
 				(int) (location.getLongitude() * 1E6));
@@ -243,7 +245,7 @@ public class MainActivity extends MapActivity implements Observer {
 		loadingStatus = new LoadingStatus(mapView.getContext());
 		try {
 			String query = RouteGenerator.generateRoute(
-							startPoint, destinationPoint);
+							startPoint, endPoint);
 			startDirectionsTask(query);
 			
 		} catch (RuntimeException e) {
