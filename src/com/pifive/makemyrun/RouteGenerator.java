@@ -52,21 +52,21 @@ public abstract class RouteGenerator {
 	 * @param startEndLoc - Current location that the generated route will start and end at
 	 * @return a google query with which you can query google for more steps
 	 */
-	public static String generateRoute(final com.pifive.makemyrun.geo.Location startEndLoc) {		
+	public static String generateRoute(final com.pifive.makemyrun.geo.Location startLoc, final com.pifive.makemyrun.geo.Location endLoc) {		
 		// build the beginning of the google query
 		StringBuilder stringBuilder = new StringBuilder("origin=");
-		stringBuilder.append(startEndLoc.getLat());
+		stringBuilder.append(startLoc.getLat());
 		stringBuilder.append(",");
-		stringBuilder.append(startEndLoc.getLng());
+		stringBuilder.append(startLoc.getLng());
 		stringBuilder.append("&destination=");
-		stringBuilder.append(startEndLoc.getLat());
+		stringBuilder.append(endLoc.getLat());
 		stringBuilder.append(",");
-		stringBuilder.append(startEndLoc.getLng());
+		stringBuilder.append(endLoc.getLng());
 		stringBuilder.append("&waypoints=");
 		
 		// get the centerpoint of the 'circle'
-		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(startEndLoc);
-		List<com.pifive.makemyrun.geo.Location> waypoints = getCircle(centerLocation, startEndLoc, 6);
+		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(startLoc);
+		List<com.pifive.makemyrun.geo.Location> waypoints = getCircle(centerLocation, startLoc, 6);
 		for (com.pifive.makemyrun.geo.Location waypoint : waypoints) {
 			stringBuilder.append(waypoint.getLat());
 			stringBuilder.append(",");
@@ -76,15 +76,22 @@ public abstract class RouteGenerator {
 		// remove the last |
 		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		stringBuilder.append("&avoid=highways&sensor=true&mode=walking");
-		
+		System.out.println(stringBuilder.toString());
 		return stringBuilder.toString();
 	}
 	
+	/**
+	 * Generates a route when a starting point and finish point is given
+	 * @param aLoc starting point
+	 * @param bLoc finish point
+	 */
 	public static void generateRoute(Location aLoc, Location bLoc) {
-		// Distance between locations
+		// Distance between locations in degrees
 		double distance = Math.sqrt(Math.pow(aLoc.getLatitude() - bLoc.getLatitude(), 2) 
 				+ Math.pow(aLoc.getLongitude() - bLoc.getLongitude(), 2));
+		
 	}
+	
 	
 	/**
 	 * Generates a location with coordinates 0.003 - 0.007 latitude and 

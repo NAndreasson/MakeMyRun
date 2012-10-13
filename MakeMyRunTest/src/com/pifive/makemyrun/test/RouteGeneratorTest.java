@@ -41,7 +41,7 @@ public class RouteGeneratorTest extends AndroidTestCase {
 	 * Passes is string is returned
 	 */
 	public void testGenerateRoute() {
-		String route = RouteGenerator.generateRoute(new Location(57.7000, 12.0000));
+		String route = RouteGenerator.generateRoute(new Location(57.7000, 12.0000), new Location(57.7000, 12.0000));
 		assert(route != null);
 		assert(route.contains("origin="));
 		assert(route.contains("&destination="));
