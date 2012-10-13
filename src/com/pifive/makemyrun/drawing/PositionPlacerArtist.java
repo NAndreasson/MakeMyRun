@@ -18,8 +18,6 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 	public enum PinState { START, END, NONE }
 	private PinState pinState; 
 	 
-	
-	// should the type of markers be sent here? 
 	public PositionPlacerArtist(PositionPin startPin, PositionPin destinationPin, MapDrawer drawer) {
 		pinState = PinState.NONE;
 		positionPins.put(PinState.START, startPin);

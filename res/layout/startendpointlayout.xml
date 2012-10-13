@@ -31,7 +31,6 @@
         android:text="End point"
         android:padding="5dp" 
         android:src="@drawable/pin" />
-     
  
       <Button
        	android:id="@+id/generateRouteButton"

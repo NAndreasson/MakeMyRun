@@ -120,13 +120,10 @@ public class MainActivity extends MapActivity implements Observer {
         viewStub.setVisibility(View.VISIBLE);
         Button runButton = (Button) findViewById(R.id.runbutton);
         runButton.setOnClickListener(new OnClickListener() {
-
 			public void onClick(View arg0) {
 				((Button)arg0).setVisibility(View.GONE);
 				startRun();
-				
 			}
-        	
         });
     }
     
@@ -184,23 +181,19 @@ public class MainActivity extends MapActivity implements Observer {
     
     public void chooseStartEndPoints(View v) {    	
     	overlay.setVisibility(View.GONE);
-    	Log.d("MMR", "Test1");
-    	
-    	Log.d("MMR", "Test1.3");
     	startEndViewStub.setVisibility(View.VISIBLE);
-    	Log.d("MMR", "Test1.5");
     	Location currentLocation = getCurrentLocation(); 
-    	Log.d("MMR", "Test2");
+
     	Bitmap pinBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
     	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
-    	Log.d("MMR", "Test3");
+
     	final PositionPlacerArtist positionPlacerArtist = 
     			new PositionPlacerArtist(startPin, endPin, mapDrawer);
     	displayCurrentLocation();
     	mapDrawer.addArtist(positionPlacerArtist);
     	mapView.setClickable(true);
-    	Log.d("MMR", "Test4");
+    	
     	ImageButton startPointButton = (ImageButton) findViewById(R.id.startpointbutton);
     	startPointButton.setOnClickListener(new OnClickListener() {
 			
