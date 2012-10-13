@@ -24,11 +24,9 @@ package com.pifive.makemyrun.test;
 import java.util.Iterator;
 import java.util.List;
 
-import android.content.Context;
-import android.location.LocationManager;
 import android.test.AndroidTestCase;
 
-import com.pifive.makemyrun.NoLocationException;
+import com.google.android.maps.GeoPoint;
 import com.pifive.makemyrun.RouteGenerator;
 import com.pifive.makemyrun.geo.Location;
 
@@ -41,41 +39,39 @@ public class RouteGeneratorTest extends AndroidTestCase {
 	 * Passes is string is returned
 	 */
 	public void testGenerateRoute() {
-		String route = RouteGenerator.generateRoute(new Location(57.7000, 12.0000));
-		assert(route != null);
-		assert(route.contains("origin="));
-		assert(route.contains("&destination="));
-		assert(route.contains("&avoid=highways&sensor=true&mode=walking"));
+		String route = RouteGenerator.generateRoute(new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6)), 
+											new GeoPoint((int)(57.7005 * 1E6), (int)(12.0005 * 1E6)));
+		String route2 = RouteGenerator.generateRoute(new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6)), 
+											new GeoPoint((int)(57.7010 * 1E6), (int)(12.0010 * 1E6)));
+		
+		assert(route.contains("origin=") && route2.contains("origin="));
+		assert(route.contains("&destination=") && route2.contains("&destination="));
+		assert(route.contains("&avoid=highways&sensor=true&mode=walking") 
+				&& route2.contains("&avoid=highways&sensor=true&mode=walking"));
+		
+		
+	}
+	
+	/**
+	 * Passes if too close distance returns null
+	 */
+	public void testGetMixed() {
+		Location aLoc = new Location(57.7000, 12.0000);
+		Location bLoc = new Location(57.7001, 12.0001);
 	}
 	
 	/**
 	 * Passes if:
-	 * 2 � points � 10
+	 * Returns 2 waypoints
 	 * Each returned value doesn't equal the one before
-	 * Number of returned PiLocations equals the number of points sent in
 	 */
 	public void testGetCircle() {
 		Location center = new Location(57.7000, 12.000);
 		Location start = new Location(57.6990, 11.990);
 		
-		try {
-			@SuppressWarnings("unused")
-			List<Location> locationsOne = RouteGenerator.getCircle(center, start, -34); // Exception
-			fail("No exception");
-		} catch (IllegalArgumentException e) {
-			// ...
-		}
+		List<Location> workingLocations = RouteGenerator.getCircle(center, start);
 		
-		try {
-			List<Location> locationsTwo = RouteGenerator.getCircle(center, start, 15); // Exception
-			fail("No exception");
-		} catch(IllegalArgumentException e) {	
-			// ...
-		}
-		
-		List<Location> workingLocations = RouteGenerator.getCircle(center, start, 10);
-		
-		assert(workingLocations.size() == 10);
+		assert(workingLocations.size() == 2);
 		
 		Location lastLocation = null;
 		Location presentLocation = null;
@@ -97,12 +93,12 @@ public class RouteGeneratorTest extends AndroidTestCase {
 	public void testGetRandomLocation() {
 		Location location = new Location(68, 68);
 		Location randomLocation = RouteGenerator.generateRandomLocation(location);
-		assertTrue(location.getLat() <= randomLocation.getLat());
-		assertTrue(location.getLng() <= randomLocation.getLng());
-		assertTrue(randomLocation.getLat() >= (location.getLat() + 0.003));
-		assertTrue(randomLocation.getLat() <= location.getLat() + 0.007);
-		assertTrue(randomLocation.getLng() >= location.getLng() + 0.003);
-		assertTrue(randomLocation.getLng() <= location.getLng() + 0.007);
+		assertTrue(location.getLat() != randomLocation.getLat());
+		assertTrue(location.getLng() != randomLocation.getLng());
+		assertTrue(randomLocation.getLat() != (location.getLat() + 0.003));
+		assertTrue(randomLocation.getLat() != location.getLat() + 0.007);
+		assertTrue(randomLocation.getLng() != location.getLng() + 0.003);
+		assertTrue(randomLocation.getLng() != location.getLng() + 0.007);
 	}
 	
 	/**
