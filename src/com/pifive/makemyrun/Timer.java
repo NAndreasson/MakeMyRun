@@ -9,7 +9,7 @@ import android.widget.TextView;
  */
 public class Timer {
 
-	private int startTime;
+	private long startTime;
 	private int timeElapsed;
 
 	private final Thread timerThread;
@@ -29,7 +29,7 @@ public class Timer {
 	 * Starts the stopwatch
 	 */
 	public void start(){
-		startTime = (int)System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		timerThread.start();
 	}
 	
@@ -48,7 +48,7 @@ public class Timer {
 	 * 
 	 * @return Unix Time in seconds when the timer was started
 	 */
-	public int getStartTime(){
+	public long getStartTime() {
 		return startTime;
 	}
 	/**
