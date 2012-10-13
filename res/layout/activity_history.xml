@@ -7,6 +7,16 @@
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
+        android:clickable="false"
         android:apiKey="0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw" />
+
+    <ListView
+        android:id="@+id/historyList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+    </ListView>
 	
 </RelativeLayout>
