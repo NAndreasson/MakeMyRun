@@ -1,5 +1,8 @@
 package com.pifive.makemyrun;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DataSetObserver;
@@ -7,10 +10,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -46,20 +51,39 @@ public class HistoryActivity extends MapActivity {
 //		 * dateEnd(end date in unix time seconds) | distanceRan | completed (1 = true, 0
 //		 * = false)
 		ListView list = (ListView) findViewById(R.id.historyList);
-		Cursor cursor = db.fetchAllRuns();
+		Cursor cursor = db.fetchAllRunsJoinRoutes();
 		CursorAdapter adapter = new CursorAdapter(getBaseContext(), cursor) {
 
 			@Override
 			public void bindView(View item, Context context, Cursor cursor) {
 				// TODO Auto-generated method stub
-				
+				item.setOnClickListener(new OnClickListener() {
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						Toast.makeText(getBaseContext(), ((TextView) v).getText(), Toast.LENGTH_LONG).show();
+					}
+					
+				});
 			}
 
 			@Override
 			public View newView(Context context, Cursor cursor, ViewGroup list) {
 				TextView view = new TextView(context);
-				view.setText("You what is up");
-				Log.d("MMR", ""+cursor.getInt(0));
+				view.setTextAppearance(getBaseContext(), R.style.HistoryFont);
+				
+				Long millis = cursor.getLong(cursor.getColumnIndex("dateStart"));
+				Date startDate = new Date(millis);
+				int distanceRan = cursor.getInt(cursor.getColumnIndex(MMRDbAdapter.KEY_RUN_DISTANCE_RAN));
+				int routeDistance = cursor.getInt(cursor.getColumnIndex(MMRDbAdapter.KEY_ROUTE_DISTANCE));
+				
+				view.setText(
+						startDate.toString() + 
+						" Distance: " +  
+						distanceRan +
+						" / " + routeDistance);
+				
 				return view;
 			}
 			

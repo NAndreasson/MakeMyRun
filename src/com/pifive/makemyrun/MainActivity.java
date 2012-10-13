@@ -21,6 +21,7 @@
 
 package com.pifive.makemyrun;
 
+import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -30,7 +31,6 @@ import org.json.JSONObject;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.location.Criteria;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -177,7 +177,7 @@ public class MainActivity extends MapActivity implements Observer {
     @Override
     public void onBackPressed() {
     	if(inCatchBackState) {
-    		stopRun(false);
+    		cleanUp();
     		stepBackwards();
     	} else {
     		finish();
@@ -313,16 +313,22 @@ public class MainActivity extends MapActivity implements Observer {
 	}
 	
 	public void onStopAction(View v) {
-		Log.d("MMR", "HELLOOOOOO MFS");
 		boolean completed = Boolean.valueOf(""+v.getTag());
-		stopRun(completed);
+		saveRun(completed);
 	}
 	
-	public void stopRun(boolean completed) {
+	public void saveRun(boolean completed) {
+		Log.d("MMR", "Saving distance: "+currentRoute.getDistance());
+		Log.d("MMR", "Route distance: " + distanceTracker.getTotalDistanceInMeters());
+		db.open();
+		db.createRun(
+				currentRoute.getPolyline(),
+				timer.getStartTime(), 
+				(int) distanceTracker.getTotalDistanceInMeters(), 
+				currentRoute.getDistance(), 
+				completed);
 		
-		db.createRun(currentRoute.getPolyline(), timer.getStartTime(), currentRoute.getDistance(), completed);
-		Cursor c = db.fetchAllRuns();
-		Log.d("MMR", ""+c.getCount());
+		db.close();
 		cleanUp();
 	}
 	
