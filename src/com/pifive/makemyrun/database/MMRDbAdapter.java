@@ -114,9 +114,9 @@ public class MMRDbAdapter {
 	 * @return a polyline's corresponding id routes or -1 if non existent.
 	 */
 	private int getRouteIdFromPolyline(String polyline) {
-		Cursor routeCursor = mmrDb.query(true, DATABASE_TABLE_RUNS,
-				new String[] { KEY_ROUTE_ID }, KEY_ROUTE_POLYLINE + "="
-						+ polyline, null, null, null, null, null);
+		Cursor routeCursor = mmrDb.query(true, DATABASE_TABLE_ROUTES,
+				new String[] { KEY_ROUTE_ID }, KEY_ROUTE_POLYLINE + "= '"+polyline+"'"
+						,null, null, null, null, null);
 		if (routeCursor.getCount() <= 0) {
 			return -1;
 		}
@@ -150,12 +150,12 @@ public class MMRDbAdapter {
 		values.put(KEY_RUN_DATE_COMPLETED, System.currentTimeMillis() / 1000);
 		values.put(KEY_RUN_DISTANCE_RAN, distanceRan);
 		values.put(KEY_RUN_COMPLETED, wasCompleted ? 1 : 0);
-
-		return (int) mmrDb.insert(DATABASE_TABLE_ROUTES, null, values);
+		Log.d(TAG, routeId+","+startTime+","+distanceRan);
+		return (int) mmrDb.insert(DATABASE_TABLE_RUNS, null, values);
 
 	}
 
-	public int createRoute(String polyline){
+	private int createRoute(String polyline){
 		ContentValues routeValue = new ContentValues();
 		routeValue.put(KEY_ROUTE_POLYLINE, polyline);
 		return (int) mmrDb.insert(DATABASE_TABLE_ROUTES, null,
@@ -265,7 +265,7 @@ public class MMRDbAdapter {
 	 */
 	public Cursor fetchRun(int rowId) throws SQLException {
 		Cursor cursor = mmrDb.query(true, DATABASE_TABLE_RUNS, new String[] {
-				KEY_RUN_ID, KEY_RUN_DATE_STARTED, KEY_RUN_DATE_COMPLETED,
+				KEY_RUN_ID,KEY_RUN_ROUTE, KEY_RUN_DATE_STARTED, KEY_RUN_DATE_COMPLETED,
 				KEY_RUN_DISTANCE_RAN, KEY_RUN_COMPLETED }, KEY_RUN_ID + "="
 				+ rowId, null, null, null, null, null);
 		return cursor;
