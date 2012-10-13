@@ -49,9 +49,9 @@ import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class MainActivity extends MapActivity implements Observer {
 	private MapView mapView;
-	private View overlay;
 	private ViewStub viewStub;
 	private ViewStub runViewStub;
+	private ViewStub mainMenuStub;
 	private Button stopRunButton;
 	private boolean inCatchBackState = false;
 	private MapDrawer mapDrawer;
@@ -68,7 +68,7 @@ public class MainActivity extends MapActivity implements Observer {
         mapView = (MapView) findViewById(R.id.mapview);
         viewStub = (ViewStub) findViewById(R.id.postGeneratedStub);
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
-        overlay = findViewById(R.id.overlayMenu);
+        mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
         mapDrawer = new MapDrawer(mapView);
         showStartScreen();
         displayCurrentLocation();
@@ -78,7 +78,7 @@ public class MainActivity extends MapActivity implements Observer {
      * Shows the start screen (entry point for application)
      */
     private void showStartScreen() {
-        overlay.setVisibility(View.VISIBLE);     
+        mainMenuStub.setVisibility(View.VISIBLE);     
     }
     
     private Location getCurrentLocation() {
@@ -168,7 +168,7 @@ public class MainActivity extends MapActivity implements Observer {
     }
     
     public void generateRoute(View v) {
-    	overlay.setVisibility(View.GONE);
+    	mainMenuStub.setVisibility(View.GONE);
 		loadingStatus = new LoadingStatus(mapView.getContext());
 		try {
 			// send the current location to routegenerator
@@ -186,8 +186,8 @@ public class MainActivity extends MapActivity implements Observer {
 		
 		showMiddleScreen();
 		
-		View overlay = findViewById(R.id.overlayMenu);
-		overlay.setVisibility(View.GONE);
+//		View overlay = findViewById(R.id.overlayMenu);
+//		overlay.setVisibility(View.GONE);
 		mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);

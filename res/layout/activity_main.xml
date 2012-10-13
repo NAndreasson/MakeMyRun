@@ -9,6 +9,15 @@
         android:layout_height="match_parent"
         android:apiKey="0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw" />
 
+    <ViewStub 
+        android:id="@+id/mainMenuStub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:layout_centerInParent="true"
+        android:inflatedId="@+layout/main_menu_layout"
+        android:layout="@layout/main_menu_layout"
+        android:layout_margin="25dp" />
+    
 	<ViewStub
         android:id="@+id/postGeneratedStub"
         android:layout_width="wrap_content"
@@ -24,35 +33,5 @@
 		android:layout_centerInParent="true"
 		android:inflatedId="@+id/placeholderlayout"
 		android:layout="@layout/placeholderlayout" />
-	
-	<FrameLayout
-	    android:id="@+id/overlayMenu"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:background="@drawable/rounded_view"
-	    android:layout_margin="25dp" >
-	    
-		<ImageView 
-		    android:id="@+id/pi5logo"
-		    android:contentDescription="@string/testlogo"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:alpha="1"
-		    android:layout_gravity="center_horizontal"
-		    android:src="@drawable/icon" />
-		
-		<Button
-		    android:background="@drawable/rounded_button"
-		    android:id="@+id/generatebutton"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:layout_margin="20dp"
-		    android:clickable="true"
-		    android:layout_gravity="bottom"
-		    android:text="@string/generate_button"
-		    android:textSize="@android:dimen/app_icon_size"
-		    android:onClick="generateRoute" />
-		
-	</FrameLayout>
-	
+
 </RelativeLayout>
