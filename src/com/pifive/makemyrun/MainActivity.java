@@ -34,12 +34,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +64,9 @@ public class MainActivity extends MapActivity implements Observer {
 	private DistanceTracker distanceTracker;
     private Timer timer;
 	private LoadingStatus loadingStatus;
+	
+	private GeoPoint startPoint; 
+	private GeoPoint destination;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -174,17 +177,12 @@ public class MainActivity extends MapActivity implements Observer {
     	}
     }
     
-    //TODO metod
-    public void chooseStartEndPoints(View v) {
-    	boolean startPointButtonPressed = false;
-    	boolean endPointButtonPressed = false;
-    	
+    public void chooseStartEndPoints(View v) {    	
     	overlay.setVisibility(View.GONE);
     	
     	ViewStub startEndViewStub = (ViewStub) findViewById(R.id.startEndPointButtons);
     	startEndViewStub.setVisibility(View.VISIBLE);
     	Location currentLocation = getCurrentLocation(); 
-
     	
     	Bitmap pinBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
@@ -196,7 +194,7 @@ public class MainActivity extends MapActivity implements Observer {
     	mapDrawer.addArtist(positionPlacerArtist);
     	mapView.setClickable(true);
     	
-    	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
+    	ImageButton startPointButton = (ImageButton) findViewById(R.id.startpointbutton);
     	startPointButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -205,30 +203,17 @@ public class MainActivity extends MapActivity implements Observer {
 			}
 		});
     	
-    	Button endPointButton = (Button) findViewById(R.id.endpointbutton);
+    	ImageButton endPointButton = (ImageButton) findViewById(R.id.endpointbutton);
     	endPointButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				positionPlacerArtist.setpinState(PinState.END);
 			}
 		});
-    	// alert positionplacerartist about the state 
     	
-    	// show another overlay with buttons? 
+    	Button generateButton = (Button) findViewById(R.id.generateRouteButton);
     	
-    	// those buttons should have click listeners
-    	
-    	// when you click on of those buttons the map should have focus for you to be able
-    	// to place the points
-    	
-    	
-    	/*
-        mapView.requestFocus();
-		mapView.requestFocusFromTouch();
-		mapView.setClickable(true);
-		*/
     }
 
 	/**

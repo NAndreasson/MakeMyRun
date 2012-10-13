@@ -3,27 +3,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <Button
+    
+    <ImageButton
         android:id="@+id/startpointbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="24dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
         android:clickable="true"
 		android:background="#FFFFFF"
         android:text="Start point"
-        android:padding="5dp" />
+        android:padding="5dp" 
+        android:src="@drawable/pin"/>
     
-      <Button
+      <ImageButton
         android:id="@+id/endpointbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="24dp"
         android:clickable="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
 		android:background="#FFFFFF"
         android:text="End point"
-        android:padding="5dp" />
-
+        android:padding="5dp" 
+        android:src="@drawable/pin" />
+     
+ 
+      <Button
+       	android:id="@+id/generateRouteButton"
+       	android:layout_width="wrap_content"
+       	android:layout_height="wrap_content"
+       	android:clickable="true"
+       	android:layout_alignParentBottom="true"
+       	android:background="#FFFFFF"
+       	android:text="Generate"
+       	android:padding="5dp"
+          />
 </RelativeLayout>
