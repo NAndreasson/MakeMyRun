@@ -44,11 +44,11 @@ public class RouteGeneratorTest extends AndroidTestCase {
 		String route2 = RouteGenerator.generateRoute(new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6)), 
 											new GeoPoint((int)(57.7010 * 1E6), (int)(12.0010 * 1E6)));
 		
-		assertNotNull(route);
-		assertNull(route2);
-		assert(route.contains("origin="));
-		assert(route.contains("&destination="));
-		assert(route.contains("&avoid=highways&sensor=true&mode=walking"));
+		assert(route.contains("origin=") && route2.contains("origin="));
+		assert(route.contains("&destination=") && route2.contains("&destination="));
+		assert(route.contains("&avoid=highways&sensor=true&mode=walking") 
+				&& route2.contains("&avoid=highways&sensor=true&mode=walking"));
+		
 		
 	}
 	

@@ -54,21 +54,13 @@ public abstract class RouteGenerator {
 	 * @param startEndLoc - Current location that the generated route will start and end at
 	 * @return a google query with which you can query google for more steps
 	 */
-	private static String generateRoute(final com.pifive.makemyrun.geo.Location startLoc, final com.pifive.makemyrun.geo.Location endLoc) {		
+	private static String generateCircle(final com.pifive.makemyrun.geo.Location loc) {		
 		// build the beginning of the google query
-		StringBuilder stringBuilder = new StringBuilder("origin=");
-		stringBuilder.append(startLoc.getLat());
-		stringBuilder.append(",");
-		stringBuilder.append(startLoc.getLng());
-		stringBuilder.append("&destination=");
-		stringBuilder.append(endLoc.getLat());
-		stringBuilder.append(",");
-		stringBuilder.append(endLoc.getLng());
-		stringBuilder.append("&waypoints=optimize:true|");
-
+		StringBuilder stringBuilder = new StringBuilder(startOfQuery(loc, loc));
+		
 		// get the centerpoint of the 'circle'
-		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(startLoc);
-		List<com.pifive.makemyrun.geo.Location> waypoints = getCircle(centerLocation, startLoc);
+		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(loc);
+		List<com.pifive.makemyrun.geo.Location> waypoints = getCircle(centerLocation, loc);
 		for (com.pifive.makemyrun.geo.Location waypoint : waypoints) {
 			stringBuilder.append(waypoint.getLat());
 			stringBuilder.append(",");
@@ -80,6 +72,59 @@ public abstract class RouteGenerator {
 		stringBuilder.append("&avoid=highways&sensor=true&mode=walking");
 		System.out.println(stringBuilder.toString());
 		return stringBuilder.toString();
+	}
+	
+	private static String generateLinear(final com.pifive.makemyrun.geo.Location aLoc,
+										 final com.pifive.makemyrun.geo.Location bLoc) {
+		
+		double longDiff = (bLoc.getLng() - aLoc.getLng());
+		com.pifive.makemyrun.geo.Location location;
+		com.pifive.makemyrun.geo.Location wLoc = aLoc.getLng() < bLoc.getLng() ? aLoc : bLoc;
+		com.pifive.makemyrun.geo.Location eLoc = aLoc.getLng() < bLoc.getLng() ? bLoc : aLoc;
+		
+		if (longDiff == 0.0) {
+			wLoc = aLoc.getLng() < bLoc.getLng() ? aLoc : bLoc;
+			eLoc = aLoc.getLng() < bLoc.getLng() ? bLoc : aLoc;
+			
+			double k = (eLoc.getLat() - wLoc.getLat()) / longDiff;
+			double m = wLoc.getLat() - wLoc.getLng() * k;
+			
+			double halfLong = (eLoc.getLat() - wLoc.getLat()) / 2;
+			double halfLat = halfLong*k + m;
+			
+			location = new com.pifive.makemyrun.geo.Location(halfLat, halfLong);
+			
+		} else {
+			wLoc = aLoc;
+			eLoc = bLoc;
+			location = new com.pifive.makemyrun.geo.Location(aLoc.getLat(), (aLoc.getLng() - bLoc.getLng()) / 2);
+		}
+		
+		StringBuilder stringBuilder = new StringBuilder(startOfQuery(aLoc, bLoc));
+		stringBuilder.append(location.getLat());
+		stringBuilder.append(",");
+		stringBuilder.append(location.getLng());
+		
+		stringBuilder.append("&avoid=highways&sensor=true&mode=walking");
+		System.out.println(stringBuilder.toString());
+		return stringBuilder.toString();
+		
+	}
+	
+	private static String startOfQuery(final com.pifive.makemyrun.geo.Location aLoc,
+			 						   final com.pifive.makemyrun.geo.Location bLoc) {
+			// build the beginning of the google query
+			StringBuilder stringBuilder = new StringBuilder("origin=");
+			stringBuilder.append(aLoc.getLat());
+			stringBuilder.append(",");
+			stringBuilder.append(aLoc.getLng());
+			stringBuilder.append("&destination=");
+			stringBuilder.append(bLoc.getLat());
+			stringBuilder.append(",");
+			stringBuilder.append(bLoc.getLng());
+			stringBuilder.append("&waypoints=optimize:true|");
+			
+			return stringBuilder.toString();
 	}
 	
 	/**
@@ -101,13 +146,14 @@ public abstract class RouteGenerator {
 		System.out.println("distance " + sLoc.distanceTo(eLoc));
 		
 		if(sLoc.distanceTo(eLoc) < 100.0) {
-			return generateRoute(new com.pifive.makemyrun.geo.Location
-					(sLoc.getLatitude(), sLoc.getLongitude()),
-					new com.pifive.makemyrun.geo.Location
+			return generateCircle(new com.pifive.makemyrun.geo.Location
 					(sLoc.getLatitude(), sLoc.getLongitude()));
 			
 		} else {
-			return null;
+			return generateLinear(new com.pifive.makemyrun.geo.Location
+					(sLoc.getLatitude(), sLoc.getLongitude()),
+					new com.pifive.makemyrun.geo.Location
+					(eLoc.getLatitude(), eLoc.getLongitude()));
 		}
 	}
 	
