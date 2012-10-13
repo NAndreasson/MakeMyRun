@@ -177,8 +177,8 @@ public class MainActivity extends MapActivity implements Observer {
 			// send the current location to routegenerator
 			Location currentLocation = getCurrentLocation();
 			String query = RouteGenerator.generateRoute(
-							new com.pifive.makemyrun.geo.Location(currentLocation.getLatitude(), currentLocation.getLongitude()),
-							new com.pifive.makemyrun.geo.Location(currentLocation.getLatitude(), currentLocation.getLongitude()));
+							new GeoPoint((int)(currentLocation.getLatitude() * 1E6), (int)(currentLocation.getLongitude() * 1E6)),
+							new GeoPoint((int)(currentLocation.getLatitude() * 1E6), (int)(currentLocation.getLongitude() * 1E6)));
 			startDirectionsTask(query);
 			
 		} catch (RuntimeException e) {

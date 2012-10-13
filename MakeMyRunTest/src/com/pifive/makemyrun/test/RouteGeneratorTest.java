@@ -24,11 +24,9 @@ package com.pifive.makemyrun.test;
 import java.util.Iterator;
 import java.util.List;
 
-import android.content.Context;
-import android.location.LocationManager;
 import android.test.AndroidTestCase;
 
-import com.pifive.makemyrun.NoLocationException;
+import com.google.android.maps.GeoPoint;
 import com.pifive.makemyrun.RouteGenerator;
 import com.pifive.makemyrun.geo.Location;
 
@@ -41,11 +39,25 @@ public class RouteGeneratorTest extends AndroidTestCase {
 	 * Passes is string is returned
 	 */
 	public void testGenerateRoute() {
-		String route = RouteGenerator.generateRoute(new Location(57.7000, 12.0000), new Location(57.7000, 12.0000));
-		assert(route != null);
+		String route = RouteGenerator.generateRoute(new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6)), 
+											new GeoPoint((int)(57.7005 * 1E6), (int)(12.0005 * 1E6)));
+		String route2 = RouteGenerator.generateRoute(new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6)), 
+											new GeoPoint((int)(57.7010 * 1E6), (int)(12.0010 * 1E6)));
+		
+		assertNotNull(route);
+		assertNull(route2);
 		assert(route.contains("origin="));
 		assert(route.contains("&destination="));
 		assert(route.contains("&avoid=highways&sensor=true&mode=walking"));
+		
+	}
+	
+	/**
+	 * Passes if too close distance returns null
+	 */
+	public void testGetMixed() {
+		Location aLoc = new Location(57.7000, 12.0000);
+		Location bLoc = new Location(57.7001, 12.0001);
 	}
 	
 	/**
