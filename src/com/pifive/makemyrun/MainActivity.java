@@ -21,6 +21,7 @@
 
 package com.pifive.makemyrun;
 
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -150,7 +151,9 @@ public class MainActivity extends MapActivity implements Observer {
     private void cleanUpRun() {
     	mapDrawer.clearDrawer();
     	mapView.invalidate();
-    	timer.stop();
+    	if (timer instanceof Timer) {
+    		timer.stop();    		
+    	}
     }
     
     
@@ -254,22 +257,20 @@ public class MainActivity extends MapActivity implements Observer {
 		// Get location manager from system
 		LocationManager locManager = 
 				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-	
-		// Fetch last known location to provide as best guess
-		LocationProvider provider = locManager.getProvider(LocationManager.GPS_PROVIDER);
-		android.location.Location bestGuess = 
-					locManager.getLastKnownLocation(provider.getName());
-		
+
 		// Construct our location artist
 		CurrentLocationArtist locationArtist = new CurrentLocationArtist(mapDrawer);
 		mapDrawer.addArtist(locationArtist);
 		
-		// Make it aware of location updates every seconds
-		locManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER,
-				0, 
-				0, 
-				locationArtist);
+		// Make it aware of location updates from all providers
+		List<String> providers = locManager.getAllProviders();
+		for (String provider : providers) {
+			locManager.requestLocationUpdates(
+					provider,
+					0, 
+					0, 
+					locationArtist);
+		}
 	}
 	
 	/**
