@@ -74,43 +74,90 @@ public abstract class RouteGenerator {
 		return stringBuilder.toString();
 	}
 	
+	/**
+	 * Returns a string containing a google query with generated waypoints
+	 * @param aLoc Starting location
+	 * @param bLoc Finish location
+	 * @return a google query with which you can query google for more steps
+	 */
+	
 	private static String generateLinear(final com.pifive.makemyrun.geo.Location aLoc,
 										 final com.pifive.makemyrun.geo.Location bLoc) {
 		
 		double longDiff = (bLoc.getLng() - aLoc.getLng());
-		com.pifive.makemyrun.geo.Location location;
-		com.pifive.makemyrun.geo.Location wLoc = aLoc.getLng() < bLoc.getLng() ? aLoc : bLoc;
-		com.pifive.makemyrun.geo.Location eLoc = aLoc.getLng() < bLoc.getLng() ? bLoc : aLoc;
+		List<com.pifive.makemyrun.geo.Location> locations = new ArrayList<com.pifive.makemyrun.geo.Location>();
 		
-		if (longDiff == 0.0) {
-			wLoc = aLoc.getLng() < bLoc.getLng() ? aLoc : bLoc;
-			eLoc = aLoc.getLng() < bLoc.getLng() ? bLoc : aLoc;
+		if (longDiff != 0.0) {
+			double northLat = aLoc.getLat() > bLoc.getLat() ? aLoc.getLat() : aLoc.getLat();
+			double southLat = aLoc.getLat() > bLoc.getLat() ? bLoc.getLat() : aLoc.getLat();
+			double westLong = aLoc.getLng() < bLoc.getLng() ? aLoc.getLng() : bLoc.getLng();
+			double eastLong = aLoc.getLng() < bLoc.getLng() ? bLoc.getLng() : aLoc.getLng();
 			
-			double k = (eLoc.getLat() - wLoc.getLat()) / longDiff;
-			double m = wLoc.getLat() - wLoc.getLng() * k;
+			if ((northLat-southLat)/(eastLong-westLong) < 0.2) {
+				double diff = (northLat-southLat);
+				for(int i=0; i<2; i++) {
+					double randLat = diff * (new Random()).nextDouble() + southLat + 
+							((new Random()).nextBoolean() ? -1.0 : 1.0) * diff;
+					double randLong = (eastLong - westLong) * (new Random()).nextDouble() + westLong;
+					locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+				}
+				
+			} else if ((eastLong-westLong)/(northLat-southLat) < 0.2) {
+				
+				double diff = (eastLong-westLong);
+				for(int i=0; i<2; i++) {
+					double randLong = diff * (new Random()).nextDouble() + westLong + 
+							((new Random()).nextBoolean() ? -1.0 : 1.0) * diff;
+					double randLat = (northLat - southLat) * (new Random()).nextDouble() + southLat;
+					locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+				}
+				
+			} else {
+				for(int i=0; i<2; i++) {
+					double randLat = (northLat - southLat) * (new Random()).nextDouble() + southLat;
+					double randLong = (eastLong - westLong) * (new Random()).nextDouble() + westLong;
+					locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+				}
+				
+			}
 			
-			double halfLong = (eLoc.getLat() - wLoc.getLat()) / 2;
-			double halfLat = halfLong*k + m;
-			
-			location = new com.pifive.makemyrun.geo.Location(halfLat, halfLong);
 			
 		} else {
-			wLoc = aLoc;
-			eLoc = bLoc;
-			location = new com.pifive.makemyrun.geo.Location(aLoc.getLat(), (aLoc.getLng() - bLoc.getLng()) / 2);
+			double northLat = aLoc.getLat() > bLoc.getLat() ? aLoc.getLat() : bLoc.getLat();
+			double southLat = aLoc.getLat() > bLoc.getLat() ? bLoc.getLat() : aLoc.getLat();
+			double westLong = aLoc.getLat();
+			double eastLong = aLoc.getLat();
+			
+			for(int i=0; i<2; i++) {
+				double randLat = ((new Random()).nextBoolean() ? -1.0 : 1.0) * 0.0005 
+												* (new Random()).nextDouble() + southLat;
+				double randLong = (eastLong - westLong) * (new Random()).nextDouble() + westLong;
+				locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+			}
+			
 		}
 		
 		StringBuilder stringBuilder = new StringBuilder(startOfQuery(aLoc, bLoc));
-		stringBuilder.append(location.getLat());
-		stringBuilder.append(",");
-		stringBuilder.append(location.getLng());
-		
+		for (com.pifive.makemyrun.geo.Location waypoint : locations) {
+			stringBuilder.append(waypoint.getLat());
+			stringBuilder.append(",");
+			stringBuilder.append(waypoint.getLng());
+			stringBuilder.append("|");
+		}
+		// remove the last |
+		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 		stringBuilder.append("&avoid=highways&sensor=true&mode=walking");
 		System.out.println(stringBuilder.toString());
 		return stringBuilder.toString();
 		
 	}
 	
+	/**
+	 * 
+	 * @param aLoc
+	 * @param bLoc
+	 * @return
+	 */
 	private static String startOfQuery(final com.pifive.makemyrun.geo.Location aLoc,
 			 						   final com.pifive.makemyrun.geo.Location bLoc) {
 			// build the beginning of the google query
