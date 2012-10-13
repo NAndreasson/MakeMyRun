@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.location.Criteria;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -40,11 +41,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
-import android.widget.Toast;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.pifive.makemyrun.database.MMRDbAdapter;
 import com.pifive.makemyrun.drawing.CurrentLocationArtist;
 import com.pifive.makemyrun.drawing.MapDrawer;
 import com.pifive.makemyrun.drawing.RouteArtist;
@@ -54,12 +57,13 @@ public class MainActivity extends MapActivity implements Observer {
 	private View overlay;
 	private ViewStub viewStub;
 	private ViewStub runViewStub;
-	private Button stopRunButton;
 	private boolean inCatchBackState = false;
 	private MapDrawer mapDrawer;
 	private DistanceTracker distanceTracker;
     private Timer timer;
 	private LoadingStatus loadingStatus;
+	private MMRDbAdapter db;
+	private Route currentRoute;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,7 @@ public class MainActivity extends MapActivity implements Observer {
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         overlay = findViewById(R.id.overlayMenu);
         mapDrawer = new MapDrawer(mapView);
+        db = new MMRDbAdapter(getBaseContext());
         updatePosition();
         showStartScreen();
     }
@@ -140,15 +145,6 @@ public class MainActivity extends MapActivity implements Observer {
     private void startRun() {
     	viewStub.setVisibility(View.GONE);
     	runViewStub.setVisibility(View.VISIBLE);
-
-        stopRunButton = (Button) findViewById(R.id.stoprunbutton);
-    	stopRunButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View arg0) {
-				cleanUpRun();
-				stepBackwards();
-			}
-		});
     	
     	// Start to track the distance and sets this activity to recieve distance updates
     	trackDistance();
@@ -161,15 +157,6 @@ public class MainActivity extends MapActivity implements Observer {
         mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
-    }
-    
-    /**
-     * To be called when a generated route is to be disposed of.
-     */
-    private void cleanUpRun() {
-    	mapDrawer.clearDrawer();
-    	mapView.invalidate();
-    	timer.stop();
     }
     
     /**
@@ -190,7 +177,7 @@ public class MainActivity extends MapActivity implements Observer {
     @Override
     public void onBackPressed() {
     	if(inCatchBackState) {
-    		cleanUpRun();
+    		stopRun(false);
     		stepBackwards();
     	} else {
     		finish();
@@ -251,17 +238,17 @@ public class MainActivity extends MapActivity implements Observer {
         JSONObject googleRoute = directionsTask.simpleGet(query);
         
         try {
-			Route route = new Route(googleRoute);
+			currentRoute = new Route(googleRoute);
 
 			// Center on our starting point
-			com.pifive.makemyrun.geo.Location location = route.getWaypoints().get(0);
+			com.pifive.makemyrun.geo.Location location = currentRoute.getWaypoints().get(0);
 			GeoPoint geoPoint = new GeoPoint(
 									location.getMicroLat(),
 									location.getMicroLng());
 			mapView.getController().animateTo(geoPoint);
 			
 			// Add an artist to draw our route
-			RouteArtist routeArtist = new RouteArtist(route.getWaypoints());
+			RouteArtist routeArtist = new RouteArtist(currentRoute.getWaypoints());
 			mapDrawer.addArtist(routeArtist);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -323,5 +310,27 @@ public class MainActivity extends MapActivity implements Observer {
 	public void viewHistory(View v) {
 		Intent intent = new Intent(this, HistoryActivity.class);
 		startActivity(intent);
+	}
+	
+	public void onStopAction(View v) {
+		Log.d("MMR", "HELLOOOOOO MFS");
+		boolean completed = Boolean.valueOf(""+v.getTag());
+		stopRun(completed);
+	}
+	
+	public void stopRun(boolean completed) {
+		
+		db.createRun(currentRoute.getPolyline(), timer.getStartTime(), currentRoute.getDistance(), completed);
+		Cursor c = db.fetchAllRuns();
+		Log.d("MMR", ""+c.getCount());
+		cleanUp();
+	}
+	
+	public void cleanUp() {
+    	mapDrawer.clearDrawer();
+    	mapView.invalidate();
+    	if (timer instanceof Timer) {
+    		timer.stop();    		
+    	}
 	}
 }

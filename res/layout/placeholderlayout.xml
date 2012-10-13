@@ -14,7 +14,8 @@
 		android:background="#FFFFFF"
 		android:layout_gravity="bottom"
         android:text="@string/stop_run_text"
-        android:padding="5dp" />
+        android:padding="5dp"
+        android:onClick="onStopAction" />
 
     <TextView
         android:id="@+id/distancetext"
