@@ -320,7 +320,7 @@ public class MainActivity extends MapActivity implements Observer {
 	
 	public void stopRun(boolean completed) {
 		
-		db.createRun(currentRoute.getPolyline(), timer.getStartTime(), currentRoute.getDistance(), completed);
+		db.createRun(currentRoute.getPolyline(), timer.getStartTime(), currentRoute.getDistance(), 123, completed);
 		Cursor c = db.fetchAllRuns();
 		Log.d("MMR", ""+c.getCount());
 		cleanUp();
