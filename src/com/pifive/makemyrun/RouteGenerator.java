@@ -80,6 +80,12 @@ public abstract class RouteGenerator {
 		return stringBuilder.toString();
 	}
 	
+	public static void generateRoute(Location aLoc, Location bLoc) {
+		// Distance between locations
+		double distance = Math.sqrt(Math.pow(aLoc.getLatitude() - bLoc.getLatitude(), 2) 
+				+ Math.pow(aLoc.getLongitude() - bLoc.getLongitude(), 2));
+	}
+	
 	/**
 	 * Generates a location with coordinates 0.003 - 0.007 latitude and 
 	 * longitude from the passed location
@@ -90,8 +96,11 @@ public abstract class RouteGenerator {
 		// create another location approx 0.003 - 0.007 from the current
 		Random random = new Random();
 		double randomNumber = 0.003 + random.nextDouble() * 0.004;
-		double centerLatitude = location.getLat() + randomNumber;
-		double centerLongitude = location.getLng() + randomNumber;
+		double latSign = random.nextBoolean() ? 1.0 : -1.0;
+		double longSign = random.nextBoolean() ? 1.0 : -1.0;
+		
+		double centerLatitude = location.getLat() + latSign*randomNumber;
+		double centerLongitude = location.getLng() + longSign*randomNumber;
 		
 		return new com.pifive.makemyrun.geo.Location(centerLatitude, centerLongitude);
 	}

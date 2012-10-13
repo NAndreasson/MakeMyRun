@@ -70,7 +70,9 @@ public class MainActivity extends MapActivity implements Observer {
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         overlay = findViewById(R.id.overlayMenu);
         mapDrawer = new MapDrawer(mapView);
+        
         showStartScreen();
+        displayCurrentLocation();
     }
     
     /**
@@ -177,7 +179,7 @@ public class MainActivity extends MapActivity implements Observer {
 			String query = RouteGenerator.generateRoute(
 							new com.pifive.makemyrun.geo.Location(currentLocation.getLatitude(), currentLocation.getLongitude()));
 			startDirectionsTask(query);
-			displayCurrentLocation();
+			
 		} catch (RuntimeException e) {
 			loadingStatus.remove();
 			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
