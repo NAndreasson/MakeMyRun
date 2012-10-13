@@ -50,32 +50,16 @@ public class RouteGeneratorTest extends AndroidTestCase {
 	
 	/**
 	 * Passes if:
-	 * 2 � points � 10
+	 * Returns 2 waypoints
 	 * Each returned value doesn't equal the one before
-	 * Number of returned PiLocations equals the number of points sent in
 	 */
 	public void testGetCircle() {
 		Location center = new Location(57.7000, 12.000);
 		Location start = new Location(57.6990, 11.990);
 		
-		try {
-			@SuppressWarnings("unused")
-			List<Location> locationsOne = RouteGenerator.getCircle(center, start, -34); // Exception
-			fail("No exception");
-		} catch (IllegalArgumentException e) {
-			// ...
-		}
+		List<Location> workingLocations = RouteGenerator.getCircle(center, start);
 		
-		try {
-			List<Location> locationsTwo = RouteGenerator.getCircle(center, start, 15); // Exception
-			fail("No exception");
-		} catch(IllegalArgumentException e) {	
-			// ...
-		}
-		
-		List<Location> workingLocations = RouteGenerator.getCircle(center, start, 10);
-		
-		assert(workingLocations.size() == 10);
+		assert(workingLocations.size() == 2);
 		
 		Location lastLocation = null;
 		Location presentLocation = null;

@@ -62,11 +62,11 @@ public abstract class RouteGenerator {
 		stringBuilder.append(endLoc.getLat());
 		stringBuilder.append(",");
 		stringBuilder.append(endLoc.getLng());
-		stringBuilder.append("&waypoints=");
-		
+		stringBuilder.append("&waypoints=optimize:true|");
+
 		// get the centerpoint of the 'circle'
 		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(startLoc);
-		List<com.pifive.makemyrun.geo.Location> waypoints = getCircle(centerLocation, startLoc, 6);
+		List<com.pifive.makemyrun.geo.Location> waypoints = getCircle(centerLocation, startLoc);
 		for (com.pifive.makemyrun.geo.Location waypoint : waypoints) {
 			stringBuilder.append(waypoint.getLat());
 			stringBuilder.append(",");
@@ -94,15 +94,15 @@ public abstract class RouteGenerator {
 	
 	
 	/**
-	 * Generates a location with coordinates 0.003 - 0.007 latitude and 
+	 * Generates a location with coordinates 0.005 - 0.010 latitude and 
 	 * longitude from the passed location
 	 * @param location
 	 * @return
 	 */
 	public static com.pifive.makemyrun.geo.Location generateRandomLocation(com.pifive.makemyrun.geo.Location location) {
-		// create another location approx 0.003 - 0.007 from the current
+		// create another location approx 0.005 - 0.010 from the current
 		Random random = new Random();
-		double randomNumber = 0.003 + random.nextDouble() * 0.004;
+		double randomNumber = 0.005 + random.nextDouble() * 0.010;
 		double latSign = random.nextBoolean() ? 1.0 : -1.0;
 		double longSign = random.nextBoolean() ? 1.0 : -1.0;
 		
@@ -113,26 +113,24 @@ public abstract class RouteGenerator {
 	}
 	
 	/**
-	 * Returns X number of points in a circle, all with the same distance from center.
+	 * Returns a circle-shaped run
+	 * @param center
+	 * @param start
+	 * @return
 	 */
 	public static List<com.pifive.makemyrun.geo.Location> getCircle(com.pifive.makemyrun.geo.Location center, 
-			com.pifive.makemyrun.geo.Location start, int points) {
-		if (points < 2) {
-			throw new IllegalArgumentException("At least two points are needed");
-		} else if (points > 10) {
-			throw new IllegalArgumentException("No more than 10 points");
-		}
+			com.pifive.makemyrun.geo.Location start) {
 		
 		List<com.pifive.makemyrun.geo.Location> locations = new ArrayList<com.pifive.makemyrun.geo.Location>();
-		double angle = (Math.PI * 2) / (double) points;
+		double angle = (Math.PI * 2) / 3;
 		double longDiff = start.getLng() - center.getLng();
 		double latDiff = start.getLat() - center.getLat();
 		double radius = Math.sqrt(Math.pow(longDiff, 2) + Math.pow(latDiff, 2));
 		
-		for(int i=1; i<points; i++) {
-			locations.add(new com.pifive.makemyrun.geo.Location(center.getLat() + Math.cos(angle*i)*radius, 
-									   center.getLng() + Math.sin(angle*i)*radius));
-		}
+		locations.add(new com.pifive.makemyrun.geo.Location(center.getLat() + Math.cos(angle)*radius, 
+									   center.getLng() + Math.sin(angle)*radius));
+		locations.add(new com.pifive.makemyrun.geo.Location(center.getLat() + Math.cos(angle*2)*radius, 
+				   center.getLng() + Math.sin(angle*2)*radius));
 		
 		return locations;
 	}
