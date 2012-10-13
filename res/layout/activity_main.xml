@@ -9,13 +9,22 @@
         android:layout_height="match_parent"
         android:apiKey="0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw" />
 
+    <ViewStub 
+        android:id="@+id/mainMenuStub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:layout_centerInParent="true"
+        android:inflatedId="@+layout/main_menu_layout"
+        android:layout="@layout/main_menu_layout"
+        android:layout_margin="25dp" />
+    
 	<ViewStub
         android:id="@+id/postGeneratedStub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:inflatedId="@+id/runbutton"
-        android:layout="@layout/runbutton" />
+        android:inflatedId="@+id/pre_run_layout"
+        android:layout="@layout/pre_run_layout" />
 	
 	<ViewStub
 	    android:id="@+id/runningInterface"

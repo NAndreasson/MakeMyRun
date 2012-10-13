@@ -54,10 +54,8 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 * @param initialGuess Our best guess at current location atm.
 	 * @param drawer The Drawer we will force to redraw on changes.
 	 */
-	public CurrentLocationArtist(Location initialGuess, Drawer drawer) {
+	public CurrentLocationArtist(Drawer drawer) {
 		this.drawer = drawer;
-		myLocation = new Location(initialGuess);
-		myGeoPoint = toGeoPoint(myLocation);
 	}
 
 	/**
@@ -96,7 +94,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
-		if (!shadow) {
+		if (!shadow && myGeoPoint instanceof GeoPoint) {
 			mapView.getProjection().toPixels(myGeoPoint, point);
 			canvas.drawCircle(point.x, point.y, 
 								locationSize*mapView.getZoomLevel(), paint);
@@ -110,7 +108,11 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void onLocationChanged(Location location) {
-		if (myLocation.distanceTo(location) > location.getAccuracy()) {				
+		Log.d("MMR", "New location at: " + location);
+		
+		if (!(myLocation instanceof Location) || 
+				myLocation.distanceTo(location) > location.getAccuracy()) {				
+			
 			myLocation = location;
 	
 			// Update the actual location we're drawing each frame

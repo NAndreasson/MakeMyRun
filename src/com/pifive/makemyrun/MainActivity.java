@@ -21,6 +21,7 @@
 
 package com.pifive.makemyrun;
 
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -55,9 +56,9 @@ import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class MainActivity extends MapActivity implements Observer {
 	private MapView mapView;
-	private View overlay;
 	private ViewStub viewStub;
 	private ViewStub runViewStub;
+	private ViewStub mainMenuStub;
 	private Button stopRunButton;
 	private boolean inCatchBackState = false;
 	private MapDrawer mapDrawer;
@@ -79,7 +80,7 @@ public class MainActivity extends MapActivity implements Observer {
         viewStub = (ViewStub) findViewById(R.id.postGeneratedStub);
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         startEndViewStub = (ViewStub) findViewById(R.id.startEndPointButtons);
-        overlay = findViewById(R.id.overlayMenu);
+        mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
         mapDrawer = new MapDrawer(mapView);
         
         showStartScreen();
@@ -90,9 +91,7 @@ public class MainActivity extends MapActivity implements Observer {
      * Shows the start screen (entry point for application)
      */
     private void showStartScreen() {
-        mapView.setBuiltInZoomControls(true);
-        overlay.setVisibility(View.VISIBLE);
-     
+        mainMenuStub.setVisibility(View.VISIBLE);     
     }
     
     private Location getCurrentLocation() {
@@ -161,7 +160,9 @@ public class MainActivity extends MapActivity implements Observer {
     private void cleanUpRun() {
     	mapDrawer.clearDrawer();
     	mapView.invalidate();
-    	timer.stop();
+    	if (timer instanceof Timer) {
+    		timer.stop();    		
+    	}
     }
     
     
@@ -179,7 +180,7 @@ public class MainActivity extends MapActivity implements Observer {
     }
     
     public void chooseStartEndPoints(View v) {    	
-    	overlay.setVisibility(View.GONE);
+    	mainMenuStub.setVisibility(View.GONE);
     	startEndViewStub.setVisibility(View.VISIBLE);
     	Location currentLocation = getCurrentLocation(); 
 
@@ -241,7 +242,7 @@ public class MainActivity extends MapActivity implements Observer {
 	}
 	
     public void generateRoute(View v) {
-    	overlay.setVisibility(View.GONE);
+    	mainMenuStub.setVisibility(View.GONE);
 		loadingStatus = new LoadingStatus(mapView.getContext());
 		try {
 			String query = RouteGenerator.generateRoute(
@@ -257,8 +258,8 @@ public class MainActivity extends MapActivity implements Observer {
 		
 		showMiddleScreen();
 		
-		View overlay = findViewById(R.id.overlayMenu);
-		overlay.setVisibility(View.GONE);
+//		View overlay = findViewById(R.id.overlayMenu);
+//		overlay.setVisibility(View.GONE);
 		mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
@@ -325,23 +326,20 @@ public class MainActivity extends MapActivity implements Observer {
 		// Get location manager from system
 		LocationManager locManager = 
 				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-	
-		// Fetch last known location to provide as best guess
-		LocationProvider provider = locManager.getProvider(LocationManager.GPS_PROVIDER);
-		android.location.Location bestGuess = 
-					locManager.getLastKnownLocation(provider.getName());
-		
+
 		// Construct our location artist
-		CurrentLocationArtist locationArtist = 
-					new CurrentLocationArtist(bestGuess, mapDrawer);
+		CurrentLocationArtist locationArtist = new CurrentLocationArtist(mapDrawer);
 		mapDrawer.addArtist(locationArtist);
 		
-		// Make it aware of location updates every seconds
-		locManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER,
-				0, 
-				0, 
-				locationArtist);
+		// Make it aware of location updates from all providers
+		List<String> providers = locManager.getAllProviders();
+		for (String provider : providers) {
+			locManager.requestLocationUpdates(
+					provider,
+					0, 
+					0, 
+					locationArtist);
+		}
 	}
 	
 	/**
