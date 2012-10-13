@@ -327,8 +327,9 @@ public class MainActivity extends MapActivity implements Observer {
 				(int) distanceTracker.getTotalDistanceInMeters(), 
 				currentRoute.getDistance(), 
 				completed);
-		
+
 		db.close();
+
 		cleanUp();
 	}
 	

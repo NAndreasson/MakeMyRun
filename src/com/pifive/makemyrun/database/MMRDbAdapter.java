@@ -260,7 +260,7 @@ public class MMRDbAdapter {
 				+ DATABASE_TABLE_RUNS + " INNER JOIN " + DATABASE_TABLE_ROUTES
 				+ " ON " + DATABASE_TABLE_RUNS + "." + KEY_RUN_ROUTE + "="
 				+ DATABASE_TABLE_ROUTES + "." + KEY_ROUTE_ID + " WHERE "
-				+ DATABASE_TABLE_RUNS + "." + KEY_RUN_ROUTE + "=" + rowId + ";";
+				+ DATABASE_TABLE_RUNS + "." + KEY_RUN_ID + "=" + rowId + ";";
 		return mmrDb.rawQuery(query, null);
 	}
 
