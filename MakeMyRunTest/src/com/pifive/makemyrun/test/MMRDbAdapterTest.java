@@ -55,6 +55,31 @@ public class MMRDbAdapterTest extends android.test.AndroidTestCase {
 		testAdapter.createRun("aabbccddeeff", 123123123, 100, true);
 		Cursor cursor = testAdapter.fetchAllRuns();
 		assertTrue(cursor.getCount() > 0);
-		
+		assertEquals(cursor.getColumnCount(), 6);
+	}
+
+	public void testFetchAllRoutes() {
+		testAdapter.createRun("aabbccddeeff", 123123123, 100, true);
+		Cursor cursor = testAdapter.fetchAllRoutes();
+		assertTrue(cursor.getCount() > 0);
+		assertEquals(cursor.getColumnCount(), 2);
+	}
+
+	public void testFetchRoute() {
+		String testPoly = "abc";
+		int runId = testAdapter.createRun(testPoly, 321, 1, false);
+		Cursor cursorRun = testAdapter.fetchRun(runId);
+		cursorRun.moveToLast();
+		int routeId = cursorRun.getInt(1);
+		Cursor cursorRoute = testAdapter.fetchRoute(routeId);
+		cursorRoute.moveToLast();
+		assertEquals(routeId, cursorRoute.getInt(0));
+		assertEquals(testPoly, cursorRoute.getString(1));
+	}
+	
+	public void testFetchAllRunsJoinRoutes(){
+		testAdapter.createRun("aabbccddeeff", 123123123, 100, true);
+		Cursor cursor = testAdapter.fetchAllRunsJoinRoutes();
+		assertEquals(cursor.getColumnCount(), 7);
 	}
 }

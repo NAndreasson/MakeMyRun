@@ -214,11 +214,14 @@ public class MMRDbAdapter {
 	}
 
 	/**
-	 * 
+	 * Selected table will look like :
+	 * 	runId | routeId | dateStart | dateEnd | distance | wasCompleted | polyline
 	 * @return All runs along with corresponding route id and polyline
 	 */
 	public Cursor fetchAllRunsJoinRoutes() {
-		String query = "SELECT * FROM " + DATABASE_TABLE_RUNS + " INNER JOIN "
+		String allExceptRouteId = DATABASE_TABLE_RUNS+"."+KEY_RUN_ID+","+KEY_RUN_ROUTE+","+KEY_RUN_DATE_STARTED
+				+","+KEY_RUN_DATE_COMPLETED+","+KEY_RUN_DISTANCE_RAN+","+KEY_RUN_COMPLETED+","+KEY_ROUTE_POLYLINE;
+		String query = "SELECT "+allExceptRouteId+" FROM " + DATABASE_TABLE_RUNS + " INNER JOIN "
 				+ DATABASE_TABLE_ROUTES + " ON " + DATABASE_TABLE_RUNS + "."
 				+ KEY_RUN_ROUTE + "=" + DATABASE_TABLE_ROUTES + "."
 				+ KEY_ROUTE_ID + ";";
@@ -249,7 +252,7 @@ public class MMRDbAdapter {
 	 */
 	public Cursor fetchAllRuns() {
 		return mmrDb.query(DATABASE_TABLE_RUNS, new String[] { KEY_RUN_ID,
-				KEY_RUN_DATE_STARTED, KEY_RUN_DATE_COMPLETED,
+				KEY_RUN_ROUTE, KEY_RUN_DATE_STARTED, KEY_RUN_DATE_COMPLETED,
 				KEY_RUN_DISTANCE_RAN, KEY_RUN_COMPLETED }, null, null, null,
 				null, KEY_RUN_DATE_COMPLETED + " DESC");
 	}
