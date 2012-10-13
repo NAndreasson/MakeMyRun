@@ -319,4 +319,9 @@ public class MainActivity extends MapActivity implements Observer {
 		TextView distance = (TextView) findViewById(R.id.distancetext);
 		distance.setText(Math.round(distanceTracker.getTotalDistanceInMeters()) + " m");
 	}
+	
+	public void viewHistory(View v) {
+		Intent intent = new Intent(this, HistoryActivity.class);
+		startActivity(intent);
+	}
 }

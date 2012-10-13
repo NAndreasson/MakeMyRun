@@ -23,12 +23,12 @@ public class MMRDbAdapter {
 
 	// Route table
 	private static final String DATABASE_TABLE_ROUTES = "routes";
-	private static final String KEY_ROUTE_ID = "id";
+	private static final String KEY_ROUTE_ID = "_id";
 	private static final String KEY_ROUTE_POLYLINE = "polyline";
 
 	// Run table
 	private static final String DATABASE_TABLE_RUNS = "runs";
-	private static final String KEY_RUN_ID = "id";
+	private static final String KEY_RUN_ID = "_id";
 	private static final String KEY_RUN_ROUTE = "routeId";
 	private static final String KEY_RUN_DATE_STARTED = "dateStart";
 	private static final String KEY_RUN_DATE_COMPLETED = "dateEnd";
@@ -51,7 +51,7 @@ public class MMRDbAdapter {
 			+ KEY_RUN_DISTANCE_RAN + " integer, " + KEY_RUN_COMPLETED
 			+ " integer);";
 
-	private static final String DATABASE_CREATE_ROUTES = "create table routes( id integer primary key autoincrement,"
+	private static final String DATABASE_CREATE_ROUTES = "create table routes( _id integer primary key autoincrement,"
 			+ "polyline string not null);";
 
 	private final Context context;
@@ -251,7 +251,7 @@ public class MMRDbAdapter {
 		return mmrDb.query(DATABASE_TABLE_RUNS, new String[] { KEY_RUN_ID,
 				KEY_RUN_DATE_STARTED, KEY_RUN_DATE_COMPLETED,
 				KEY_RUN_DISTANCE_RAN, KEY_RUN_COMPLETED }, null, null, null,
-				null, KEY_RUN_DATE_COMPLETED + "DESC");
+				null, KEY_RUN_DATE_COMPLETED + " DESC");
 	}
 
 	/**

@@ -17,5 +17,6 @@
     <string name="directions_finished_message">Got directions!</string>
     <string name="directions_failed_message">Failed to load data from Google</string>
     <string name="title_activity_history">Running History!</string>
+    <string name="history_btn">View history</string>
 
 </resources>
