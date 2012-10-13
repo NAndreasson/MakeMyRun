@@ -10,6 +10,15 @@ public class TimerTest extends AndroidTestCase {
 	Timer testTimer;
 
 	/**
+	 * 
+	 */
+	public void testGetStartTime(){
+		testTimer = new Timer(new TextView(getContext()));
+		testTimer.start();
+
+		assertTrue(System.currentTimeMillis()/1000 - testTimer.getStartTime() > 0);
+	}
+	/**
 	 * Tests that we can start a timer
 	 */
 	public void testStartAndRun() {
