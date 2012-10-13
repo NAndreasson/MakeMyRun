@@ -9,10 +9,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * The MMRDbAdapter handles a database containing two tables:
- * runs: id | routeId(reference to routes) | dateStart(start date in unix time milliseconds) |
- * dateEnd(end date in unix time milliseconds) | distanceRan | completed (1 = true, 0
- * = false)
+ * The MMRDbAdapter handles a database containing two tables: runs: id |
+ * routeId(reference to routes) | dateStart(start date in unix time
+ * milliseconds) | dateEnd(end date in unix time milliseconds) | distanceRan |
+ * completed (1 = true, 0 = false)
  * 
  * routes: id | polyline (string containing encoded coordinates)
  * 
@@ -22,18 +22,19 @@ import android.util.Log;
 public class MMRDbAdapter {
 
 	// Route table
-	private static final String DATABASE_TABLE_ROUTES = "routes";
-	private static final String KEY_ROUTE_ID = "_id";
-	private static final String KEY_ROUTE_POLYLINE = "polyline";
+	public static final String DATABASE_TABLE_ROUTES = "routes";
+	public static final String KEY_ROUTE_ID = "_id";
+	public static final String KEY_ROUTE_POLYLINE = "polyline";
+	public static final String KEY_ROUTE_DISTANCE = "distance";
 
 	// Run table
-	private static final String DATABASE_TABLE_RUNS = "runs";
-	private static final String KEY_RUN_ID = "_id";
-	private static final String KEY_RUN_ROUTE = "routeId";
-	private static final String KEY_RUN_DATE_STARTED = "dateStart";
-	private static final String KEY_RUN_DATE_COMPLETED = "dateEnd";
-	private static final String KEY_RUN_DISTANCE_RAN = "distanceRan";
-	private static final String KEY_RUN_COMPLETED = "completed";
+	public static final String DATABASE_TABLE_RUNS = "runs";
+	public static final String KEY_RUN_ID = "_id";
+	public static final String KEY_RUN_ROUTE = "routeId";
+	public static final String KEY_RUN_DATE_STARTED = "dateStart";
+	public static final String KEY_RUN_DATE_COMPLETED = "dateEnd";
+	public static final String KEY_RUN_DISTANCE_RAN = "distanceRan";
+	public static final String KEY_RUN_COMPLETED = "completed";
 
 	private static final String TAG = "MMR-"
 			+ MMRDbAdapter.class.getSimpleName();
@@ -51,8 +52,13 @@ public class MMRDbAdapter {
 			+ KEY_RUN_DISTANCE_RAN + " integer, " + KEY_RUN_COMPLETED
 			+ " integer);";
 
-	private static final String DATABASE_CREATE_ROUTES = "create table routes( _id integer primary key autoincrement,"
-			+ "polyline string not null);";
+	private static final String DATABASE_CREATE_ROUTES = "create table routes( "
+			+ KEY_ROUTE_ID
+			+ " integer primary key autoincrement,"
+			+ KEY_ROUTE_POLYLINE
+			+ " string not null, "
+			+ KEY_ROUTE_DISTANCE
+			+ " int);";
 
 	private final Context context;
 
@@ -115,8 +121,8 @@ public class MMRDbAdapter {
 	 */
 	private int getRouteIdFromPolyline(String polyline) {
 		Cursor routeCursor = mmrDb.query(true, DATABASE_TABLE_ROUTES,
-				new String[] { KEY_ROUTE_ID }, KEY_ROUTE_POLYLINE + "= '"+polyline+"'"
-						,null, null, null, null, null);
+				new String[] { KEY_ROUTE_ID }, KEY_ROUTE_POLYLINE + "= '"
+						+ polyline + "'", null, null, null, null, null);
 		if (routeCursor.getCount() <= 0) {
 			return -1;
 		}
@@ -133,16 +139,18 @@ public class MMRDbAdapter {
 	 *            The time when route was started in ms since 00:00 01-01-1970
 	 * @param distanceRan
 	 *            The distance ran
+	 * @param routeDistance
+	 * 			  The route's distance
 	 * @param wasCompleted
 	 *            Completed/Cancelled
 	 * @return the row ID of the newly inserted row, or -1 if an error
 	 */
-	public int createRun(String route, long startTime, long distanceRan,
-			boolean wasCompleted) {
+	public int createRun(String route, long startTime, int distanceRan,
+			int routeDistance, boolean wasCompleted) {
 		int routeId = getRouteIdFromPolyline(route);
 		if (routeId == -1) {
-			routeId = createRoute(route);
-			
+			routeId = createRoute(route, routeDistance);
+
 		}
 		ContentValues values = new ContentValues();
 		values.put(KEY_RUN_ROUTE, routeId);
@@ -150,18 +158,19 @@ public class MMRDbAdapter {
 		values.put(KEY_RUN_DATE_COMPLETED, System.currentTimeMillis());
 		values.put(KEY_RUN_DISTANCE_RAN, distanceRan);
 		values.put(KEY_RUN_COMPLETED, wasCompleted ? 1 : 0);
-		Log.d(TAG, routeId+","+startTime+","+distanceRan);
+		Log.d(TAG, routeId + "," + startTime + "," + distanceRan);
 		return (int) mmrDb.insert(DATABASE_TABLE_RUNS, null, values);
 
 	}
 
-	private int createRoute(String polyline){
+	private int createRoute(String polyline, int distanceRan) {
 		ContentValues routeValue = new ContentValues();
 		routeValue.put(KEY_ROUTE_POLYLINE, polyline);
-		return (int) mmrDb.insert(DATABASE_TABLE_ROUTES, null,
-				routeValue);
-		
+		routeValue.put(KEY_ROUTE_DISTANCE, distanceRan);
+		return (int) mmrDb.insert(DATABASE_TABLE_ROUTES, null, routeValue);
+
 	}
+
 	/**
 	 * Delete the route with the given rowId
 	 * 
@@ -195,7 +204,8 @@ public class MMRDbAdapter {
 	 */
 	public Cursor fetchAllRoutes() {
 		return mmrDb.query(DATABASE_TABLE_ROUTES, new String[] { KEY_ROUTE_ID,
-				KEY_ROUTE_POLYLINE }, null, null, null, null, null);
+				KEY_ROUTE_POLYLINE, KEY_ROUTE_DISTANCE }, null, null, null,
+				null, null);
 	}
 
 	/**
@@ -208,23 +218,27 @@ public class MMRDbAdapter {
 	 */
 	public Cursor fetchRoute(int rowId) throws SQLException {
 		Cursor cursor = mmrDb.query(true, DATABASE_TABLE_ROUTES, new String[] {
-				KEY_ROUTE_ID, KEY_ROUTE_POLYLINE }, KEY_ROUTE_ID + "=" + rowId,
-				null, null, null, null, null);
+				KEY_ROUTE_ID, KEY_ROUTE_POLYLINE, KEY_ROUTE_DISTANCE },
+				KEY_ROUTE_ID + "=" + rowId, null, null, null, null, null);
 		return cursor;
 	}
 
 	/**
-	 * Selected table will look like :
-	 * 	runId | routeId | dateStart | dateEnd | distance | wasCompleted | polyline
+	 * Selected table will look like : runId | routeId | dateStart | dateEnd |
+	 * distance | wasCompleted | polyline
+	 * 
 	 * @return All runs along with corresponding route id and polyline
 	 */
 	public Cursor fetchAllRunsJoinRoutes() {
-		String allExceptRouteId = DATABASE_TABLE_RUNS+"."+KEY_RUN_ID+","+KEY_RUN_ROUTE+","+KEY_RUN_DATE_STARTED
-				+","+KEY_RUN_DATE_COMPLETED+","+KEY_RUN_DISTANCE_RAN+","+KEY_RUN_COMPLETED+","+KEY_ROUTE_POLYLINE;
-		String query = "SELECT "+allExceptRouteId+" FROM " + DATABASE_TABLE_RUNS + " INNER JOIN "
-				+ DATABASE_TABLE_ROUTES + " ON " + DATABASE_TABLE_RUNS + "."
-				+ KEY_RUN_ROUTE + "=" + DATABASE_TABLE_ROUTES + "."
-				+ KEY_ROUTE_ID + ";";
+		String allExceptRouteId = DATABASE_TABLE_RUNS + "." + KEY_RUN_ID + ","
+				+ KEY_RUN_ROUTE + "," + KEY_RUN_DATE_STARTED + ","
+				+ KEY_RUN_DATE_COMPLETED + "," + KEY_RUN_DISTANCE_RAN + ","
+				+ KEY_RUN_COMPLETED + "," + KEY_ROUTE_POLYLINE + ","
+				+ KEY_ROUTE_DISTANCE;
+		String query = "SELECT " + allExceptRouteId + " FROM "
+				+ DATABASE_TABLE_RUNS + " INNER JOIN " + DATABASE_TABLE_ROUTES
+				+ " ON " + DATABASE_TABLE_RUNS + "." + KEY_RUN_ROUTE + "="
+				+ DATABASE_TABLE_ROUTES + "." + KEY_ROUTE_ID + ";";
 
 		return mmrDb.rawQuery(query, null);
 	}
@@ -236,11 +250,17 @@ public class MMRDbAdapter {
 	 * @return a specific run with its corrosponding route id and polyline
 	 */
 	public Cursor fetchRunJoinRoute(int rowId) {
-		String query = "SELECT * FROM " + DATABASE_TABLE_RUNS + " INNER JOIN "
-				+ DATABASE_TABLE_ROUTES + " ON " + DATABASE_TABLE_RUNS + "."
-				+ KEY_RUN_ROUTE + "=" + DATABASE_TABLE_ROUTES + "."
-				+ KEY_ROUTE_ID + " WHERE " + DATABASE_TABLE_RUNS + "."
-				+ KEY_RUN_ROUTE + "=" + rowId + ";";
+		String allExceptRouteId = DATABASE_TABLE_RUNS + "." + KEY_RUN_ID + ","
+				+ KEY_RUN_ROUTE + "," + KEY_RUN_DATE_STARTED + ","
+				+ KEY_RUN_DATE_COMPLETED + "," + KEY_RUN_DISTANCE_RAN + ","
+				+ KEY_RUN_COMPLETED + "," + KEY_ROUTE_POLYLINE + ","
+				+ KEY_ROUTE_DISTANCE;
+
+		String query = "SELECT " + allExceptRouteId + " FROM "
+				+ DATABASE_TABLE_RUNS + " INNER JOIN " + DATABASE_TABLE_ROUTES
+				+ " ON " + DATABASE_TABLE_RUNS + "." + KEY_RUN_ROUTE + "="
+				+ DATABASE_TABLE_ROUTES + "." + KEY_ROUTE_ID + " WHERE "
+				+ DATABASE_TABLE_RUNS + "." + KEY_RUN_ROUTE + "=" + rowId + ";";
 		return mmrDb.rawQuery(query, null);
 	}
 
@@ -267,10 +287,11 @@ public class MMRDbAdapter {
 	 *             if there was an error
 	 */
 	public Cursor fetchRun(int rowId) throws SQLException {
-		Cursor cursor = mmrDb.query(true, DATABASE_TABLE_RUNS, new String[] {
-				KEY_RUN_ID,KEY_RUN_ROUTE, KEY_RUN_DATE_STARTED, KEY_RUN_DATE_COMPLETED,
-				KEY_RUN_DISTANCE_RAN, KEY_RUN_COMPLETED }, KEY_RUN_ID + "="
-				+ rowId, null, null, null, null, null);
+		Cursor cursor = mmrDb.query(true, DATABASE_TABLE_RUNS,
+				new String[] { KEY_RUN_ID, KEY_RUN_ROUTE, KEY_RUN_DATE_STARTED,
+						KEY_RUN_DATE_COMPLETED, KEY_RUN_DISTANCE_RAN,
+						KEY_RUN_COMPLETED }, KEY_RUN_ID + "=" + rowId, null,
+				null, null, null, null);
 		return cursor;
 	}
 }
