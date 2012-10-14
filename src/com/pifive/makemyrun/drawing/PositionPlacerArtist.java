@@ -33,22 +33,22 @@ import com.google.android.maps.MapView;
 
 /**
  * 
- * @author niklas
  *
  */
 public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTapListener {
+	
+	public enum PinState { START, END, NONE }
+	private PinState pinState;
+	
 	private Map<PinState, PositionPin> positionPins = 
 							new EnumMap<PinState, PositionPin>(PinState.class);
 	private Drawer drawer;
-	
-	public enum PinState { START, END, NONE }
-	private PinState pinState; 
 	 
 	/**
 	 * 
-	 * @param startPin
-	 * @param endPin
-	 * @param drawer
+	 * @param startPin - The start position pin
+	 * @param endPin - The end position pin
+	 * @param drawer - The Drawer we will force to redraw on changes.
 	 */
 	public PositionPlacerArtist(PositionPin startPin, PositionPin endPin, Drawer drawer) {
 		pinState = PinState.NONE;
@@ -59,7 +59,7 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 	
 	@Override
 	/**
-	 * 
+	 * Draw the start and end pin on to the MapOverlay we are attached to
 	 */
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 		// iterate over map and draw
@@ -76,7 +76,7 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 	}
 	
 	/**
-	 * 
+	 * Returns the start point
 	 * @return Returns the start point that has been set
 	 */
 	public GeoPoint getStartPoint() {
@@ -84,7 +84,7 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 	}
 	
 	/**
-	 * 
+	 * Returns the end point
 	 * @return Returns the end point that has been set
 	 */
 	public GeoPoint getEndPoint() {
@@ -92,17 +92,18 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 	}
 	
 	/**
-	 * 
-	 * @param pinState
+	 * Set the pin state (which pin that should be moved on tap)
+	 * @param pinState - The pinstate
 	 */
-	public void setpinState(PinState pinState) {
+	public void setPinState(PinState pinState) {
 		this.pinState = pinState; 
 	}
 
-	@Override
 	/**
-	 * 
+	 * The start or end PositionPins position gets updated depending on the PinState
+	 * {@inheritDoc}
 	 */
+	@Override
 	public void onTap(GeoPoint geoPoint, MapView mapView) {
 		if (pinState == PinState.START || pinState == PinState.END) {
 			positionPins.get(pinState).setGeoPoint(geoPoint);

@@ -199,7 +199,7 @@ public class MainActivity extends MapActivity implements Observer {
 			
 			@Override
 			public void onClick(View v) {
-				positionPlacerArtist.setpinState(PinState.START);
+				positionPlacerArtist.setPinState(PinState.START);
 			}
 		});
     	
@@ -208,7 +208,7 @@ public class MainActivity extends MapActivity implements Observer {
 			
 			@Override
 			public void onClick(View v) {
-				positionPlacerArtist.setpinState(PinState.END);
+				positionPlacerArtist.setPinState(PinState.END);
 			}
 		});
     	
@@ -258,8 +258,6 @@ public class MainActivity extends MapActivity implements Observer {
 		
 		showMiddleScreen();
 		
-//		View overlay = findViewById(R.id.overlayMenu);
-//		overlay.setVisibility(View.GONE);
 		mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);

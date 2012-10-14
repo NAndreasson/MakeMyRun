@@ -56,7 +56,7 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 				endPoint.getLongitudeE6(), positionPlacerArtist.getEndPoint().getLongitudeE6());
 	
 		GeoPoint newStartPoint = new GeoPoint(66, 55);
-		positionPlacerArtist.setpinState(PinState.START);
+		positionPlacerArtist.setPinState(PinState.START);
 		positionPlacerArtist.onTap(newStartPoint, mapView);
 		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
 				newStartPoint.getLatitudeE6(), positionPlacerArtist.getStartPoint().getLatitudeE6());
@@ -64,12 +64,16 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 				newStartPoint.getLongitudeE6(), positionPlacerArtist.getStartPoint().getLongitudeE6());
 		
 		GeoPoint newEndPoint = new GeoPoint(77, 77);
-		positionPlacerArtist.setpinState(PinState.END);
+		positionPlacerArtist.setPinState(PinState.END);
 		positionPlacerArtist.onTap(newEndPoint, mapView);
 		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
 				newEndPoint.getLatitudeE6(), positionPlacerArtist.getEndPoint().getLatitudeE6());
 		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
 				newEndPoint.getLongitudeE6(), positionPlacerArtist.getEndPoint().getLongitudeE6());
+	}
+	
+	public void testDraw() {
+		
 	}
 	
 	/**
@@ -94,6 +98,5 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 		public void reDraw() {
 			drawRequested = true;
 		}
-		
 	}
 }

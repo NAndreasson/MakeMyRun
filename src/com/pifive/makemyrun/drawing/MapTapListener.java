@@ -25,5 +25,10 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
 public interface MapTapListener {
+	/**
+	 * 
+	 * @param geoPoint - The GeoPoint corresponding to where you tapped
+	 * @param mapView - The MapView that was tapped
+	 */
 	public void onTap(GeoPoint geoPoint, MapView mapView);
 }
