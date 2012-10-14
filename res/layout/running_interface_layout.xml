@@ -14,8 +14,8 @@
 		android:background="@drawable/rounded_button"
 		android:layout_gravity="bottom"
         android:text="@string/stop_run_text"
-        android:textSize="25dp"
-        android:padding="5dp" />
+        android:padding="5dp"
+        android:onClick="onStopAction" />
 
     <TextView
         android:id="@+id/distancetext"
@@ -41,7 +41,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
-        android:text="00:00:00"
+        android:text="@string/clockText"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:background="@drawable/rounded_view"
         android:textColor="#FFE0671B"

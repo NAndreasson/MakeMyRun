@@ -28,48 +28,68 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.pifive.makemyrun.geo.Location;
 
 public class Route {
 
 	private List<Location> waypoints = new ArrayList<Location>();
-	private int distance ;
-	
+	private int distance;
+	private final String polyline;
+
 	/**
 	 * Creates a route from a JSONObject handed out from Google Directions
-	 * @param directions A JSON respond from google. with the structure:
-	 * 					route->legs[]->steps[]->polyline->points
-	 * @throws JSONException if the strucutre of the JSON is unexpected
+	 * 
+	 * @param directions
+	 *            A JSON respond from google. with the structure:
+	 *            route->legs[]->steps[]->polyline->points
+	 * @throws JSONException
+	 *             if the strucutre of the JSON is unexpected
 	 */
 	public Route(JSONObject directions) throws JSONException {
 		JSONArray routes = directions.getJSONArray("routes");
 		JSONObject route = routes.getJSONObject(0);
 		JSONArray legs = route.getJSONArray("legs");
-		for(int i = 0 ; i < legs.length(); i ++) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < legs.length(); i++) {
 			JSONObject leg = legs.getJSONObject(i);
 			distance += leg.getJSONObject("distance").getInt("value");
 			JSONArray steps = getLegSteps(leg);
-			for(int j = 0; j < steps.length(); j++){
-				String points = steps.getJSONObject(j).
-						getJSONObject("polyline").getString("points");
+			for (int j = 0; j < steps.length(); j++) {
+				String points = steps.getJSONObject(j)
+						.getJSONObject("polyline").getString("points");
+
 				waypoints.addAll(PolylineDecoder.decodePoly(points));
+				sb.append(points);
 			}
 		}
+
+		polyline = sb.toString();
+		Log.d("MMR", "Route polyline: " + polyline);
 	}
-	
+
 	private JSONArray getLegSteps(JSONObject leg) throws JSONException {
 		JSONArray stepsArray = leg.getJSONArray("steps");
 		return stepsArray;
 	}
-	
+
 	/**
 	 * 
-	 * @return The route's distance 
+	 * @return The route's distance
 	 */
-	public int getDistance(){
+	public int getDistance() {
 		return distance;
-	}	
-	
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getPolyline() {
+		return polyline;
+	}
+
 	/**
 	 * 
 	 * @return The route's waypoint Locations
