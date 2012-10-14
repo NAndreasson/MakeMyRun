@@ -182,15 +182,19 @@ public class MainActivity extends MapActivity implements Observer {
     public void chooseStartEndPoints(View v) {    	
     	mainMenuStub.setVisibility(View.GONE);
     	generateRouteStub.setVisibility(View.VISIBLE);
+    	
+    	// the default location should be the current one
     	Location currentLocation = getCurrentLocation(); 
-    	Bitmap pinBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
-    	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
-    	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
+    	
+    	Bitmap positionPinImage = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
+    	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
+    	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
+    	
     	final PositionPlacerArtist positionPlacerArtist = 
     			new PositionPlacerArtist(startPin, endPin, mapDrawer);
-    	
     	mapDrawer.addArtist(positionPlacerArtist);
     	mapView.setClickable(true);
+    	
     	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
     	startPointButton.setOnClickListener(new OnClickListener() {
 			
@@ -214,7 +218,6 @@ public class MainActivity extends MapActivity implements Observer {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO naming conventions, destination or end
 				startPoint = positionPlacerArtist.getStartPoint();
 				endPoint = positionPlacerArtist.getEndPoint();
 				generateRouteStub.setVisibility(View.GONE);
