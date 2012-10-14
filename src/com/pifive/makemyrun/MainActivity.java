@@ -331,6 +331,7 @@ public class MainActivity extends MapActivity implements Observer {
 	
 	public void cleanUp() {
     	mapDrawer.clearDrawer();
+    	mapView.setClickable(false);
     	mapView.invalidate();
     	if (timer instanceof Timer) {
     		timer.stop();    		

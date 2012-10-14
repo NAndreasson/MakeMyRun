@@ -1,14 +1,11 @@
 package com.pifive.makemyrun;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -18,55 +15,57 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.MapActivity;
-import com.google.android.maps.MapView;
 import com.pifive.makemyrun.database.MMRDbAdapter;
-import com.pifive.makemyrun.drawing.MapDrawer;
 
+/**
+ * Lists all previously saved runs in from the database.
+ * A simple list displaying date and distance ran / distance of the route generated
+ */
 public class HistoryActivity extends MapActivity {
 
-	private static final int SWIPE_MIN_DISTANCE = 120;
-	private static final int SWIPE_MAX_OFF_PATH = 250;
-	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
-
-	private GestureDetector gestureDetector;
-	private View.OnTouchListener gestureListener;
-	private MapView mapView;
-	private View overlay;
-	private MapDrawer mapDrawer;
 	private MMRDbAdapter db;
 
+	/**
+	 * Creates a list with all run entries in the database
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		// Setup view correctly
 		setContentView(R.layout.activity_history);
-		mapView = (MapView) findViewById(R.id.mapview);
-		mapDrawer = new MapDrawer(mapView);
+		
+		// Open database
 		db = new MMRDbAdapter(getBaseContext());
 		db.open();
 		
-	//	 * runs: id | routeId(reference to routes) | dateStart(start date in unix time seconds) |
-//		 * dateEnd(end date in unix time seconds) | distanceRan | completed (1 = true, 0
-//		 * = false)
+		// Get list 
 		ListView list = (ListView) findViewById(R.id.historyList);
 		Cursor cursor = db.fetchAllRunsJoinRoutes();
+		
+		
 		CursorAdapter adapter = new CursorAdapter(getBaseContext(), cursor) {
 
+			/**
+			 * Binds a toast just to make sure we can do something on click
+			 */
 			@Override
 			public void bindView(View item, Context context, Cursor cursor) {
-				// TODO Auto-generated method stub
 				item.setOnClickListener(new OnClickListener() {
 
 					@Override
 					public void onClick(View v) {
-						// TODO Auto-generated method stub
+						// TODO Bind to a more detailed mapview with flash graphics
 						Toast.makeText(getBaseContext(), ((TextView) v).getText(), Toast.LENGTH_LONG).show();
 					}
 					
 				});
 			}
 
+			/**
+			 * Creates a simple textview for each listitem.
+			 * Displays ISO-format Date together with distance run/routedistance
+			 */
 			@Override
 			public View newView(Context context, Cursor cursor, ViewGroup list) {
 				TextView view = new TextView(context);
@@ -74,11 +73,13 @@ public class HistoryActivity extends MapActivity {
 				
 				Long millis = cursor.getLong(cursor.getColumnIndex("dateStart"));
 				Date startDate = new Date(millis);
+				
+				// Distances
 				int distanceRan = cursor.getInt(cursor.getColumnIndex(MMRDbAdapter.KEY_RUN_DISTANCE_RAN));
 				int routeDistance = cursor.getInt(cursor.getColumnIndex(MMRDbAdapter.KEY_ROUTE_DISTANCE));
 				
 				view.setText(
-						startDate.toString() + 
+						new SimpleDateFormat("yyyy-mm-dd").format(startDate) + 
 						" Distance: " +  
 						distanceRan +
 						" / " + routeDistance);
@@ -90,18 +91,6 @@ public class HistoryActivity extends MapActivity {
 		list.setAdapter(adapter);
 		
 		db.close();
-		DataSetObserver observer = new DataSetObserver() {};
-		
-		
-//		gestureDetector = new GestureDetector(mapView.getContext(),
-//				new HistoryGestureDetector());
-//		gestureListener = new View.OnTouchListener() {
-//
-//			@Override
-//			public boolean onTouch(View v, MotionEvent motionEvent) {
-//				return gestureDetector.onTouchEvent(motionEvent);
-//			}
-//		};
 	}
 
 	@Override
@@ -110,40 +99,4 @@ public class HistoryActivity extends MapActivity {
 		return false;
 	}
 
-//	public class HistoryGestureDetector extends SimpleOnGestureListener {
-//
-//		@Override
-//		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-//				float velocityY) {
-//
-//			// Do nothing if we swipe diagonally
-//			if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-//				return false;
-//			
-//			// Left swipe
-//			if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
-//					&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-//				Toast.makeText(HistoryActivity.this, "Left Swipe",
-//						Toast.LENGTH_SHORT).show();
-//				// See below
-//				
-//				
-//			// Right swipe
-//			} else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-//					&& Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
-//				
-//				// Here we wish to start displaying a new run
-//				// Which means:
-//				
-//				// a) Offset UI for timer and distance for both this and the to-be displayed run
-//				
-//				// b) Start animating the MapView towards new target run
-//				Toast.makeText(HistoryActivity.this, "Right Swipe",
-//						Toast.LENGTH_SHORT).show();
-//			}
-//			return false;
-//		}
-//
-//	}
-	
 }
