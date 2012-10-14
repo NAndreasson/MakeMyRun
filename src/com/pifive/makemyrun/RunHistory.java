@@ -5,18 +5,15 @@ import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.widget.CursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.pifive.makemyrun.database.MMRDbAdapter;
 
 public class RunHistory extends CursorAdapter {	
 	
-	@SuppressWarnings("deprecation")
 	public RunHistory(Context context, Cursor c) {
 		super(context, c);
 	}
@@ -26,15 +23,8 @@ public class RunHistory extends CursorAdapter {
 	 */
 	@Override
 	public void bindView(View item, final Context context, Cursor cursor) {
-		item.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Bind to a more detailed mapview with flash graphics
-				Toast.makeText(context, ((TextView) v).getText(), Toast.LENGTH_LONG).show();
-			}
-			
-		});
+		// TODO Bind to a more detailed mapview with flash graphics
+				
 	}
 
 	/**
