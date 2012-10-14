@@ -108,7 +108,6 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d("MMR", "New location at: " + location);
 		
 		if (!(myLocation instanceof Location) || 
 				myLocation.distanceTo(location) > location.getAccuracy()) {				
