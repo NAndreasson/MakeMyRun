@@ -11,7 +11,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="24dp"
         android:clickable="true"
-		android:background="#FFFFFF"
+		android:background="@drawable/rounded_button"
 		android:layout_gravity="bottom"
         android:text="@string/stop_run_text"
         android:padding="5dp"
@@ -27,9 +27,8 @@
         android:layout_marginTop="20dp"
         android:text="@string/distance"
         android:textAppearance="?android:attr/textAppearanceLarge" 
-        android:background="#000000"
-        android:textColor="#E0671B"
-        android:alpha="0.3"
+        android:background="@drawable/rounded_view"
+        android:textColor="#FFE0671B"
         android:padding="5dp"/>
 
     <TextView
@@ -44,9 +43,8 @@
         android:layout_marginTop="20dp"
         android:text="00:00:00"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:background="#000000"
-        android:textColor="#E0671B"
-        android:alpha="0.3"
+        android:background="@drawable/rounded_view"
+        android:textColor="#FFE0671B"
         android:padding="5dp" />
 
 </RelativeLayout>

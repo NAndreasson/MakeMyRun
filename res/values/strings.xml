@@ -18,5 +18,11 @@
     <string name="directions_failed_message">Failed to load data from Google</string>
     <string name="title_activity_history">Running History!</string>
     <string name="history_btn">View history</string>
+    <string name="stop_run_alert_dialog_message">Run is not completed, do you really want to stop?</string>
+    <string name="stop_run_alert_dialog_title">Stopping run&#8230;</string>
+    <string name="stop_run_alert_dialog_yes">Yes please</string>
+    <string name="stop_run_alert_dialog_no">No way</string>
+    <string name="save_run_success">Run was successfully saved</string>
+    <string name="save_run_failed">Failed to save run :/</string>
 
 </resources>

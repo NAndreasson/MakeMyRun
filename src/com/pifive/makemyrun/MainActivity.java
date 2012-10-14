@@ -21,26 +21,27 @@
 
 package com.pifive.makemyrun;
 
-import java.util.Date;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.PendingIntent;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.location.Criteria;
+import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewStub;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,9 +55,9 @@ import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class MainActivity extends MapActivity implements Observer {
 	private MapView mapView;
-	private View overlay;
-	private ViewStub viewStub;
+	private ViewStub postGeneratedStub;
 	private ViewStub runViewStub;
+	private ViewStub mainMenuStub;
 	private boolean inCatchBackState = false;
 	private MapDrawer mapDrawer;
 	private DistanceTracker distanceTracker;
@@ -72,78 +73,53 @@ public class MainActivity extends MapActivity implements Observer {
         // Setup view correctly
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
-        viewStub = (ViewStub) findViewById(R.id.postGeneratedStub);
+        postGeneratedStub = (ViewStub) findViewById(R.id.postGeneratedStub);
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
-        overlay = findViewById(R.id.overlayMenu);
+        mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
         mapDrawer = new MapDrawer(mapView);
         db = new MMRDbAdapter(getBaseContext());
-        updatePosition();
         showStartScreen();
+        displayCurrentLocation();
     }
     
     /**
      * Shows the start screen (entry point for application)
      */
     private void showStartScreen() {
-        mapView.setBuiltInZoomControls(true);
-        overlay.setVisibility(View.VISIBLE);
-        
-        // Listen for generate-click
-        Button button = (Button) findViewById(R.id.generatebutton);
-        button.setOnClickListener(new OnClickListener() {
-			
-        	public void onClick(View v) {
-				overlay.setVisibility(View.GONE);
-        		loadingStatus = new LoadingStatus(mapView.getContext());
-        		try {
-        			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-        			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.geo.Location(location.getLatitude(), location.getLongitude()));
-        			startDirectionsTask(query);
-        			displayCurrentLocation();
-        		} catch (RuntimeException e) {
-        			loadingStatus.remove();
-        			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
-        			e.printStackTrace();
-        			return;
-        		}
-        		
-        		showMiddleScreen();
-
-				View overlay = findViewById(R.id.overlayMenu);
-				overlay.setVisibility(View.GONE);
-
-				mapView.requestFocus();
-				mapView.requestFocusFromTouch();
-				mapView.setClickable(true);
-				
-			}
-        	
-        });
+        mainMenuStub.setVisibility(View.VISIBLE);     
+    }
+    
+    private Location getCurrentLocation() {
+		// Get location manager from system
+		LocationManager locManager = 
+				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+	
+		// Fetch last known location to provide as best guess
+		String provider = locManager.getBestProvider(new Criteria(), true);
+		//locManager.getProvider(LocationManager.GPS_PROVIDER);
+		Log.d("MMR", "im using provider : "+ provider);
+		android.location.Location currentLocation = 
+					locManager.getLastKnownLocation(provider);
+    	
+		if (currentLocation == null) {
+			throw new NoLocationException("Location unavailable");
+		}
+		return currentLocation;
     }
     
     /**
-     * Shows the middle screen and activates the state where back button takes you backwards
+     * Shows the middle screen 
      */
     private void showMiddleScreen() {
     	inCatchBackState = true;
-        viewStub.setVisibility(View.VISIBLE);
-        Button runButton = (Button) findViewById(R.id.runbutton);
-        runButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View arg0) {
-				((Button)arg0).setVisibility(View.GONE);
-				startRun();
-				
-			}
-        	
-        });
+        postGeneratedStub.setVisibility(View.VISIBLE);
     }
     
     /**
      * Starting the run
      */
-    private void startRun() {
-    	viewStub.setVisibility(View.GONE);
+    public void startRunAction(View v) {
+    	postGeneratedStub.setVisibility(View.GONE);
     	runViewStub.setVisibility(View.VISIBLE);
     	
     	// Start to track the distance and sets this activity to recieve distance updates
@@ -160,18 +136,6 @@ public class MainActivity extends MapActivity implements Observer {
     }
     
     /**
-     * Makes the phone get new GPS position so that we can use it later to generate route from accurate position
-     */
-    private void updatePosition() {
-    	PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext(), 
-    						 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
-        LocationManager locationManager = (LocationManager) getBaseContext().
-        							  getSystemService(Context.LOCATION_SERVICE);
-        String provider = locationManager.getBestProvider(new Criteria(), false);
-        locationManager.requestSingleUpdate(provider, pendingIntent);
-    }
-    
-    /**
      * Catches back button when we want it to just step back in application
      */
     @Override
@@ -185,22 +149,29 @@ public class MainActivity extends MapActivity implements Observer {
     }
     
     public void generateRoute(View v) {
-    	try {
-			android.location.Location location = RouteGenerator.getCurrentLocation(getBaseContext());
-			System.out.println(location.toString());
-			String query = RouteGenerator.generateRoute(new com.pifive.makemyrun.geo.Location(location.getLatitude(), location.getLongitude()));
-	        System.out.println(query);
+    	mainMenuStub.setVisibility(View.GONE);
+		loadingStatus = new LoadingStatus(mapView.getContext());
+		try {
+			// send the current location to routegenerator
+			Location currentLocation = getCurrentLocation();
+			String query = RouteGenerator.generateRoute(
+							new com.pifive.makemyrun.geo.Location(currentLocation.getLatitude(), currentLocation.getLongitude()));
 			startDirectionsTask(query);
-		} catch (NoLocationException e) {
-			// TODO Auto-generated catch block
+		} catch (RuntimeException e) {
+			loadingStatus.remove();
+			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
+			return;
 		}
 		
-		View overlay = findViewById(R.id.overlayMenu);
-		overlay.setVisibility(View.GONE);
+		showMiddleScreen();
+		
+//		View overlay = findViewById(R.id.overlayMenu);
+//		overlay.setVisibility(View.GONE);
 		mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
+		
     }
 
     /**
@@ -208,7 +179,7 @@ public class MainActivity extends MapActivity implements Observer {
      */
     private void stepBackwards() {
     	inCatchBackState = false;
-    	viewStub.setVisibility(View.GONE);
+    	postGeneratedStub.setVisibility(View.GONE);
     	runViewStub.setVisibility(View.GONE);
    		mapView.getOverlays().clear();
    		mapView.setClickable(false);
@@ -251,7 +222,6 @@ public class MainActivity extends MapActivity implements Observer {
 			RouteArtist routeArtist = new RouteArtist(currentRoute.getWaypoints());
 			mapDrawer.addArtist(routeArtist);
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -264,23 +234,20 @@ public class MainActivity extends MapActivity implements Observer {
 		// Get location manager from system
 		LocationManager locManager = 
 				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-	
-		// Fetch last known location to provide as best guess
-		LocationProvider provider = locManager.getProvider(LocationManager.GPS_PROVIDER);
-		android.location.Location bestGuess = 
-					locManager.getLastKnownLocation(provider.getName());
-		
+
 		// Construct our location artist
-		CurrentLocationArtist locationArtist = 
-					new CurrentLocationArtist(bestGuess, mapDrawer);
+		CurrentLocationArtist locationArtist = new CurrentLocationArtist(mapDrawer);
 		mapDrawer.addArtist(locationArtist);
 		
-		// Make it aware of location updates every seconds
-		locManager.requestLocationUpdates(
-				LocationManager.GPS_PROVIDER,
-				0, 
-				0, 
-				locationArtist);
+		// Make it aware of location updates from all providers
+		List<String> providers = locManager.getAllProviders();
+		for (String provider : providers) {
+			locManager.requestLocationUpdates(
+					provider,
+					0, 
+					0, 
+					locationArtist);
+		}
 	}
 	
 	/**
@@ -313,24 +280,53 @@ public class MainActivity extends MapActivity implements Observer {
 	}
 	
 	public void onStopAction(View v) {
-		boolean completed = Boolean.valueOf(""+v.getTag());
-		saveRun(completed);
+		final boolean completed = Boolean.valueOf(""+v.getTag());
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		builder.setMessage(R.string.stop_run_alert_dialog_message)
+		       .setTitle(R.string.stop_run_alert_dialog_title);
+		
+		final ViewStub runStub = runViewStub;
+		final ViewStub mainMenuStub = this.mainMenuStub;
+
+		builder.setPositiveButton(R.string.stop_run_alert_dialog_yes, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				runStub.setVisibility(View.GONE);
+				mainMenuStub.setVisibility(View.VISIBLE);
+				Toast.makeText(getBaseContext(), saveRun(completed) ?    // look close, we aculy we save hear
+						R.string.save_run_success :
+						R.string.save_run_failed, Toast.LENGTH_LONG).show();	
+				cleanUp();
+
+			}
+			
+		});
+		builder.setNegativeButton(R.string.stop_run_alert_dialog_no, new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				return; // nothing to do here :D
+			}
+		});
+		
+		builder.create().show();
 	}
 	
-	public void saveRun(boolean completed) {
-		Log.d("MMR", "Saving distance: "+currentRoute.getDistance());
-		Log.d("MMR", "Route distance: " + distanceTracker.getTotalDistanceInMeters());
+	public boolean saveRun(boolean completed) {
+		Log.d("MMR", "Route distance: "+currentRoute.getDistance());
+		Log.d("MMR", "Ran distance: " + distanceTracker.getTotalDistanceInMeters());
 		db.open();
-		db.createRun(
+		boolean result = db.createRun(
 				currentRoute.getPolyline(),
 				timer.getStartTime(), 
 				(int) distanceTracker.getTotalDistanceInMeters(), 
 				currentRoute.getDistance(), 
-				completed);
+				completed) != -1;
 
 		db.close();
-
-		cleanUp();
+		return result; 
 	}
 	
 	public void cleanUp() {

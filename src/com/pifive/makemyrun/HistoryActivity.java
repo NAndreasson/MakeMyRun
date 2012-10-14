@@ -42,7 +42,6 @@ public class HistoryActivity extends MapActivity {
 		// Setup view correctly
 		setContentView(R.layout.activity_history);
 		mapView = (MapView) findViewById(R.id.mapview);
-		overlay = findViewById(R.id.overlayMenu);
 		mapDrawer = new MapDrawer(mapView);
 		db = new MMRDbAdapter(getBaseContext());
 		db.open();

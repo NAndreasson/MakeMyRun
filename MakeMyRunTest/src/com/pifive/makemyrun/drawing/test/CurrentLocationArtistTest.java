@@ -53,7 +53,8 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 		location.setLatitude(15);
 		location.setLongitude(15);
 		
-		artist = new CurrentLocationArtist(location, drawer);
+		artist = new CurrentLocationArtist(drawer);
+		artist.onLocationChanged(location);
 		
 		// We don't need to test with correct key 
 		// since we don't need to draw the actual map
@@ -78,6 +79,8 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 	 * Tests that a locationupdate with location.accuracy <= distance(oldloc -> newloc)
 	 */
 	public void testLocationUpdateRequestsDraw() {
+		// Reset request status
+		drawer.isDrawRequested();
 		
 		// Test an update which shall not render a redraw
 		Location newLoc = new Location(LocationManager.GPS_PROVIDER);

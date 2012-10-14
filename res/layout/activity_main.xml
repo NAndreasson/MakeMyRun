@@ -9,55 +9,28 @@
         android:layout_height="match_parent"
         android:apiKey="0jk9toza2GMaBQEe--jPaMvm_2g17l0hP_xnXfw" />
 
+    <ViewStub 
+        android:id="@+id/mainMenuStub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+		android:layout_centerInParent="true"
+        android:inflatedId="@+layout/main_menu_layout"
+        android:layout="@layout/main_menu_layout"
+        android:layout_margin="25dp" />
+    
 	<ViewStub
         android:id="@+id/postGeneratedStub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:inflatedId="@+id/runbutton"
-        android:layout="@layout/runbutton" />
+        android:inflatedId="@+id/pre_run_layout"
+        android:layout="@layout/pre_run_layout" />
 	
 	<ViewStub
 	    android:id="@+id/runningInterface"
 	    android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_centerInParent="true"
-		android:inflatedId="@+id/placeholderlayout"
-		android:layout="@layout/placeholderlayout" />
-	
-	<FrameLayout
-	    android:id="@+id/overlayMenu"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:background="#99000000"
-	    android:layout_margin="20dp" >
-	    
-	    <Button 
-	        android:id="@+id/histButton"
-	        android:text="@string/history_btn"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:onClick="viewHistory" />
-	    
-		<ImageView 
-		    android:id="@+id/pi5logo"
-		    android:contentDescription="@string/testlogo"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:alpha="1"
-		    android:layout_gravity="right"
-		    android:src="@drawable/testpic" />
-		
-		<Button
-		    android:id="@+id/generatebutton"
-		    android:layout_width="match_parent"
-		    android:layout_height="wrap_content"
-		    android:clickable="true"
-		    android:background="#FFFFFF"
-		    android:layout_gravity="bottom"
-		    android:text="@string/generate_button"
-		    android:onClick="generateRoute" />
-		
-	</FrameLayout>
-	
+		android:inflatedId="@+id/running_interface_layout"
+		android:layout="@layout/running_interface_layout" />
 </RelativeLayout>
