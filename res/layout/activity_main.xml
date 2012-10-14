@@ -33,22 +33,14 @@
 		android:layout_centerInParent="true"
 		android:inflatedId="@+id/placeholderlayout"
 		android:layout="@layout/placeholderlayout" />
-	
-		<ViewStub
-	    android:id="@+id/runningInterface"
-	    android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
+		
+		
+	<ViewStub
+		android:id="@+id/generateRouteStub"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
 		android:layout_centerInParent="true"
-		android:inflatedId="@+id/placeholderlayout"
-		android:layout="@layout/placeholderlayout" />
-		
-		
-<ViewStub
-android:id="@+id/startEndPointButtons"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:layout_centerInParent="true"
-android:inflatedId="@+id/startendpointlayout"
-android:layout="@layout/startendpointlayout" />
+		android:inflatedId="@+id/generate_route_layout"
+		android:layout="@layout/generate_route_layout" />
 
 </RelativeLayout>

@@ -68,7 +68,7 @@ public class MainActivity extends MapActivity implements Observer {
 	
 	private GeoPoint startPoint; 
 	private GeoPoint endPoint;
-	private ViewStub startEndViewStub;
+	private ViewStub generateRouteStub;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,7 +79,7 @@ public class MainActivity extends MapActivity implements Observer {
         mapView = (MapView) findViewById(R.id.mapview);
         viewStub = (ViewStub) findViewById(R.id.postGeneratedStub);
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
-        startEndViewStub = (ViewStub) findViewById(R.id.startEndPointButtons);
+        generateRouteStub = (ViewStub) findViewById(R.id.generateRouteStub);
         mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
         mapDrawer = new MapDrawer(mapView);
         
@@ -181,7 +181,7 @@ public class MainActivity extends MapActivity implements Observer {
     
     public void chooseStartEndPoints(View v) {    	
     	mainMenuStub.setVisibility(View.GONE);
-    	startEndViewStub.setVisibility(View.VISIBLE);
+    	generateRouteStub.setVisibility(View.VISIBLE);
     	Location currentLocation = getCurrentLocation(); 
     	Bitmap pinBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
@@ -217,7 +217,7 @@ public class MainActivity extends MapActivity implements Observer {
 				// TODO naming conventions, destination or end
 				startPoint = positionPlacerArtist.getStartPoint();
 				endPoint = positionPlacerArtist.getEndPoint();
-				startEndViewStub.setVisibility(View.GONE);
+				generateRouteStub.setVisibility(View.GONE);
 				positionPlacerArtist.setPinState(PinState.NONE);
 				generateRoute(v);
 			}

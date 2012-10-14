@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
     
     <Button
         android:id="@+id/startpointbutton"
@@ -14,7 +13,7 @@
         android:layout_marginTop="20dp"
         android:clickable="true"
 		android:background="#FFFFFF"
-        android:text="Start"
+        android:text="@string/start_point_button"
         android:padding="5dp" 
         android:drawableLeft="@drawable/pin" />
     
@@ -28,7 +27,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
 		android:background="#FFFFFF"
-        android:text="End"
+        android:text="@string/stop_run_text"
         android:padding="5dp" 
         android:drawableLeft="@drawable/pin" />
  
@@ -36,11 +35,13 @@
        	android:id="@+id/generateRouteButton"
        	android:layout_width="wrap_content"
        	android:layout_height="wrap_content"
+       	android:layout_centerHorizontal="true"
+       	android:layout_marginBottom="10dp"
        	android:clickable="true"
        	android:layout_alignParentBottom="true"
-       	android:background="#FFFFFF"
-       	android:text="Generate"
+       	android:background="@drawable/rounded_button"
+       	android:text="@string/generate_route_button"
+       	android:textSize="26dp"
        	android:padding="5dp"
-       	android:onClick="generateRoute"
           />
 </RelativeLayout>

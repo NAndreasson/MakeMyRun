@@ -17,6 +17,8 @@
     <string name="directions_loading_message">Requesting data from Google&#8230;</string>
     <string name="directions_finished_message">Got directions!</string>
     <string name="directions_failed_message">Failed to load data from Google</string>
-    <string name="generate_new_route_button">Generate new Route!</string>
+    <string name="generate_route_button">Generate</string>
+    <string name="start_point_button">Set start</string>
+    <string name="end_point_button">Set end</string>
 
 </resources>

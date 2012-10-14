@@ -14,6 +14,7 @@
 		android:background="@drawable/rounded_button"
 		android:layout_gravity="bottom"
         android:text="@string/stop_run_text"
+        android:textSize="25dp"
         android:padding="5dp" />
 
     <TextView
