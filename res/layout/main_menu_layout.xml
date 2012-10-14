@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-	
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_view">
-    
-	<ImageView 
-	    android:id="@+id/pi5logo"
-	    android:contentDescription="@string/testlogo"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:alpha="1"
-	    android:layout_gravity="center_horizontal"
-	    android:src="@drawable/icon" />
-	
-	<Button
-	    android:background="@drawable/rounded_button"
-	    android:id="@+id/generatebutton"
-	    android:layout_width="match_parent"
-	    android:layout_height="wrap_content"
-	    android:layout_margin="20dp"
-	    android:clickable="true"
-	    android:layout_gravity="bottom"
-	    android:text="@string/generate_button"
-	    android:textSize="@android:dimen/app_icon_size"
-	    android:onClick="chooseStartEndPoints" />
-	
+    android:background="@drawable/rounded_view" >
+
+    <ImageView
+        android:id="@+id/pi5logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:alpha="1"
+        android:contentDescription="@string/testlogo"
+        android:src="@drawable/icon" />
+
+    <Button
+        android:id="@+id/generatebutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="20dp"
+        android:background="@drawable/rounded_button"
+        android:clickable="true"
+        android:onClick="chooseStartEndPoints"
+        android:text="@string/generate_button"
+        android:textSize="@android:dimen/app_icon_size" />
+
+    <Button
+        android:id="@+id/histButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="viewHistory"
+        android:text="@string/history_btn" />
+
 </FrameLayout>

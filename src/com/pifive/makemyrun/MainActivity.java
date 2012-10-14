@@ -28,7 +28,11 @@ import java.util.Observer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Criteria;
@@ -38,7 +42,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.TextView;
@@ -47,6 +50,7 @@ import android.widget.Toast;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
+import com.pifive.makemyrun.database.MMRDbAdapter;
 import com.pifive.makemyrun.drawing.CurrentLocationArtist;
 import com.pifive.makemyrun.drawing.MapDrawer;
 import com.pifive.makemyrun.drawing.PositionPin;
@@ -56,19 +60,19 @@ import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class MainActivity extends MapActivity implements Observer {
 	private MapView mapView;
-	private ViewStub viewStub;
+	private ViewStub postGeneratedStub;
 	private ViewStub runViewStub;
 	private ViewStub mainMenuStub;
-	private Button stopRunButton;
 	private boolean inCatchBackState = false;
 	private MapDrawer mapDrawer;
 	private DistanceTracker distanceTracker;
     private Timer timer;
 	private LoadingStatus loadingStatus;
-	
 	private GeoPoint startPoint; 
 	private GeoPoint endPoint;
 	private ViewStub generateRouteStub;
+	private MMRDbAdapter db;
+	private Route currentRoute;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,12 +81,13 @@ public class MainActivity extends MapActivity implements Observer {
         // Setup view correctly
         setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapview);
-        viewStub = (ViewStub) findViewById(R.id.postGeneratedStub);
+        postGeneratedStub = (ViewStub) findViewById(R.id.postGeneratedStub);
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         generateRouteStub = (ViewStub) findViewById(R.id.generateRouteStub);
         mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
         mapDrawer = new MapDrawer(mapView);
-        
+        db = new MMRDbAdapter(getBaseContext());
+
         showStartScreen();
         displayCurrentLocation();
     }
@@ -101,6 +106,9 @@ public class MainActivity extends MapActivity implements Observer {
 	
 		// Fetch last known location to provide as best guess
 		String provider = locManager.getBestProvider(new Criteria(), true);
+		//locManager.getProvider(LocationManager.GPS_PROVIDER);
+		Log.d("MMR", "im using provider : "+ provider);
+
 		android.location.Location currentLocation = 
 					locManager.getLastKnownLocation(provider);
     	
@@ -111,35 +119,19 @@ public class MainActivity extends MapActivity implements Observer {
     }
     
     /**
-     * Shows the middle screen and activates the state where back button takes you backwards
+     * Shows the middle screen 
      */
     private void showMiddleScreen() {
     	inCatchBackState = true;
-        viewStub.setVisibility(View.VISIBLE);
-        Button runButton = (Button) findViewById(R.id.runbutton);
-        
-        runButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				startRun();
-			}
-        });
+        postGeneratedStub.setVisibility(View.VISIBLE);
     }
     
     /**
      * Starting the run
      */
-    private void startRun() {
-    	viewStub.setVisibility(View.GONE);
+    public void startRunAction(View v) {
+    	postGeneratedStub.setVisibility(View.GONE);
     	runViewStub.setVisibility(View.VISIBLE);
-
-        stopRunButton = (Button) findViewById(R.id.stoprunbutton);
-    	stopRunButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View arg0) {
-				cleanUpRun();
-				stepBackwards();
-			}
-		});
     	
     	// Start to track the distance and sets this activity to recieve distance updates
     	trackDistance();
@@ -155,24 +147,12 @@ public class MainActivity extends MapActivity implements Observer {
     }
     
     /**
-     * To be called when a generated route is to be disposed of.
-     */
-    private void cleanUpRun() {
-    	mapDrawer.clearDrawer();
-    	mapView.invalidate();
-    	if (timer instanceof Timer) {
-    		timer.stop();    		
-    	}
-    }
-    
-    
-    /**
      * Catches back button when we want it to just step back in application
      */
     @Override
     public void onBackPressed() {
     	if(inCatchBackState) {
-    		cleanUpRun();
+    		cleanUp();
     		stepBackwards();
     	} else {
     		finish();
@@ -196,7 +176,7 @@ public class MainActivity extends MapActivity implements Observer {
     	mapView.setClickable(true);
     	
     	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
-    	startPointButton.setOnClickListener(new OnClickListener() {
+    	startPointButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -205,7 +185,7 @@ public class MainActivity extends MapActivity implements Observer {
 		});
 
     	Button endPointButton = (Button) findViewById(R.id.endpointbutton);
-    	endPointButton.setOnClickListener(new OnClickListener() {
+    	endPointButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -214,7 +194,7 @@ public class MainActivity extends MapActivity implements Observer {
 		});
 
     	Button generateButton = (Button) findViewById(R.id.generateRouteButton);
-    	generateButton.setOnClickListener(new OnClickListener() {
+    	generateButton.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -247,9 +227,9 @@ public class MainActivity extends MapActivity implements Observer {
 			String query = RouteGenerator.generateRoute(
 							startPoint, endPoint);
 			startDirectionsTask(query);
-			
 		} catch (RuntimeException e) {
 			loadingStatus.remove();
+			Log.d("MMR", e.getStackTrace().toString());
 			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 			return;
@@ -268,7 +248,7 @@ public class MainActivity extends MapActivity implements Observer {
      */
     private void stepBackwards() {
     	inCatchBackState = false;
-    	viewStub.setVisibility(View.GONE);
+    	postGeneratedStub.setVisibility(View.GONE);
     	runViewStub.setVisibility(View.GONE);
    		mapView.getOverlays().clear();
    		mapView.setClickable(false);
@@ -298,17 +278,17 @@ public class MainActivity extends MapActivity implements Observer {
         JSONObject googleRoute = directionsTask.simpleGet(query);
         
         try {
-			Route route = new Route(googleRoute);
+			currentRoute = new Route(googleRoute);
 
 			// Center on our starting point
-			com.pifive.makemyrun.geo.Location location = route.getWaypoints().get(0);
+			com.pifive.makemyrun.geo.Location location = currentRoute.getWaypoints().get(0);
 			GeoPoint geoPoint = new GeoPoint(
 									location.getMicroLat(),
 									location.getMicroLng());
 			mapView.getController().animateTo(geoPoint);
 			
 			// Add an artist to draw our route
-			RouteArtist routeArtist = new RouteArtist(route.getWaypoints());
+			RouteArtist routeArtist = new RouteArtist(currentRoute.getWaypoints());
 			mapDrawer.addArtist(routeArtist);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -362,5 +342,69 @@ public class MainActivity extends MapActivity implements Observer {
 	public void update(Observable observable, Object data) {
 		TextView distance = (TextView) findViewById(R.id.distancetext);
 		distance.setText(Math.round(distanceTracker.getTotalDistanceInMeters()) + " m");
+	}
+	
+	public void viewHistory(View v) {
+		Intent intent = new Intent(this, HistoryActivity.class);
+		startActivity(intent);
+	}
+	
+	public void onStopAction(View v) {
+		final boolean completed = Boolean.valueOf(""+v.getTag());
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		builder.setMessage(R.string.stop_run_alert_dialog_message)
+		       .setTitle(R.string.stop_run_alert_dialog_title);
+		
+		final ViewStub runStub = runViewStub;
+		final ViewStub mainMenuStub = this.mainMenuStub;
+
+		builder.setPositiveButton(R.string.stop_run_alert_dialog_yes, new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				runStub.setVisibility(View.GONE);
+				mainMenuStub.setVisibility(View.VISIBLE);
+				Toast.makeText(getBaseContext(), saveRun(completed) ?    // look close, aculy we save hear
+						R.string.save_run_success :
+						R.string.save_run_failed, Toast.LENGTH_LONG).show();	
+				cleanUp();
+
+			}
+			
+		});
+		builder.setNegativeButton(R.string.stop_run_alert_dialog_no, new OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				return; // nothing to do here :D
+			}
+		});
+		
+		builder.create().show();
+	}
+	
+	public boolean saveRun(boolean completed) {
+		Log.d("MMR", "Route distance: "+currentRoute.getDistance());
+		Log.d("MMR", "Ran distance: " + distanceTracker.getTotalDistanceInMeters());
+		db.open();
+		boolean result = db.createRun(
+				currentRoute.getPolyline(),
+				timer.getStartTime(), 
+				(int) distanceTracker.getTotalDistanceInMeters(), 
+				currentRoute.getDistance(), 
+				completed) != -1;
+
+		db.close();
+		return result; 
+	}
+	
+	public void cleanUp() {
+    	mapDrawer.clearDrawer();
+    	mapView.setClickable(false);
+    	mapView.invalidate();
+    	if (timer instanceof Timer) {
+    		timer.stop();    		
+    	}
 	}
 }

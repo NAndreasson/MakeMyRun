@@ -14,5 +14,6 @@
 	    android:background="@drawable/rounded_button"
 	    android:clickable="true"
 	    android:text="@string/run_button"
-	    android:textSize="@android:dimen/app_icon_size" />
+	    android:textSize="@android:dimen/app_icon_size"
+	    android:onClick="startRunAction" />
 </RelativeLayout>

@@ -1,4 +1,9 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <style name="AppTheme" parent="android:Theme.Light" />
+    <style name="HistoryFont" parent="@android:style/TextAppearance.Medium">
+        
+        <item name="android:textColor">#FFFFFFFF</item>
+    </style>
+    
 </resources>

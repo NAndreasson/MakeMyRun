@@ -10,6 +10,16 @@ public class TimerTest extends AndroidTestCase {
 	Timer testTimer;
 
 	/**
+	 * 
+	 */
+	public void testGetStartTime(){
+		testTimer = new Timer(new TextView(getContext()));
+		testTimer.start();
+
+		assertTrue("verifies that startTime was less than 2 seconds ago"
+				,testTimer.getStartTime()-(System.currentTimeMillis()-2000) > 0);
+	}
+	/**
 	 * Tests that we can start a timer
 	 */
 	public void testStartAndRun() {
