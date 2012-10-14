@@ -26,9 +26,7 @@ import android.graphics.Bitmap;
 import com.google.android.maps.GeoPoint;
 
 /**
- * 
- * @author niklas
- *
+ * Class representing a Pin on a map, a pin is basically an image and a location.
  */
 public class PositionPin {	
 	private GeoPoint location;
@@ -45,7 +43,7 @@ public class PositionPin {
 	}
 	
 	/**
-	 * 
+	 * Return the GeoPoint that the pin is placed on
 	 * @return
 	 */
 	public GeoPoint getGeoPoint() {
@@ -53,16 +51,16 @@ public class PositionPin {
 	}
 	
 	/**
-	 * 
-	 * @param location
+	 * Set the GeoPoint that the pin should be set to
+	 * @param location - the geopoint which the pin should be set to
 	 */
 	public void setGeoPoint(GeoPoint location) {
 		this.location = location;
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Returns the bitmap that the pin is graphically represented by
+	 * @return - the bitmap that the pin is graphically represented by
 	 */
 	public Bitmap getImage() {
 		return image;
