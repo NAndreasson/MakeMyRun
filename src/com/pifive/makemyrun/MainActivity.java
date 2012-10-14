@@ -218,6 +218,7 @@ public class MainActivity extends MapActivity implements Observer {
 				startPoint = positionPlacerArtist.getStartPoint();
 				endPoint = positionPlacerArtist.getEndPoint();
 				startEndViewStub.setVisibility(View.GONE);
+				positionPlacerArtist.setPinState(PinState.NONE);
 				generateRoute(v);
 			}
 		});
