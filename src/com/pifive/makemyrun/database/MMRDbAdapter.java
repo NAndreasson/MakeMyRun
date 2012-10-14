@@ -158,7 +158,6 @@ public class MMRDbAdapter {
 		values.put(KEY_RUN_DATE_COMPLETED, System.currentTimeMillis());
 		values.put(KEY_RUN_DISTANCE_RAN, distanceRan);
 		values.put(KEY_RUN_COMPLETED, wasCompleted ? 1 : 0);
-		Log.d(TAG, routeId + "," + startTime + "," + distanceRan);
 		return (int) mmrDb.insert(DATABASE_TABLE_RUNS, null, values);
 
 	}
@@ -191,11 +190,20 @@ public class MMRDbAdapter {
 	 * @return true if deleted, false otherwise
 	 */
 	public boolean deleteRun(int rowId) {
-		boolean result = mmrDb.delete(DATABASE_TABLE_RUNS, KEY_RUN_ID + "="
-				+ rowId, null) > 0;
-		// TODO: if the run's route no longer is used by any other row
-		return result;
 
+		Cursor run = fetchRun(rowId);
+		if(run.getCount() > 0){
+			run.moveToFirst();
+			int routeId = run.getInt(run.getColumnIndex(MMRDbAdapter.KEY_RUN_ROUTE));
+			Cursor routes = mmrDb.query(DATABASE_TABLE_RUNS, new String[]{KEY_RUN_ROUTE},KEY_RUN_ROUTE + "="+routeId , null, null, null, null);
+			if (routes.getCount() == 1){
+				Log.d(TAG, "im removing nao!");
+				deleteRoute(routeId);
+			}
+		}
+		
+		return mmrDb.delete(DATABASE_TABLE_RUNS, KEY_RUN_ID + "="
+				+ rowId, null) > 0;
 	}
 
 	/**
