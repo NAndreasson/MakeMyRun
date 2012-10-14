@@ -295,7 +295,7 @@ public class MainActivity extends MapActivity implements Observer {
 				
 				runStub.setVisibility(View.GONE);
 				mainMenuStub.setVisibility(View.VISIBLE);
-				Toast.makeText(getBaseContext(), saveRun(completed) ?    // look close, we aculy we save hear
+				Toast.makeText(getBaseContext(), saveRun(completed) ?    // look close, aculy we save hear
 						R.string.save_run_success :
 						R.string.save_run_failed, Toast.LENGTH_LONG).show();	
 				cleanUp();

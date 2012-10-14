@@ -16,7 +16,8 @@ public class TimerTest extends AndroidTestCase {
 		testTimer = new Timer(new TextView(getContext()));
 		testTimer.start();
 
-		assertTrue(System.currentTimeMillis()/1000 - testTimer.getStartTime() > 0);
+		assertTrue("verifies that startTime was less than 2 seconds ago"
+				,testTimer.getStartTime()-(System.currentTimeMillis()-2000) > 0);
 	}
 	/**
 	 * Tests that we can start a timer
