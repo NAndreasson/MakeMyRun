@@ -31,9 +31,9 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -100,9 +100,9 @@ public class MainActivity extends MapActivity implements Observer {
 				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 	
 		// Fetch last known location to provide as best guess
-		LocationProvider provider = locManager.getProvider(LocationManager.GPS_PROVIDER);
+		String provider = locManager.getBestProvider(new Criteria(), true);
 		android.location.Location currentLocation = 
-					locManager.getLastKnownLocation(provider.getName());
+					locManager.getLastKnownLocation(provider);
     	
 		if (currentLocation == null) {
 			throw new NoLocationException("Location unavailable");
@@ -218,6 +218,7 @@ public class MainActivity extends MapActivity implements Observer {
 				startPoint = positionPlacerArtist.getStartPoint();
 				endPoint = positionPlacerArtist.getEndPoint();
 				startEndViewStub.setVisibility(View.GONE);
+				positionPlacerArtist.setPinState(PinState.NONE);
 				generateRoute(v);
 			}
 		});

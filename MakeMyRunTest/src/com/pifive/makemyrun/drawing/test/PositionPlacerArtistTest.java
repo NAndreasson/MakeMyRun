@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.test.ActivityInstrumentationTestCase2;
 
+import android.graphics.Canvas;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 import com.pifive.makemyrun.MainActivity;
@@ -73,7 +74,7 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 	}
 	
 	public void testDraw() {
-		
+		positionPlacerArtist.draw(new Canvas(), mapView, false);
 	}
 	
 	/**
