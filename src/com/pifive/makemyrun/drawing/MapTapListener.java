@@ -24,9 +24,13 @@ package com.pifive.makemyrun.drawing;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
+/**
+ * Interface which should be implemented by all the classes that want data when
+ * the MapView is tapped.
+ */
 public interface MapTapListener {
 	/**
-	 * 
+	 * When a MapView is tapped, this method will be called
 	 * @param geoPoint - The GeoPoint corresponding to where you tapped
 	 * @param mapView - The MapView that was tapped
 	 */

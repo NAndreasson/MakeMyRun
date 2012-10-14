@@ -35,12 +35,12 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -117,9 +117,9 @@ public class MainActivity extends MapActivity implements Observer {
     	inCatchBackState = true;
         viewStub.setVisibility(View.VISIBLE);
         Button runButton = (Button) findViewById(R.id.runbutton);
+        
         runButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
-				((Button)arg0).setVisibility(View.GONE);
 				startRun();
 			}
         });
@@ -183,18 +183,15 @@ public class MainActivity extends MapActivity implements Observer {
     	mainMenuStub.setVisibility(View.GONE);
     	startEndViewStub.setVisibility(View.VISIBLE);
     	Location currentLocation = getCurrentLocation(); 
-
     	Bitmap pinBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
     	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), pinBitmap);
-
     	final PositionPlacerArtist positionPlacerArtist = 
     			new PositionPlacerArtist(startPin, endPin, mapDrawer);
-    	displayCurrentLocation();
+    	
     	mapDrawer.addArtist(positionPlacerArtist);
     	mapView.setClickable(true);
-    	
-    	ImageButton startPointButton = (ImageButton) findViewById(R.id.startpointbutton);
+    	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
     	startPointButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -202,8 +199,8 @@ public class MainActivity extends MapActivity implements Observer {
 				positionPlacerArtist.setPinState(PinState.START);
 			}
 		});
-    	
-    	ImageButton endPointButton = (ImageButton) findViewById(R.id.endpointbutton);
+
+    	Button endPointButton = (Button) findViewById(R.id.endpointbutton);
     	endPointButton.setOnClickListener(new OnClickListener() {
 			
 			@Override
@@ -211,7 +208,7 @@ public class MainActivity extends MapActivity implements Observer {
 				positionPlacerArtist.setPinState(PinState.END);
 			}
 		});
-    	
+
     	Button generateButton = (Button) findViewById(R.id.generateRouteButton);
     	generateButton.setOnClickListener(new OnClickListener() {
 			
@@ -224,7 +221,6 @@ public class MainActivity extends MapActivity implements Observer {
 				generateRoute(v);
 			}
 		});
-    	
     }
 
 	/**
@@ -242,7 +238,6 @@ public class MainActivity extends MapActivity implements Observer {
 	}
 	
     public void generateRoute(View v) {
-    	mainMenuStub.setVisibility(View.GONE);
 		loadingStatus = new LoadingStatus(mapView.getContext());
 		try {
 			String query = RouteGenerator.generateRoute(
@@ -338,6 +333,7 @@ public class MainActivity extends MapActivity implements Observer {
 					0, 
 					locationArtist);
 		}
+		Log.d("MMR", "Does this run? ");
 	}
 	
 	/**

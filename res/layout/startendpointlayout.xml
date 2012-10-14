@@ -4,7 +4,7 @@
     android:layout_height="match_parent" >
 
     
-    <ImageButton
+    <Button
         android:id="@+id/startpointbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,11 +14,11 @@
         android:layout_marginTop="20dp"
         android:clickable="true"
 		android:background="#FFFFFF"
-        android:text="Start point"
+        android:text="Start"
         android:padding="5dp" 
-        android:src="@drawable/pin"/>
+        android:drawableLeft="@drawable/pin" />
     
-      <ImageButton
+      <Button
         android:id="@+id/endpointbutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,9 +28,9 @@
         android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
 		android:background="#FFFFFF"
-        android:text="End point"
+        android:text="End"
         android:padding="5dp" 
-        android:src="@drawable/pin" />
+        android:drawableLeft="@drawable/pin" />
  
       <Button
        	android:id="@+id/generateRouteButton"

@@ -32,8 +32,8 @@ import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
 
 /**
- * 
- *
+ * Class for drawing Position pins on to a MapView, receives new GeoPoints when the map is
+ * tapped 
  */
 public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTapListener {
 	
@@ -45,7 +45,7 @@ public class PositionPlacerArtist extends AbstractOverlayArtist implements MapTa
 	private Drawer drawer;
 	 
 	/**
-	 * 
+	 * Constructs a PositionPlacerArtist from the params
 	 * @param startPin - The start position pin
 	 * @param endPin - The end position pin
 	 * @param drawer - The Drawer we will force to redraw on changes.

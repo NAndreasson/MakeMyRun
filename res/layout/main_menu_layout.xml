@@ -26,6 +26,6 @@
 	    android:layout_gravity="bottom"
 	    android:text="@string/generate_button"
 	    android:textSize="@android:dimen/app_icon_size"
-	    android:onClick="generateRoute" />
+	    android:onClick="chooseStartEndPoints" />
 	
 </FrameLayout>
