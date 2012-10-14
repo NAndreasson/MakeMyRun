@@ -21,14 +21,10 @@
 
 package com.pifive.makemyrun.test;
 
-import java.util.Iterator;
-import java.util.List;
-
-import android.test.AndroidTestCase;
-
 import com.google.android.maps.GeoPoint;
 import com.pifive.makemyrun.RouteGenerator;
-import com.pifive.makemyrun.geo.Location;
+
+import android.test.AndroidTestCase;
 
 /**
  * Test class for RouteGenerator
@@ -36,99 +32,38 @@ import com.pifive.makemyrun.geo.Location;
 public class RouteGeneratorTest extends AndroidTestCase {
 	
 	/**
-	 * Passes is string is returned
+	 * Passes if not null and of type String
 	 */
-	public void testGenerateRoute() {
-		String route = RouteGenerator.generateRoute(new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6)), 
-											new GeoPoint((int)(57.7005 * 1E6), (int)(12.0005 * 1E6)));
-		String route2 = RouteGenerator.generateRoute(new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6)), 
-											new GeoPoint((int)(57.7010 * 1E6), (int)(12.0010 * 1E6)));
+	public void testRouteExistenceAndType() {
+		GeoPoint pointOne = new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6));
+		GeoPoint pointTwo = new GeoPoint((int)(57.7010 * 1E6), (int)(12.0010 * 1E6));
 		
-		assert(route.contains("origin=") && route2.contains("origin="));
-		assert(route.contains("&destination=") && route2.contains("&destination="));
-		assert(route.contains("&avoid=highways&sensor=true&mode=walking") 
-				&& route2.contains("&avoid=highways&sensor=true&mode=walking"));
-		
-		
+		String routeWithQuery = RouteGenerator.generateRoute(pointOne, pointTwo);
+		assertNotNull(routeWithQuery);
+		assert(routeWithQuery.getClass() == String.class);
 	}
 	
 	/**
-	 * Passes if too close distance returns null
+	 * Passes if destination and origin equals
 	 */
-	public void testGetMixed() {
-		Location aLoc = new Location(57.7000, 12.0000);
-		Location bLoc = new Location(57.7001, 12.0001);
+	public void testCircleRoute() {
+		GeoPoint pointOne = new GeoPoint((int)(57.7 * 1E6), (int)(12 * 1E6));
+		GeoPoint pointTwo = new GeoPoint((int)(57.7003 * 1E6), (int)(12.0003 * 1E6));
+		
+		String routeWithQuery = RouteGenerator.generateRoute(pointOne, pointTwo);
+		
+		int indexOfOrigin = routeWithQuery.indexOf("=");
+		int indexOfComma = routeWithQuery.indexOf(",");
+		int indexOfAnd = routeWithQuery.indexOf("&");
+		String otherHalf = routeWithQuery.substring(routeWithQuery.indexOf("destination="));
+		int indexOfDestination = otherHalf.indexOf("=");
+		int indexOfSecondComma = otherHalf.indexOf(",");
+		int indexOfSecondAnd = otherHalf.indexOf("&");
+		String originLat = routeWithQuery.substring(indexOfOrigin+1, indexOfComma);
+		String originLong = routeWithQuery.substring(indexOfComma+1, indexOfAnd);
+		String destLat = otherHalf.substring(indexOfDestination+1, indexOfSecondComma);
+		String destLong = otherHalf.substring(indexOfSecondComma+1, indexOfSecondAnd);
+		
+		assert(originLat.equals(destLat) && originLong.equals(originLong));
 	}
-	
-	/**
-	 * Passes if:
-	 * Returns 2 waypoints
-	 * Each returned value doesn't equal the one before
-	 */
-	public void testGetCircle() {
-		Location center = new Location(57.7000, 12.000);
-		Location start = new Location(57.6990, 11.990);
-		
-		List<Location> workingLocations = RouteGenerator.getCircle(center, start);
-		
-		assert(workingLocations.size() == 2);
-		
-		Location lastLocation = null;
-		Location presentLocation = null;
-		Iterator<Location> iterator = workingLocations.iterator();
-		while(iterator.hasNext()) {
-			if(lastLocation == null) {
-				lastLocation = iterator.next();
-			} else {
-				presentLocation = iterator.next();
-				assert(presentLocation.getLat() != lastLocation.getLat() && 
-						presentLocation.getLng() != lastLocation.getLng());
-			}
-		}
-	}
-	
-	/**
-	 * Passes if the random location is not too far from location
-	 */
-	public void testGetRandomLocation() {
-		Location location = new Location(68, 68);
-		Location randomLocation = RouteGenerator.generateRandomLocation(location);
-		assertTrue(location.getLat() != randomLocation.getLat());
-		assertTrue(location.getLng() != randomLocation.getLng());
-		assertTrue(randomLocation.getLat() != (location.getLat() + 0.003));
-		assertTrue(randomLocation.getLat() != location.getLat() + 0.007);
-		assertTrue(randomLocation.getLng() != location.getLng() + 0.003);
-		assertTrue(randomLocation.getLng() != location.getLng() + 0.007);
-	}
-	
-	/**
-	 * Should throw exception due to no location available in tests
-	 */
-	/* public void testGetCurrentRoute() {
-		
-		// Create a mock location
-		LocationManager locationManager = (LocationManager) getContext()
-							.getSystemService(Context.LOCATION_SERVICE);
-		android.location.Location mockLocation = 
-				new android.location.Location("gps");
-		
-		// Set its values
-		mockLocation.setLatitude(15);
-		mockLocation.setLongitude(15);
-		locationManager.addTestProvider("gps", 
-						false, false, false, 
-						false, false, false, 
-						false, 1, 1);
-		locationManager.setTestProviderLocation("gps", mockLocation);
-		
-		// Verify that it is returned
-		try {
-			android.location.Location returnedLocation = RouteGenerator.getCurrentLocation(getContext());
-			assertEquals("Verify that correct location is returned from getCurrentLocation()",
-				mockLocation, returnedLocation);
-		} catch (NoLocationException e) {
-			fail("Verify that we can get current location from RouteGenerator");
-		}
-		
-	}*/
 }

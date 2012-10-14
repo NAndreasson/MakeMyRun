@@ -30,7 +30,6 @@ import java.util.Random;
 
 import com.google.android.maps.GeoPoint;
 import android.location.Location;
-import android.util.Log;
 
 /**
  *	RouteGenerator
@@ -81,14 +80,8 @@ public abstract class RouteGenerator {
 	 * @return a google query with which you can query google for more steps
 	 */
 	private static String generateCircle(final com.pifive.makemyrun.geo.Location loc) {		
-		// build the beginning of the google query
-		StringBuilder stringBuilder = new StringBuilder(startOfQuery(loc, loc));
-		
-		// get the centerpoint of the 'circle'
 		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(loc);
-		stringBuilder.append(restOfQuery(getCircle(centerLocation, loc)));
-		System.out.println(stringBuilder.toString());
-		return stringBuilder.toString();
+		return QueryGenerator.googleQuery(loc, loc, getCircle(centerLocation, loc));
 	}
 	
 	/**
@@ -101,7 +94,7 @@ public abstract class RouteGenerator {
 										 final com.pifive.makemyrun.geo.Location bLoc) {
 		
 		double longDiff = (bLoc.getLng() - aLoc.getLng());
-		double latDiff = (bLoc.getLat() - bLoc.getLat());
+		double latDiff = (bLoc.getLat() - aLoc.getLat());
 		
 		List<com.pifive.makemyrun.geo.Location> locations = 
 							new ArrayList<com.pifive.makemyrun.geo.Location>();
@@ -113,7 +106,7 @@ public abstract class RouteGenerator {
 			locations = generateStraightHorizontal(aLoc, bLoc);
 			
 		} else {
-			double northLat = aLoc.getLat() > bLoc.getLat() ? aLoc.getLat() : aLoc.getLat();
+			double northLat = aLoc.getLat() > bLoc.getLat() ? aLoc.getLat() : bLoc.getLat();
 			double southLat = aLoc.getLat() > bLoc.getLat() ? bLoc.getLat() : aLoc.getLat();
 			double westLong = aLoc.getLng() < bLoc.getLng() ? aLoc.getLng() : bLoc.getLng();
 			double eastLong = aLoc.getLng() < bLoc.getLng() ? bLoc.getLng() : aLoc.getLng();
@@ -131,56 +124,11 @@ public abstract class RouteGenerator {
 			
 		}
 		
-		StringBuilder stringBuilder = new StringBuilder(startOfQuery(aLoc, bLoc));
-		stringBuilder.append(restOfQuery(locations));
-		System.out.println(stringBuilder.toString());
-		return stringBuilder.toString();
+		return QueryGenerator.googleQuery(aLoc, bLoc, locations);
 		
 	}
 	
-	/**
-	 * Generates the start of the google query
-	 * @param aLoc
-	 * @param bLoc
-	 * @return
-	 */
-	private static String startOfQuery(final com.pifive.makemyrun.geo.Location aLoc,
-			 						   final com.pifive.makemyrun.geo.Location bLoc) {
-			// build the beginning of the google query
-			StringBuilder stringBuilder = new StringBuilder("origin=");
-			stringBuilder.append(aLoc.getLat());
-			stringBuilder.append(",");
-			stringBuilder.append(aLoc.getLng());
-			stringBuilder.append("&destination=");
-			stringBuilder.append(bLoc.getLat());
-			stringBuilder.append(",");
-			stringBuilder.append(bLoc.getLng());
-			stringBuilder.append("&waypoints=optimize:true|");
-			
-			return stringBuilder.toString();
-	}
 	
-	/**
-	 * Generates the rest of the query
-	 * @param waypoints
-	 * @return String with the rest of the query to Google Maps
-	 */
-	private static String restOfQuery(List<com.pifive.makemyrun.geo.Location> waypoints) {
-		StringBuilder stringBuilder = new StringBuilder("");
-		Log.d("MMR", "whattafack");
-		for (com.pifive.makemyrun.geo.Location waypoint : waypoints) {
-			Log.d("MMR", "whattafack2");
-			stringBuilder.append(waypoint.getLat());
-			Log.d("MMR", ""+waypoint.getLat());
-			stringBuilder.append(",");
-			stringBuilder.append(waypoint.getLng());
-			stringBuilder.append("|");
-		}
-		// remove the last |
-		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-		stringBuilder.append("&avoid=highways&sensor=true&mode=walking");
-		return stringBuilder.toString();
-	}
 	
 	/**
 	 * Generates waypoints when the vertical sides are more than 5 times shorter than horizontal sides.
@@ -199,12 +147,12 @@ public abstract class RouteGenerator {
 		double diff = (northLat-southLat);
 		for(int i=0; i<2; i++) {
 			double randLat = diff * (new Random()).nextDouble() + southLat + 
-					((new Random()).nextBoolean() ? -1.0 : 1.0) * diff;
+					((new Random()).nextBoolean() ? -1.0 : 1.0) * 10 * diff;
 			double randLong = (eastLong - westLong) * (new Random()).nextDouble() + westLong;
 			locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
 		}
 		
-		return null;
+		return locations;
 	}
 
 	/**
@@ -224,12 +172,12 @@ public abstract class RouteGenerator {
 		double diff = (eastLong-westLong);
 		for(int i=0; i<2; i++) {
 			double randLong = diff * (new Random()).nextDouble() + westLong + 
-					((new Random()).nextBoolean() ? -1.0 : 1.0) * diff;
+					((new Random()).nextBoolean() ? -1.0 : 1.0) * 10 * diff;
 			double randLat = (northLat - southLat) * (new Random()).nextDouble() + southLat;
 			locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
 		}
 		
-		return null;
+		return locations;
 	}
 
 	/**
