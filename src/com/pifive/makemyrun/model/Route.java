@@ -30,11 +30,11 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.pifive.makemyrun.geo.Location;
+import com.pifive.makemyrun.geo.MMRLocation;
 
 public class Route {
 
-	private List<Location> waypoints = new ArrayList<Location>();
+	private List<MMRLocation> waypoints = new ArrayList<MMRLocation>();
 	private int distance;
 	private final String polyline;
 
@@ -94,7 +94,7 @@ public class Route {
 	 * 
 	 * @return The route's waypoint Locations
 	 */
-	public List<Location> getWaypoints() {
+	public List<MMRLocation> getWaypoints() {
 		return waypoints;
 	}
 }

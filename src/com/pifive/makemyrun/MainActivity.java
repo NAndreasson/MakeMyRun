@@ -35,7 +35,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +52,8 @@ public class MainActivity extends MapActivity implements Observer {
 	private ViewStub mainMenuStub;
 	private boolean inCatchBackState = false;
 	private ViewStub generateRouteStub;
-	private RunController runController;
+	private RunHelper runController;
+	private PositionPlacerArtist positionPlacerArtist;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class MainActivity extends MapActivity implements Observer {
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         generateRouteStub = (ViewStub) findViewById(R.id.generateRouteStub);
         mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
-        runController = new RunController(this, mapView);
+        runController = new RunHelper(this, mapView);
 
         runController.displayCurrentLocation();
         showStartScreen();
@@ -112,52 +112,40 @@ public class MainActivity extends MapActivity implements Observer {
     	}
     }
     
-    public void chooseStartEndPoints(View v) {    	
-    	mainMenuStub.setVisibility(View.GONE);
-    	generateRouteStub.setVisibility(View.VISIBLE);
-    	
+
+    public void endPointClickAction(View v){
+    	positionPlacerArtist.setPinState(PinState.END);
+    }
+    public void startPointClickAction(View v){
+    	positionPlacerArtist.setPinState(PinState.START);
+    }
+    
+    private void updatePositionPlacerArtist(){    	
     	// the default location should be the current one
-    	Location currentLocation = runController.getCurrentLocation(); 
     	
+    	Location currentLocation = runController.getCurrentLocation(); 
     	Bitmap positionPinImage = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
     	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
     	
-    	final PositionPlacerArtist positionPlacerArtist = 
+    	positionPlacerArtist = 
     			new PositionPlacerArtist(startPin, endPin, runController.getMapDrawer());
     	runController.getMapDrawer().addArtist(positionPlacerArtist);
+    }
+    
+    public void generateRouteButtonAction(View v) {
+    	runController.setStartPoint(positionPlacerArtist.getStartPoint());
+		runController.setEndPoint(positionPlacerArtist.getEndPoint());
+		generateRouteStub.setVisibility(View.GONE);
+		positionPlacerArtist.setPinState(PinState.NONE);
+		generateRoute(v);
+    }
+    
+    public void chooseStartEndPoints(View v) {    	
+    	mainMenuStub.setVisibility(View.GONE);
+    	generateRouteStub.setVisibility(View.VISIBLE);
+    	updatePositionPlacerArtist();
     	mapView.setClickable(true);
-    	
-    	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
-    	startPointButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				positionPlacerArtist.setPinState(PinState.START);
-			}
-		});
-
-    	Button endPointButton = (Button) findViewById(R.id.endpointbutton);
-    	endPointButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				positionPlacerArtist.setPinState(PinState.END);
-			}
-		});
-
-    	Button generateButton = (Button) findViewById(R.id.generateRouteButton);
-    	generateButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				MainActivity.this.runController.setStartPoint(positionPlacerArtist.getStartPoint());
-				MainActivity.this.runController.setEndPoint(positionPlacerArtist.getEndPoint());
-				generateRouteStub.setVisibility(View.GONE);
-				positionPlacerArtist.setPinState(PinState.NONE);
-				generateRoute(v);
-			}
-		});
     }
 
 	/**

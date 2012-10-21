@@ -6,15 +6,6 @@ import java.util.Observer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.google.android.maps.GeoPoint;
-import com.google.android.maps.MapView;
-import com.pifive.makemyrun.database.MMRDbAdapter;
-import com.pifive.makemyrun.drawing.CurrentLocationArtist;
-import com.pifive.makemyrun.drawing.MapDrawer;
-import com.pifive.makemyrun.drawing.RouteArtist;
-import com.pifive.makemyrun.model.Route;
-import com.pifive.makemyrun.model.RouteGenerator;
-
 import android.app.Activity;
 import android.content.Context;
 import android.location.Criteria;
@@ -24,7 +15,17 @@ import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class RunController {
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.pifive.makemyrun.database.MMRDbAdapter;
+import com.pifive.makemyrun.drawing.CurrentLocationArtist;
+import com.pifive.makemyrun.drawing.MapDrawer;
+import com.pifive.makemyrun.drawing.RouteArtist;
+import com.pifive.makemyrun.geo.MMRLocation;
+import com.pifive.makemyrun.model.Route;
+import com.pifive.makemyrun.model.RouteGenerator;
+
+public class RunHelper {
 	private Context context;
 	private DistanceTracker distanceTracker;
 	
@@ -44,7 +45,7 @@ public class RunController {
 	 * Adds the layout to the Activity
 	 * @param activity
 	 */
-	public RunController(final Activity activity, final MapView mapView) {
+	public RunHelper(final Activity activity, final MapView mapView) {
 		this.activity = activity;
 		context = activity.getBaseContext();
 		mapDrawer = new MapDrawer(mapView);
@@ -118,36 +119,8 @@ public class RunController {
 		return distanceTracker;
 	}
 
-	public void setDistanceTracker(DistanceTracker distanceTracker) {
-		this.distanceTracker = distanceTracker;
-	}
-
-	public Timer getTimer() {
-		return timer;
-	}
-
-	public void setTimer(Timer timer) {
-		this.timer = timer;
-	}
-
-	public LoadingStatus getLoadingStatus() {
-		return loadingStatus;
-	}
-
-	public void setLoadingStatus(LoadingStatus loadingStatus) {
-		this.loadingStatus = loadingStatus;
-	}
-
-	public GeoPoint getStartPoint() {
-		return startPoint;
-	}
-
 	public void setStartPoint(GeoPoint startPoint) {
 		this.startPoint = startPoint;
-	}
-
-	public GeoPoint getEndPoint() {
-		return endPoint;
 	}
 
 	public void setEndPoint(GeoPoint endPoint) {
@@ -156,26 +129,6 @@ public class RunController {
 
 	public MapDrawer getMapDrawer() {
 		return mapDrawer;
-	}
-
-	public void setMapDrawer(MapDrawer mapDrawer) {
-		this.mapDrawer = mapDrawer;
-	}
-
-	public MMRDbAdapter getDb() {
-		return db;
-	}
-
-	public void setDb(MMRDbAdapter db) {
-		this.db = db;
-	}
-
-	public Route getCurrentRoute() {
-		return currentRoute;
-	}
-
-	public void setCurrentRoute(Route currentRoute) {
-		this.currentRoute = currentRoute;
 	}
 
 	/**
@@ -191,7 +144,7 @@ public class RunController {
 		android.location.Location currentLocation = 
 					locManager.getLastKnownLocation(provider);
 			
-		setDistanceTracker(new DistanceTracker(currentLocation));
+		distanceTracker = new DistanceTracker(currentLocation);
 		// set distanceTracker to retrieve location updates
 		locManager.requestLocationUpdates(provider, 0, 0, getDistanceTracker());
 	}
@@ -210,18 +163,18 @@ public class RunController {
     	trackDistance();
         getDistanceTracker().addObserver(observer);
 
-        setTimer(new Timer((TextView) activity.findViewById(R.id.clocktext)));
-    	getTimer().start();
+        timer = new Timer((TextView) activity.findViewById(R.id.clocktext));
+    	timer.start();
 	}
 
 	public void generateRoute(MapView view) {
-		setLoadingStatus(new LoadingStatus(view.getContext()));
+		loadingStatus = new LoadingStatus(view.getContext());
 		try {
 			String query = RouteGenerator.generateRoute(
-							getStartPoint(), getEndPoint());
+							startPoint, endPoint);
 			startDirectionsTask(query, view);
 		} catch (RuntimeException e) {
-			getLoadingStatus().remove();
+			loadingStatus.remove();
 			Log.d("MMR", e.getStackTrace().toString());
 			Toast.makeText(context.getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
@@ -236,21 +189,21 @@ public class RunController {
 	 */
 	private void startDirectionsTask(String query, MapView mapView) {
         DirectionsTask directionsTask = new DirectionsTask(context, DirectionsTask.GOOGLE_URL);
-        directionsTask.setLoadingStatus(getLoadingStatus());
+        directionsTask.setLoadingStatus(loadingStatus);
         JSONObject googleRoute = directionsTask.simpleGet(query);
         
         try {
-			setCurrentRoute((new Route(googleRoute)));
+			currentRoute = new Route(googleRoute);
 
 			// Center on our starting point
-			com.pifive.makemyrun.geo.Location location = getCurrentRoute().getWaypoints().get(0);
+			MMRLocation location = currentRoute.getWaypoints().get(0);
 			GeoPoint geoPoint = new GeoPoint(
 									location.getMicroLat(),
 									location.getMicroLng());
 			mapView.getController().animateTo(geoPoint);
 			
 			// Add an artist to draw our route
-			RouteArtist routeArtist = new RouteArtist(getCurrentRoute().getWaypoints());
+			RouteArtist routeArtist = new RouteArtist(currentRoute.getWaypoints());
 			getMapDrawer().addArtist(routeArtist);
 		} catch (JSONException e) {
 			e.printStackTrace();

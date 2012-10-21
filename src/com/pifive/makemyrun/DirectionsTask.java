@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.pifive.makemyrun.database.MMRDbAdapter;
 import com.pifive.makemyrun.model.RouteGenerationFailedException;
 
 import android.content.Context;
