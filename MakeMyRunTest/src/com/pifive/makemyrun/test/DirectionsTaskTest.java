@@ -32,7 +32,7 @@ import com.pifive.makemyrun.DirectionsException;
 import com.pifive.makemyrun.DirectionsTask;
 import com.pifive.makemyrun.LoadingStatus;
 import com.pifive.makemyrun.MainActivity;
-import com.pifive.makemyrun.RouteGenerationFailedException;
+import com.pifive.makemyrun.model.RouteGenerationFailedException;
 
 public class DirectionsTaskTest extends
 		ActivityInstrumentationTestCase2<MainActivity> {

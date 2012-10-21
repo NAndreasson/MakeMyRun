@@ -34,7 +34,7 @@ import org.json.JSONTokener;
 
 import android.util.Log;
 
-import com.pifive.makemyrun.Route;
+import com.pifive.makemyrun.model.Route;
 
 public class RouteTest extends android.test.InstrumentationTestCase{
 	Route testObj;

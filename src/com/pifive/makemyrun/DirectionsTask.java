@@ -32,6 +32,8 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pifive.makemyrun.model.RouteGenerationFailedException;
+
 import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;

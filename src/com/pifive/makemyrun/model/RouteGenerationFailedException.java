@@ -19,24 +19,13 @@
  *     under the License.
  */
 
-package com.pifive.makemyrun.test;
+package com.pifive.makemyrun.model;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
-import com.pifive.makemyrun.geo.Location;
-import com.pifive.makemyrun.model.PolylineDecoder;
-
-public class PolylineDecoderTest extends TestCase{
+@SuppressWarnings("serial")
+public class RouteGenerationFailedException extends RuntimeException {
 	
-	private final String testPoints = "}sf_JmgdhAa@cA_@aAKSoCwGcAqCg@qA";
-	
-	public void testDecode(){
-		List<Location> result = PolylineDecoder.decodePoly(testPoints);
-		
-		assertTrue(result != null && result.size() > 0);
-		assertTrue(result.get(0).getLat()+result.get(0).getLng() != 0);
+	public RouteGenerationFailedException(String detailMessage) {
+		super(detailMessage);
 	}
 
 }

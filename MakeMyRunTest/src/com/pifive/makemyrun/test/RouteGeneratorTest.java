@@ -22,7 +22,7 @@
 package com.pifive.makemyrun.test;
 
 import com.google.android.maps.GeoPoint;
-import com.pifive.makemyrun.RouteGenerator;
+import com.pifive.makemyrun.model.RouteGenerator;
 
 import android.test.AndroidTestCase;
 
