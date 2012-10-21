@@ -53,7 +53,7 @@ public class MainActivity extends MapActivity implements Observer {
 	private ViewStub mainMenuStub;
 	private boolean inCatchBackState = false;
 	private ViewStub generateRouteStub;
-	private RunController makeMyRun;
+	private RunController runController;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,9 +65,9 @@ public class MainActivity extends MapActivity implements Observer {
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         generateRouteStub = (ViewStub) findViewById(R.id.generateRouteStub);
         mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
-        makeMyRun = new RunController(this, mapView);
+        runController = new RunController(this, mapView);
 
-        makeMyRun.displayCurrentLocation();
+        runController.displayCurrentLocation();
         showStartScreen();
     }
     
@@ -93,7 +93,7 @@ public class MainActivity extends MapActivity implements Observer {
     	postGeneratedStub.setVisibility(View.GONE);
     	runViewStub.setVisibility(View.VISIBLE);
     	
-    	makeMyRun.startRunLogic(this);
+    	runController.startRunLogic(this);
         mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
@@ -117,15 +117,15 @@ public class MainActivity extends MapActivity implements Observer {
     	generateRouteStub.setVisibility(View.VISIBLE);
     	
     	// the default location should be the current one
-    	Location currentLocation = makeMyRun.getCurrentLocation(); 
+    	Location currentLocation = runController.getCurrentLocation(); 
     	
     	Bitmap positionPinImage = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
     	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
     	
     	final PositionPlacerArtist positionPlacerArtist = 
-    			new PositionPlacerArtist(startPin, endPin, makeMyRun.getMapDrawer());
-    	makeMyRun.getMapDrawer().addArtist(positionPlacerArtist);
+    			new PositionPlacerArtist(startPin, endPin, runController.getMapDrawer());
+    	runController.getMapDrawer().addArtist(positionPlacerArtist);
     	mapView.setClickable(true);
     	
     	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
@@ -151,8 +151,8 @@ public class MainActivity extends MapActivity implements Observer {
 			
 			@Override
 			public void onClick(View v) {
-				MainActivity.this.makeMyRun.setStartPoint(positionPlacerArtist.getStartPoint());
-				MainActivity.this.makeMyRun.setEndPoint(positionPlacerArtist.getEndPoint());
+				MainActivity.this.runController.setStartPoint(positionPlacerArtist.getStartPoint());
+				MainActivity.this.runController.setEndPoint(positionPlacerArtist.getEndPoint());
 				generateRouteStub.setVisibility(View.GONE);
 				positionPlacerArtist.setPinState(PinState.NONE);
 				generateRoute(v);
@@ -175,7 +175,7 @@ public class MainActivity extends MapActivity implements Observer {
 	}
 	
     public void generateRoute(View v) {
-    	makeMyRun.generateRoute(mapView);
+    	runController.generateRoute(mapView);
 		showMiddleScreen();
 		mapView.requestFocus();
 		mapView.requestFocusFromTouch();
@@ -214,7 +214,7 @@ public class MainActivity extends MapActivity implements Observer {
 	@Override
 	public void update(Observable observable, Object data) {
 		TextView distance = (TextView) findViewById(R.id.distancetext);
-		distance.setText(Math.round(makeMyRun.getDistanceTracker().getTotalDistanceInMeters()) + " m");
+		distance.setText(Math.round(runController.getDistanceTracker().getTotalDistanceInMeters()) + " m");
 	}
 	
 	/**
@@ -246,7 +246,7 @@ public class MainActivity extends MapActivity implements Observer {
 				
 				runStub.setVisibility(View.GONE);
 				mainMenuStub.setVisibility(View.VISIBLE);
-				Toast.makeText(getBaseContext(), makeMyRun.saveRun(completed) ?
+				Toast.makeText(getBaseContext(), runController.saveRun(completed) ?
 						R.string.save_run_success :
 						R.string.save_run_failed, Toast.LENGTH_LONG).show();	
 				cleanUp();
@@ -269,7 +269,7 @@ public class MainActivity extends MapActivity implements Observer {
 	 * Cleans up from a run
 	 */
 	public void cleanUp() {
-    	makeMyRun.cleanUp(); 
+    	runController.cleanUp(); 
     	mapView.setClickable(false);
     	mapView.invalidate();	
 	}
