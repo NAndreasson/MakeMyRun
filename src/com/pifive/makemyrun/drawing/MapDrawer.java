@@ -134,6 +134,9 @@ public class MapDrawer implements Drawer {
 			}
 		}
 		
+		/**
+		 * Let all artists know we got a tap.
+		 */
 		@Override
 		public boolean onTap(GeoPoint geoPoint, MapView mapView) {
 			for (OverlayArtist artist : artists) {
