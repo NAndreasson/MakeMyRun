@@ -9,28 +9,37 @@
         android:id="@+id/pi5logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_gravity="center_horizontal"
         android:alpha="1"
         android:contentDescription="@string/testlogo"
         android:src="@drawable/icon" />
 
     <Button
+        style="@style/MMRButtons"
         android:id="@+id/generatebutton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="20dp"
-        android:background="@drawable/rounded_button"
         android:clickable="true"
         android:onClick="chooseStartEndPoints"
         android:text="@string/generate_button"
         android:textSize="@android:dimen/app_icon_size" />
 
     <Button
+        style="@style/MMRButtons"
         android:id="@+id/histButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="170dp"
+        android:text="@string/history_btn"
+        android:padding="5dp"
+        android:textSize="25dp"
         android:onClick="viewHistory"
-        android:text="@string/history_btn" />
+         />
 
 </FrameLayout>

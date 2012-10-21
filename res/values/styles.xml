@@ -2,8 +2,10 @@
 
     <style name="AppTheme" parent="android:Theme.Light" />
     <style name="HistoryFont" parent="@android:style/TextAppearance.Medium">
-        
         <item name="android:textColor">#FFFFFFFF</item>
+    </style>
+    <style name="MMRButtons">
+        <item name="android:background">@drawable/rounded_button</item>
     </style>
     
 </resources>
