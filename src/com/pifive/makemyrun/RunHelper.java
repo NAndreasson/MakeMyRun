@@ -46,6 +46,11 @@ import com.pifive.makemyrun.geo.MMRLocation;
 import com.pifive.makemyrun.model.Route;
 import com.pifive.makemyrun.model.RouteGenerator;
 
+/**
+ * Helper class for MainActivity. More complex code is delegated here 
+ * to make MainActivity easier to read
+ *
+ */
 public class RunHelper {
 	private Context context;
 	private DistanceTracker distanceTracker;
@@ -97,6 +102,11 @@ public class RunHelper {
 		Log.d("MMR", "Does this run? ");
 	}
 	
+	/**
+	 * Determines current location by using getBestProvider in
+	 * android's LocationManager
+	 * @return current location as a Android Location object
+	 */
 	public Location getCurrentLocation() {
 		// Get location manager from system
 		LocationManager locManager = 
@@ -119,7 +129,7 @@ public class RunHelper {
 	/**
 	 * Saves a run
 	 * @param completed
-	 * @return
+	 * @return true if succeeded else false
 	 */
 	public boolean saveRun(boolean completed) {
 		Log.d("MMR", "Route distance: "+currentRoute.getDistance());

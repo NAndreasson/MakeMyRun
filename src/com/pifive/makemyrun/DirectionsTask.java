@@ -99,7 +99,8 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 */
 	private void updateLoadingStage(boolean finishedMessage) {
 		if(loadingStatus != null){
-			loadingStatus.setLoadingStage(loadingMessage, finishedMessage);
+			loadingStatus.setLoadingStage(finishedMessage ? this.finishedMessage : 
+				loadingMessage, finishedMessage);
 		}
 		
 	}

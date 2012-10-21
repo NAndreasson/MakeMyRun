@@ -33,8 +33,18 @@ import android.widget.TextView;
 
 import com.pifive.makemyrun.database.MMRDbAdapter;
 
+/**
+ * Cursor adapter class get data from MMRDbAdapter
+ * 
+ */
 public class RunHistory extends CursorAdapter {	
 	
+	/**
+	 * Construct
+	 * 
+	 * @param context Activity context
+	 * @param c Database table cursor
+	 */
 	public RunHistory(Context context, Cursor c) {
 		super(context, c);
 	}
