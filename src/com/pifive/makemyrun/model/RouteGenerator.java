@@ -55,11 +55,11 @@ public abstract class RouteGenerator {
 	}
 	
 	/**
-	 * Generates a route.
+	 * Generates a google query that we can use to get a route in return.
 	 * If distance between points < 100 meters, a circle route will be returned.
-	 * @param startLoc
-	 * @param endLoc
-	 * @return
+	 * @param startLoc Starting location
+	 * @param endLoc End location
+	 * @return Google Query
 	 */
 	public static String generateRoute(final GeoPoint startLoc, final GeoPoint endLoc) {
 		Location sLoc = new Location("start location");
@@ -297,7 +297,7 @@ public abstract class RouteGenerator {
 	 * Returns a circle-shaped run
 	 * @param center
 	 * @param start
-	 * @return
+	 * @return waypoints in a circle
 	 */
 	private static List<MMRLocation> getCircle(MMRLocation center, 
 			MMRLocation start) {
