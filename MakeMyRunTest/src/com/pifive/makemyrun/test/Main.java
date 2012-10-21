@@ -35,8 +35,13 @@ public class Main extends ActivityInstrumentationTestCase2<MainActivity> {
 	}
 	
 	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	protected void setUp() {
+		try {
+			super.setUp();
+		} catch (Exception e) {
+			fail();
+			e.printStackTrace();
+		}
 		
 		setActivityInitialTouchMode(false);
 		

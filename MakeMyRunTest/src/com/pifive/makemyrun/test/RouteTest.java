@@ -38,16 +38,21 @@ import com.pifive.makemyrun.model.Route;
 public class RouteTest extends android.test.InstrumentationTestCase {
 	private static final String TAG = "MMR-"
 			+ RouteTest.class.getSimpleName();
-	
+
 	private JSONObject testCase1;
 	private Route testRoute;
 	private int resultDistance = 351;
 	private int wpsSize = 11;
 	@Override
 
-	protected void setUp() throws Exception{
-		super.setUp();
-		if(testCase1==null){
+	protected void setUp() {
+		try {
+			super.setUp();
+		} catch (Exception e) {
+			fail("setUp failed");
+		}
+		
+		if (testCase1 == null) {
 			InputStream in = getInstrumentation().getContext().
 					getResources().openRawResource(R.raw.routetestcase1);
 			BufferedReader bufIn = new BufferedReader(new InputStreamReader(in));

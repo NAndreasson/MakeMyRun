@@ -24,8 +24,12 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 		super(MainActivity.class);
 	}
 	
-	public void setUp() throws Exception {
-		super.setUp();
+	public void setUp() {
+		try {
+			super.setUp();
+		} catch (Exception e) {
+			fail("setUp failed");
+		}
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
 		GeoPoint startPoint = new GeoPoint(22, 22);

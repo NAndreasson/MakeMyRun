@@ -49,9 +49,12 @@ public class RouteArtistTest extends ActivityInstrumentationTestCase2<MainActivi
 	 * Sets up MapView with Overlays and mocks a location list.
 	 */
 	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		
+	public void setUp() {
+		try {
+			super.setUp();
+		} catch (Exception e) {
+			fail("setUp failed");
+		}
 		mapView = (MapView) getActivity().findViewById(com.pifive.makemyrun.R.id.mapview);
 		
 		// Mock locations

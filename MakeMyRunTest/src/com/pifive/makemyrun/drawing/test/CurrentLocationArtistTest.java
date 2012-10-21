@@ -54,8 +54,12 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 	private CurrentLocationArtist artist;
 	private MapView mapView;
 	
-	public void setUp() throws Exception {
-		super.setUp();
+	public void setUp() {
+		try {
+			super.setUp();
+		} catch (Exception e) {
+			fail();
+		}
 		
 		location.setLatitude(testDegree);
 		location.setLongitude(testDegree);

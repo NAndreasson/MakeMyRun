@@ -45,8 +45,12 @@ public class DirectionsTaskTest extends
 	}
 
 	@Override
-	public void setUp() throws Exception {
-		super.setUp();
+	public void setUp() {
+		try {
+			super.setUp();
+		} catch (Exception e) {
+			fail("setUp failed");
+		}
 
 		activity = getActivity();
 		task = new DirectionsTask(activity, DirectionsTask.GOOGLE_URL);
