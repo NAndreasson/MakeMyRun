@@ -19,7 +19,7 @@
  *     under the License.
  */
 
-package com.pifive.makemyrun;
+package com.pifive.makemyrun.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,16 +27,13 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
 import android.util.Log;
-
 import com.pifive.makemyrun.external.PolylineDecoder;
-import com.pifive.makemyrun.geo.Location;
+import com.pifive.makemyrun.geo.MMRLocation;
 
 public class Route {
 
-	private List<Location> waypoints = new ArrayList<Location>();
+	private List<MMRLocation> waypoints = new ArrayList<MMRLocation>();
 	private int distance;
 	private final String polyline;
 
@@ -96,7 +93,7 @@ public class Route {
 	 * 
 	 * @return The route's waypoint Locations
 	 */
-	public List<Location> getWaypoints() {
+	public List<MMRLocation> getWaypoints() {
 		return waypoints;
 	}
 }

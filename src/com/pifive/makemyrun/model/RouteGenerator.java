@@ -22,20 +22,29 @@
 /**
  * RouteGenerator.java
  */
-package com.pifive.makemyrun;
+package com.pifive.makemyrun.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.google.android.maps.GeoPoint;
 import android.location.Location;
+
+import com.google.android.maps.GeoPoint;
+import com.pifive.makemyrun.geo.MMRLocation;
 
 /**
  *	RouteGenerator
  *	Class with static methods for route generation.
  */
 public abstract class RouteGenerator {
+	private static double micro = 1E6;
+	private static double minDistForDiffPoints = 100.0;
+	private static double oneFifth = 0.2;
+	private static int factorToWidenRoute = 10;
+	private static double minDiff = 0.0005;
+	private static double maxDiff = 0.001;
+	private static double thirdOfCircle = 2.0/3.0;
 
 	/**
 	 * Private constructor to prevent from being instantiated
@@ -53,23 +62,21 @@ public abstract class RouteGenerator {
 	 */
 	public static String generateRoute(final GeoPoint startLoc, final GeoPoint endLoc) {
 		Location sLoc = new Location("start location");
-		sLoc.setLatitude(startLoc.getLatitudeE6() / 1E6);
-		sLoc.setLongitude(startLoc.getLongitudeE6() / 1E6);
+		sLoc.setLatitude(startLoc.getLatitudeE6() / micro);
+		sLoc.setLongitude(startLoc.getLongitudeE6() / micro);
 		
 		Location eLoc = new Location("end location");
-		eLoc.setLatitude(endLoc.getLatitudeE6() / 1E6);
-		eLoc.setLongitude(endLoc.getLongitudeE6() / 1E6);
-		
-		System.out.println("distance " + sLoc.distanceTo(eLoc));
+		eLoc.setLatitude(endLoc.getLatitudeE6() / micro);
+		eLoc.setLongitude(endLoc.getLongitudeE6() / micro);
 		
 		if(sLoc.distanceTo(eLoc) < 100.0) {
-			return generateCircle(new com.pifive.makemyrun.geo.Location
+			return generateCircle(new MMRLocation
 					(sLoc.getLatitude(), sLoc.getLongitude()));
 			
 		} else {
-			return generateLinear(new com.pifive.makemyrun.geo.Location
+			return generateLinear(new MMRLocation
 					(sLoc.getLatitude(), sLoc.getLongitude()),
-					new com.pifive.makemyrun.geo.Location
+					new MMRLocation
 					(eLoc.getLatitude(), eLoc.getLongitude()));
 		}
 	}
@@ -79,8 +86,8 @@ public abstract class RouteGenerator {
 	 * @param startEndLoc - Current location that the generated route will start and end at
 	 * @return a google query with which you can query google for more steps
 	 */
-	private static String generateCircle(final com.pifive.makemyrun.geo.Location loc) {		
-		com.pifive.makemyrun.geo.Location centerLocation = generateRandomLocation(loc);
+	private static String generateCircle(final MMRLocation loc) {		
+		MMRLocation centerLocation = generateRandomLocation(loc);
 		return QueryGenerator.googleQuery(loc, loc, getCircle(centerLocation, loc));
 	}
 	
@@ -90,14 +97,14 @@ public abstract class RouteGenerator {
 	 * @param bLoc Finish location
 	 * @return a google query with which you can query google for more steps
 	 */
-	private static String generateLinear(final com.pifive.makemyrun.geo.Location aLoc,
-										 final com.pifive.makemyrun.geo.Location bLoc) {
+	private static String generateLinear(final MMRLocation aLoc,
+										 final MMRLocation bLoc) {
 		
 		double longDiff = (bLoc.getLng() - aLoc.getLng());
 		double latDiff = (bLoc.getLat() - aLoc.getLat());
 		
-		List<com.pifive.makemyrun.geo.Location> locations = 
-							new ArrayList<com.pifive.makemyrun.geo.Location>();
+		List<MMRLocation> locations = 
+							new ArrayList<MMRLocation>();
 		
 		if (longDiff == 0.0) {
 			locations = generateStraightVertical(aLoc, bLoc);
@@ -111,10 +118,10 @@ public abstract class RouteGenerator {
 			double westLong = aLoc.getLng() < bLoc.getLng() ? aLoc.getLng() : bLoc.getLng();
 			double eastLong = aLoc.getLng() < bLoc.getLng() ? bLoc.getLng() : aLoc.getLng();
 			
-			if ((northLat-southLat)/(eastLong-westLong) < 0.2) {
+			if ((northLat-southLat)/(eastLong-westLong) < oneFifth) {
 				locations = generateHorizontalThin(northLat, southLat, westLong, eastLong);
 				
-			} else if ((eastLong-westLong)/(northLat-southLat) < 0.2) {
+			} else if ((eastLong-westLong)/(northLat-southLat) < oneFifth) {
 				locations = generateVerticalThin(northLat, southLat, westLong, eastLong);
 				
 			} else {
@@ -138,18 +145,18 @@ public abstract class RouteGenerator {
 	 * @param eastLong Eastest longitude
 	 * @return waypoints
 	 */
-	private static List<com.pifive.makemyrun.geo.Location> generateHorizontalThin(
+	private static List<MMRLocation> generateHorizontalThin(
 			double northLat, double southLat, double westLong, double eastLong) {
 		
-		List<com.pifive.makemyrun.geo.Location> locations = 
-				new ArrayList<com.pifive.makemyrun.geo.Location>();
+		List<MMRLocation> locations = 
+				new ArrayList<MMRLocation>();
 		
 		double diff = (northLat-southLat);
 		for(int i=0; i<2; i++) {
 			double randLat = diff * (new Random()).nextDouble() + southLat + 
-					((new Random()).nextBoolean() ? -1.0 : 1.0) * 10 * diff;
+					((new Random()).nextBoolean() ? -1.0 : 1.0) * factorToWidenRoute * diff;
 			double randLong = (eastLong - westLong) * (new Random()).nextDouble() + westLong;
-			locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+			locations.add(new MMRLocation(randLat, randLong));
 		}
 		
 		return locations;
@@ -163,18 +170,18 @@ public abstract class RouteGenerator {
 	 * @param eastLong Eastest longitude
 	 * @return waypoints
 	 */
-	private static List<com.pifive.makemyrun.geo.Location> generateVerticalThin(
+	private static List<MMRLocation> generateVerticalThin(
 			double northLat, double southLat, double westLong, double eastLong) {
 		
-		List<com.pifive.makemyrun.geo.Location> locations = 
-				new ArrayList<com.pifive.makemyrun.geo.Location>();
+		List<MMRLocation> locations = 
+				new ArrayList<MMRLocation>();
 		
 		double diff = (eastLong-westLong);
 		for(int i=0; i<2; i++) {
 			double randLong = diff * (new Random()).nextDouble() + westLong + 
-					((new Random()).nextBoolean() ? -1.0 : 1.0) * 10 * diff;
+					((new Random()).nextBoolean() ? -1.0 : 1.0) * factorToWidenRoute * diff;
 			double randLat = (northLat - southLat) * (new Random()).nextDouble() + southLat;
-			locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+			locations.add(new MMRLocation(randLat, randLong));
 		}
 		
 		return locations;
@@ -188,18 +195,18 @@ public abstract class RouteGenerator {
 	 * @param eastLong Eastest longitude
 	 * @return waypoints
 	 */
-	private static List<com.pifive.makemyrun.geo.Location> 
+	private static List<MMRLocation> 
 						generateNormal(
 						final double northLat, final double southLat, 
 						final double westLong, final double eastLong) {
 		
-		List<com.pifive.makemyrun.geo.Location> locations = 
-				new ArrayList<com.pifive.makemyrun.geo.Location>();
+		List<MMRLocation> locations = 
+				new ArrayList<MMRLocation>();
 		
 		for(int i=0; i<2; i++) {
 			double randLat = (northLat - southLat) * (new Random()).nextDouble() + southLat;
 			double randLong = (eastLong - westLong) * (new Random()).nextDouble() + westLong;
-			locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+			locations.add(new MMRLocation(randLat, randLong));
 		}
 		
 		return locations;
@@ -211,23 +218,23 @@ public abstract class RouteGenerator {
 	 * @param bLoc finish location
 	 * @return waypoints 
 	 */
-	private static List<com.pifive.makemyrun.geo.Location> 
+	private static List<MMRLocation> 
 						generateStraightVertical(
-						final com.pifive.makemyrun.geo.Location aLoc,
-			 			final com.pifive.makemyrun.geo.Location bLoc) {
+						final MMRLocation aLoc,
+			 			final MMRLocation bLoc) {
 		
-		List<com.pifive.makemyrun.geo.Location> locations = 
-				new ArrayList<com.pifive.makemyrun.geo.Location>();
+		List<MMRLocation> locations = 
+				new ArrayList<MMRLocation>();
 		
 		double southLat = aLoc.getLat() > bLoc.getLat() ? bLoc.getLat() : aLoc.getLat();
 		double westLong = aLoc.getLng();
 		double eastLong = aLoc.getLng();
 		
 		for(int i=0; i<2; i++) {
-			double randLat = ((new Random()).nextBoolean() ? -1.0 : 1.0) * 0.0005 
+			double randLat = ((new Random()).nextBoolean() ? -1.0 : 1.0) * minDiff 
 											* (new Random()).nextDouble() + southLat;
 			double randLong = (eastLong - westLong) * (new Random()).nextDouble() + westLong;
-			locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+			locations.add(new MMRLocation(randLat, randLong));
 		}
 		
 		return locations;
@@ -240,13 +247,13 @@ public abstract class RouteGenerator {
 	 * @param bLoc finish location
 	 * @return waypoints 
 	 */
-	private static List<com.pifive.makemyrun.geo.Location> 
+	private static List<MMRLocation> 
 						generateStraightHorizontal(
-						final com.pifive.makemyrun.geo.Location aLoc,
-			 			final com.pifive.makemyrun.geo.Location bLoc) {
+						final MMRLocation aLoc,
+			 			final MMRLocation bLoc) {
 		
-		List<com.pifive.makemyrun.geo.Location> locations = 
-				new ArrayList<com.pifive.makemyrun.geo.Location>();
+		List<MMRLocation> locations = 
+				new ArrayList<MMRLocation>();
 		
 		double northLat = aLoc.getLat();
 		double southLat = aLoc.getLat();
@@ -254,10 +261,10 @@ public abstract class RouteGenerator {
 		
 		for(int i=0; i<2; i++) {
 			double randLat = (northLat - southLat) * (new Random()).nextDouble() + southLat;
-			double randLong = ((new Random()).nextBoolean() ? -1.0 : 1.0) * 0.0005 
+			double randLong = ((new Random()).nextBoolean() ? -1.0 : 1.0) * minDiff 
 									            * (new Random()).nextDouble() + westLong;
 			
-			locations.add(new com.pifive.makemyrun.geo.Location(randLat, randLong));
+			locations.add(new MMRLocation(randLat, randLong));
 		}
 		
 		return locations;
@@ -272,17 +279,17 @@ public abstract class RouteGenerator {
 	 * @param location
 	 * @return
 	 */
-	private static com.pifive.makemyrun.geo.Location generateRandomLocation(com.pifive.makemyrun.geo.Location location) {
+	private static MMRLocation generateRandomLocation(MMRLocation location) {
 		// create another location approx 0.005 - 0.010 from the current
 		Random random = new Random();
-		double randomNumber = 0.005 + random.nextDouble() * 0.010;
+		double randomNumber = minDiff + random.nextDouble() * maxDiff;
 		double latSign = random.nextBoolean() ? 1.0 : -1.0;
 		double longSign = random.nextBoolean() ? 1.0 : -1.0;
 		
 		double centerLatitude = location.getLat() + latSign*randomNumber;
 		double centerLongitude = location.getLng() + longSign*randomNumber;
 		
-		return new com.pifive.makemyrun.geo.Location(centerLatitude, centerLongitude);
+		return new MMRLocation(centerLatitude, centerLongitude);
 	}
 	
 	/**
@@ -291,18 +298,18 @@ public abstract class RouteGenerator {
 	 * @param start
 	 * @return
 	 */
-	private static List<com.pifive.makemyrun.geo.Location> getCircle(com.pifive.makemyrun.geo.Location center, 
-			com.pifive.makemyrun.geo.Location start) {
+	private static List<MMRLocation> getCircle(MMRLocation center, 
+			MMRLocation start) {
 		
-		List<com.pifive.makemyrun.geo.Location> locations = new ArrayList<com.pifive.makemyrun.geo.Location>();
-		double angle = (Math.PI * 2) / 3;
+		double angle = Math.PI * thirdOfCircle;
+		List<MMRLocation> locations = new ArrayList<MMRLocation>();
 		double longDiff = start.getLng() - center.getLng();
 		double latDiff = start.getLat() - center.getLat();
 		double radius = Math.sqrt(Math.pow(longDiff, 2) + Math.pow(latDiff, 2));
 		
-		locations.add(new com.pifive.makemyrun.geo.Location(center.getLat() + Math.cos(angle)*radius, 
+		locations.add(new MMRLocation(center.getLat() + Math.cos(angle)*radius, 
 									   center.getLng() + Math.sin(angle)*radius));
-		locations.add(new com.pifive.makemyrun.geo.Location(center.getLat() + Math.cos(angle*2)*radius, 
+		locations.add(new MMRLocation(center.getLat() + Math.cos(angle*2)*radius, 
 				   center.getLng() + Math.sin(angle*2)*radius));
 		
 		return locations;

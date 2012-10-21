@@ -31,7 +31,7 @@ import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
-import com.pifive.makemyrun.geo.Location;
+import com.pifive.makemyrun.geo.MMRLocation;
 
 /**
  * An OverlayArtist that draws a route (Android Path) on a MapOverlay.
@@ -46,12 +46,12 @@ public class RouteArtist extends AbstractOverlayArtist {
 	 * Constructs a RouteArtist to  draw a route on a MapOverlay
 	 * @param list A list with geologic locations to construct a Path from.
 	 */
-	public RouteArtist(List<Location> list) {
+	public RouteArtist(List<MMRLocation> list) {
 		if (list.isEmpty()) {
 			throw new EmptyRouteException();
 		}
 		// Create a list to draw from
-		for (Location p : list) {
+		for (MMRLocation p : list) {
 			geoList.add(new GeoPoint(p.getMicroLat(), p.getMicroLng()));
 		}
 		Log.d("MMR", "Amount of GeoPoints to draw per frame: " + geoList.size());

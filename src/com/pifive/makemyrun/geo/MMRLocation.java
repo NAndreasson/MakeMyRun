@@ -24,7 +24,7 @@ package com.pifive.makemyrun.geo;
 /**
  * A location defined by a latitude and longitue angles
  */
-public class Location {
+public class MMRLocation {
 
 	private double lat;
 	private double lng;
@@ -34,7 +34,7 @@ public class Location {
 	 * @param lat Latitude degrees
 	 * @param lng Longitude degrees
 	 */
-	public Location(double lat, double lng){
+	public MMRLocation(double lat, double lng){
 		this.lat = lat;
 		this.lng = lng;
 	}

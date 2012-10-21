@@ -19,13 +19,33 @@
  *     under the License.
  */
 
-package com.pifive.makemyrun;
+package com.pifive.makemyrun.test;
 
-@SuppressWarnings("serial")
-public class RouteGenerationFailedException extends RuntimeException {
+import com.pifive.makemyrun.geo.MMRLocation;
+
+import junit.framework.TestCase;
+
+public class MMRLocationTest extends TestCase {
+
+	private MMRLocation testLoc = new MMRLocation(57.043, 31.32);
 	
-	public RouteGenerationFailedException(String detailMessage) {
-		super(detailMessage);
+	public void testGetLng(){
+		assertTrue(testLoc.getLat() == 57.043);
 	}
-
+	
+	public void testGetLat(){
+		assertTrue(testLoc.getLng() == 31.32);
+	}
+	
+	public void testGetMicroLng(){
+		assertTrue(testLoc.getMicroLat() == 57.043*1E6);
+	}
+	
+	public void testGetMicroLat(){
+		assertTrue(testLoc.getMicroLng() == 31.32*1E6);
+	}
+	
+	public void testToString(){
+		assertEquals(testLoc.toString(),"Location [lat=57.043, lng=31.32]");
+	}
 }

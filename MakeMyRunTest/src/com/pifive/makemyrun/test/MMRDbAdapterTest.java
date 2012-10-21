@@ -35,16 +35,24 @@ public class MMRDbAdapterTest extends android.test.AndroidTestCase {
 	private MMRDbAdapter testAdapter;
 
 	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	protected void setUp() {
+		try {
+			super.setUp();
+		} catch (Exception e) {
+			fail();
+		}
 
 		testAdapter = new MMRDbAdapter(this.getContext());
 		testAdapter.open();
 	}
 
 	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	protected void tearDown() {
+		try {
+			super.tearDown();
+		} catch (Exception e) {
+			fail();
+		}
 
 		testAdapter.close();
 	}

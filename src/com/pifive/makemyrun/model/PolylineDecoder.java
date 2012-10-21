@@ -1,4 +1,4 @@
-package com.pifive.makemyrun.external;
+package com.pifive.makemyrun.model;
 
 
 import java.util.ArrayList;

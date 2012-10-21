@@ -15,7 +15,8 @@
 		android:background="#FFFFFF"
         android:text="@string/start_point_button"
         android:padding="5dp" 
-        android:drawableLeft="@drawable/pin" />
+        android:drawableLeft="@drawable/pin"
+        android:onClick="startPointClickAction" />
     
       <Button
         android:id="@+id/endpointbutton"
@@ -29,7 +30,8 @@
 		android:background="#FFFFFF"
         android:text="@string/stop_run_text"
         android:padding="5dp" 
-        android:drawableLeft="@drawable/pin" />
+        android:drawableLeft="@drawable/pin"
+        android:onClick="endPointClickAction" />
  
       <Button
         style="@style/MMRButtons"
@@ -43,5 +45,5 @@
        	android:text="@string/generate_route_button"
        	android:textSize="26dp"
        	android:padding="5dp"
-          />
+       	android:onClick="generateRouteButtonAction"  />
 </RelativeLayout>

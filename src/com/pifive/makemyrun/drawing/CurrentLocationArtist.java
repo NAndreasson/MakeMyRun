@@ -22,7 +22,6 @@
 package com.pifive.makemyrun.drawing;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.location.Location;
@@ -39,7 +38,10 @@ import com.google.android.maps.MapView;
  */
 public class CurrentLocationArtist extends AbstractOverlayArtist implements
 		LocationListener {
-
+	
+	private static final String TAG = "MMR-"
+			+ CurrentLocationArtist.class.getSimpleName();
+	
 	private Drawer drawer;
 	
 	// Variables to keep track of, trace and draw the actual position 
@@ -48,7 +50,11 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	private Point point = new Point();
 	
 	private float locationSize = 0.7f;
-
+	private int alpha = 255;
+	private int red = 230;
+	private int green = 50;
+	private int blue = 50;
+	
 	/**
 	 * Sets current location to a best guess provided by creator.
 	 * @param initialGuess Our best guess at current location atm.
@@ -74,7 +80,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	@Override
 	protected void setupMapPaint() {
 		super.setupMapPaint();
-		paint.setARGB(255, 230, 50, 50);
+		paint.setARGB(alpha, red, green, blue);
 		paint.setStyle(Paint.Style.FILL);
 	}
 	
@@ -126,7 +132,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void onProviderDisabled(String provider) {
-		Log.d("MMR", "Warning: GPS provider disabled");
+		Log.d(TAG, "Warning: GPS provider disabled");
 	}
 
 	/**
@@ -135,7 +141,7 @@ public class CurrentLocationArtist extends AbstractOverlayArtist implements
 	 */
 	@Override
 	public void onProviderEnabled(String provider) {
-		Log.d("MMR", "GPS provider enabled! :)");
+		Log.d(TAG, "GPS provider enabled! :)");
 	}
 
 	/**

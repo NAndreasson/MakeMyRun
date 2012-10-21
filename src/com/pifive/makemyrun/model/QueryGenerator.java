@@ -22,7 +22,7 @@
 /**
  * 
  */
-package com.pifive.makemyrun;
+package com.pifive.makemyrun.model;
 
 import java.util.List;
 
@@ -47,9 +47,9 @@ public class QueryGenerator {
 	 * @param waypoints Way points on the way
 	 * @return a google ready query
 	 */
-	public static String googleQuery(final com.pifive.makemyrun.geo.Location startLoc,
-									 final com.pifive.makemyrun.geo.Location stopLoc,
-									 final List<com.pifive.makemyrun.geo.Location> waypoints) {
+	public static String googleQuery(final com.pifive.makemyrun.geo.MMRLocation startLoc,
+									 final com.pifive.makemyrun.geo.MMRLocation stopLoc,
+									 final List<com.pifive.makemyrun.geo.MMRLocation> waypoints) {
 		return startOfQuery(startLoc, stopLoc).concat(restOfQuery(waypoints));
 	}
 	
@@ -59,8 +59,8 @@ public class QueryGenerator {
 	 * @param bLoc
 	 * @return
 	 */
-	private static String startOfQuery(final com.pifive.makemyrun.geo.Location aLoc,
-			 						   final com.pifive.makemyrun.geo.Location bLoc) {
+	private static String startOfQuery(final com.pifive.makemyrun.geo.MMRLocation aLoc,
+			 						   final com.pifive.makemyrun.geo.MMRLocation bLoc) {
 			// build the beginning of the google query
 			StringBuilder stringBuilder = new StringBuilder("origin=");
 			stringBuilder.append(aLoc.getLat());
@@ -80,9 +80,9 @@ public class QueryGenerator {
 	 * @param waypoints
 	 * @return String with the rest of the query to Google Maps
 	 */
-	private static String restOfQuery(List<com.pifive.makemyrun.geo.Location> waypoints) {
+	private static String restOfQuery(List<com.pifive.makemyrun.geo.MMRLocation> waypoints) {
 		StringBuilder stringBuilder = new StringBuilder("");
-		for (com.pifive.makemyrun.geo.Location waypoint : waypoints) {
+		for (com.pifive.makemyrun.geo.MMRLocation waypoint : waypoints) {
 			stringBuilder.append(waypoint.getLat());
 			stringBuilder.append(",");
 			stringBuilder.append(waypoint.getLng());

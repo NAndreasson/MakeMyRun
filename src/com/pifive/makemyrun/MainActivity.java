@@ -21,42 +21,29 @@
 
 package com.pifive.makemyrun;
 
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewStub;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
-import com.pifive.makemyrun.database.MMRDbAdapter;
-import com.pifive.makemyrun.drawing.CurrentLocationArtist;
-import com.pifive.makemyrun.drawing.MapDrawer;
 import com.pifive.makemyrun.drawing.PositionPin;
 import com.pifive.makemyrun.drawing.PositionPlacerArtist;
 import com.pifive.makemyrun.drawing.PositionPlacerArtist.PinState;
-import com.pifive.makemyrun.drawing.RouteArtist;
 
 public class MainActivity extends MapActivity implements Observer {
 	private MapView mapView;
@@ -64,32 +51,24 @@ public class MainActivity extends MapActivity implements Observer {
 	private ViewStub runViewStub;
 	private ViewStub mainMenuStub;
 	private boolean inCatchBackState = false;
-	private MapDrawer mapDrawer;
-	private DistanceTracker distanceTracker;
-    private Timer timer;
-	private LoadingStatus loadingStatus;
-	private GeoPoint startPoint; 
-	private GeoPoint endPoint;
 	private ViewStub generateRouteStub;
-	private MMRDbAdapter db;
-	private Route currentRoute;
+	private RunHelper runController;
+	private PositionPlacerArtist positionPlacerArtist;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Setup view correctly
         setContentView(R.layout.activity_main);
+        
         mapView = (MapView) findViewById(R.id.mapview);
         postGeneratedStub = (ViewStub) findViewById(R.id.postGeneratedStub);
         runViewStub = (ViewStub) findViewById(R.id.runningInterface);
         generateRouteStub = (ViewStub) findViewById(R.id.generateRouteStub);
         mainMenuStub = (ViewStub) findViewById(R.id.mainMenuStub);
-        mapDrawer = new MapDrawer(mapView);
-        db = new MMRDbAdapter(getBaseContext());
+        runController = new RunHelper(this, mapView);
 
+        runController.displayCurrentLocation();
         showStartScreen();
-        displayCurrentLocation();
     }
     
     /**
@@ -97,25 +76,6 @@ public class MainActivity extends MapActivity implements Observer {
      */
     private void showStartScreen() {
         mainMenuStub.setVisibility(View.VISIBLE);     
-    }
-    
-    private Location getCurrentLocation() {
-		// Get location manager from system
-		LocationManager locManager = 
-				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-	
-		// Fetch last known location to provide as best guess
-		String provider = locManager.getBestProvider(new Criteria(), true);
-		//locManager.getProvider(LocationManager.GPS_PROVIDER);
-		Log.d("MMR", "im using provider : "+ provider);
-
-		android.location.Location currentLocation = 
-					locManager.getLastKnownLocation(provider);
-    	
-		if (currentLocation == null) {
-			throw new NoLocationException("Location unavailable");
-		}
-		return currentLocation;
     }
     
     /**
@@ -133,14 +93,7 @@ public class MainActivity extends MapActivity implements Observer {
     	postGeneratedStub.setVisibility(View.GONE);
     	runViewStub.setVisibility(View.VISIBLE);
     	
-    	// Start to track the distance and sets this activity to recieve distance updates
-    	trackDistance();
-        distanceTracker.addObserver(MainActivity.this);
-
-        // Start counting the clockwatch for this run
-        timer = new Timer((TextView) findViewById(R.id.clocktext));
-    	timer.start();
-    	
+    	runController.startRunLogic(this);
         mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
@@ -159,52 +112,40 @@ public class MainActivity extends MapActivity implements Observer {
     	}
     }
     
-    public void chooseStartEndPoints(View v) {    	
-    	mainMenuStub.setVisibility(View.GONE);
-    	generateRouteStub.setVisibility(View.VISIBLE);
-    	
+
+    public void endPointClickAction(View v){
+    	positionPlacerArtist.setPinState(PinState.END);
+    }
+    public void startPointClickAction(View v){
+    	positionPlacerArtist.setPinState(PinState.START);
+    }
+    
+    private void updatePositionPlacerArtist(){    	
     	// the default location should be the current one
-    	Location currentLocation = getCurrentLocation(); 
     	
+    	Location currentLocation = runController.getCurrentLocation(); 
     	Bitmap positionPinImage = BitmapFactory.decodeResource(getResources(), R.drawable.pin);
     	PositionPin startPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
     	PositionPin endPin = new PositionPin(toGeoPoint(currentLocation), positionPinImage);
     	
-    	final PositionPlacerArtist positionPlacerArtist = 
-    			new PositionPlacerArtist(startPin, endPin, mapDrawer);
-    	mapDrawer.addArtist(positionPlacerArtist);
+    	positionPlacerArtist = 
+    			new PositionPlacerArtist(startPin, endPin, runController.getMapDrawer());
+    	runController.getMapDrawer().addArtist(positionPlacerArtist);
+    }
+    
+    public void generateRouteButtonAction(View v) {
+    	runController.setStartPoint(positionPlacerArtist.getStartPoint());
+		runController.setEndPoint(positionPlacerArtist.getEndPoint());
+		generateRouteStub.setVisibility(View.GONE);
+		positionPlacerArtist.setPinState(PinState.NONE);
+		generateRoute(v);
+    }
+    
+    public void chooseStartEndPoints(View v) {    	
+    	mainMenuStub.setVisibility(View.GONE);
+    	generateRouteStub.setVisibility(View.VISIBLE);
+    	updatePositionPlacerArtist();
     	mapView.setClickable(true);
-    	
-    	Button startPointButton = (Button) findViewById(R.id.startpointbutton);
-    	startPointButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				positionPlacerArtist.setPinState(PinState.START);
-			}
-		});
-
-    	Button endPointButton = (Button) findViewById(R.id.endpointbutton);
-    	endPointButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				positionPlacerArtist.setPinState(PinState.END);
-			}
-		});
-
-    	Button generateButton = (Button) findViewById(R.id.generateRouteButton);
-    	generateButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				startPoint = positionPlacerArtist.getStartPoint();
-				endPoint = positionPlacerArtist.getEndPoint();
-				generateRouteStub.setVisibility(View.GONE);
-				positionPlacerArtist.setPinState(PinState.NONE);
-				generateRoute(v);
-			}
-		});
     }
 
 	/**
@@ -222,21 +163,8 @@ public class MainActivity extends MapActivity implements Observer {
 	}
 	
     public void generateRoute(View v) {
-		loadingStatus = new LoadingStatus(mapView.getContext());
-		try {
-			String query = RouteGenerator.generateRoute(
-							startPoint, endPoint);
-			startDirectionsTask(query);
-		} catch (RuntimeException e) {
-			loadingStatus.remove();
-			Log.d("MMR", e.getStackTrace().toString());
-			Toast.makeText(getApplicationContext(), "ERROR: "+e.getMessage(), Toast.LENGTH_LONG).show();
-			e.printStackTrace();
-			return;
-		}
-		
+    	runController.generateRoute(mapView);
 		showMiddleScreen();
-		
 		mapView.requestFocus();
 		mapView.requestFocusFromTouch();
 		mapView.setClickable(true);
@@ -267,88 +195,29 @@ public class MainActivity extends MapActivity implements Observer {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	/**
-	 * Queries Google Directions with supplied query through a task.
-	 * @param query The query to execute DirectionsTask with.
-	 */
-	private void startDirectionsTask(String query) {
-        DirectionsTask directionsTask = new DirectionsTask(this, DirectionsTask.GOOGLE_URL);
-        directionsTask.setLoadingStatus(loadingStatus);
-        JSONObject googleRoute = directionsTask.simpleGet(query);
-        
-        try {
-			currentRoute = new Route(googleRoute);
 
-			// Center on our starting point
-			com.pifive.makemyrun.geo.Location location = currentRoute.getWaypoints().get(0);
-			GeoPoint geoPoint = new GeoPoint(
-									location.getMicroLat(),
-									location.getMicroLng());
-			mapView.getController().animateTo(geoPoint);
-			
-			// Add an artist to draw our route
-			RouteArtist routeArtist = new RouteArtist(currentRoute.getWaypoints());
-			mapDrawer.addArtist(routeArtist);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**
-	 * Constructs a MyLocationDrawer to draw current location.
+	 * Updates distance text
 	 */
-	private void displayCurrentLocation() {
-		
-		// Get location manager from system
-		LocationManager locManager = 
-				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-		// Construct our location artist
-		CurrentLocationArtist locationArtist = new CurrentLocationArtist(mapDrawer);
-		mapDrawer.addArtist(locationArtist);
-		
-		// Make it aware of location updates from all providers
-		List<String> providers = locManager.getAllProviders();
-		for (String provider : providers) {
-			locManager.requestLocationUpdates(
-					provider,
-					0, 
-					0, 
-					locationArtist);
-		}
-		Log.d("MMR", "Does this run? ");
-	}
-	
-	/**
-	 * Constructs a DistanceTracker to track distance
-	 */
-	private void trackDistance() {
-		// Get location manager from system
-		LocationManager locManager = 
-				(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-	
-		// Get the starting position
-		String provider = LocationManager.GPS_PROVIDER;
-		android.location.Location currentLocation = 
-					locManager.getLastKnownLocation(provider);
-			
-		distanceTracker = new DistanceTracker(currentLocation);
-		// set distanceTracker to retrieve location updates
-		locManager.requestLocationUpdates(provider, 0, 0, distanceTracker);
-	}
-
 	@Override
 	public void update(Observable observable, Object data) {
 		TextView distance = (TextView) findViewById(R.id.distancetext);
-		distance.setText(Math.round(distanceTracker.getTotalDistanceInMeters()) + " m");
+		distance.setText(Math.round(runController.getDistanceTracker().getTotalDistanceInMeters()) + " m");
 	}
 	
+	/**
+	 * Starts history activity
+	 * @param v
+	 */
 	public void viewHistory(View v) {
 		Intent intent = new Intent(this, HistoryActivity.class);
 		startActivity(intent);
 	}
 	
+	/**
+	 * 
+	 * @param v
+	 */
 	public void onStopAction(View v) {
 		final boolean completed = Boolean.valueOf(""+v.getTag());
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -365,7 +234,7 @@ public class MainActivity extends MapActivity implements Observer {
 				
 				runStub.setVisibility(View.GONE);
 				mainMenuStub.setVisibility(View.VISIBLE);
-				Toast.makeText(getBaseContext(), saveRun(completed) ?    // look close, aculy we save hear
+				Toast.makeText(getBaseContext(), runController.saveRun(completed) ?
 						R.string.save_run_success :
 						R.string.save_run_failed, Toast.LENGTH_LONG).show();	
 				cleanUp();
@@ -384,27 +253,12 @@ public class MainActivity extends MapActivity implements Observer {
 		builder.create().show();
 	}
 	
-	public boolean saveRun(boolean completed) {
-		Log.d("MMR", "Route distance: "+currentRoute.getDistance());
-		Log.d("MMR", "Ran distance: " + distanceTracker.getTotalDistanceInMeters());
-		db.open();
-		boolean result = db.createRun(
-				currentRoute.getPolyline(),
-				timer.getStartTime(), 
-				(int) distanceTracker.getTotalDistanceInMeters(), 
-				currentRoute.getDistance(), 
-				completed) != -1;
-
-		db.close();
-		return result; 
-	}
-	
+	/**
+	 * Cleans up from a run
+	 */
 	public void cleanUp() {
-    	mapDrawer.clearDrawer();
+    	runController.cleanUp(); 
     	mapView.setClickable(false);
-    	mapView.invalidate();
-    	if (timer instanceof Timer) {
-    		timer.stop();    		
-    	}
+    	mapView.invalidate();	
 	}
 }

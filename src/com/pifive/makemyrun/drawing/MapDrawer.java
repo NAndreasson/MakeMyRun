@@ -21,11 +21,10 @@
 
 package com.pifive.makemyrun.drawing;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import android.graphics.Canvas;
-import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapView;
@@ -90,18 +89,18 @@ public class MapDrawer implements Drawer {
 	 */
 	private class MapOverlay extends Overlay {
 
-		private List<OverlayArtist> artists = new LinkedList<OverlayArtist>();
+		private Set<OverlayArtist> artists = new HashSet<OverlayArtist>();
 		
 		/**
 		 * Returns the number of artists that are drawing with us.
-		 * @return The actual size of an artists list.
+		 * @return The actual size of an artists set.
 		 */
 		protected int getNumberofArtists() {
 			return artists.size();
 		}
 
 		/**
-		 * Add an artist to the list of drawers.
+		 * Add an artist to the set of drawers.
 		 * @param artist The artist to help us draw.
 		 */
 		protected void addArtist(OverlayArtist artist) {
@@ -109,7 +108,7 @@ public class MapDrawer implements Drawer {
 		}
 
 		/**
-		 * Removes an artist from our list of drawers.
+		 * Removes an artist from our set of drawers.
 		 * @param artist The artist we will not allow to draw any longer.
 		 */
 		protected void removeArtist(OverlayArtist artist) {
