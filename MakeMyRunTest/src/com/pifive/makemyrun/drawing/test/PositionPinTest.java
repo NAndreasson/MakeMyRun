@@ -24,7 +24,9 @@ public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivi
 	public void testGetImage() {
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
-		GeoPoint startPoint = new GeoPoint(22, 22);
+		int startPointLat = 22;
+		int startPointLong = 22;
+		GeoPoint startPoint = new GeoPoint(startPointLat, startPointLong);
 		positionPin = new PositionPin(startPoint, pinBitmap);	
 		
 		assertEquals("Verify that the bitmap is equal", pinBitmap, positionPin.getImage());
@@ -33,13 +35,17 @@ public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivi
 	public void testGetSetGeoPoint() {
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
-		GeoPoint startPoint = new GeoPoint(22, 22);
+		int startPointLat = 22;
+		int startPointLong = 22;
+		GeoPoint startPoint = new GeoPoint(startPointLat, startPointLong);
 		positionPin = new PositionPin(startPoint, pinBitmap);	
 		
 		assertEquals("Verify that the position is equal to the one instantiated", 
 												startPoint, positionPin.getGeoPoint());
 		
-		GeoPoint newPoint = new GeoPoint(55, 65);
+		int newPointLat = 55;
+		int newPointLong = 65;
+		GeoPoint newPoint = new GeoPoint(newPointLat, newPointLong);
 		positionPin.setGeoPoint(newPoint);
 		assertEquals("Verify that the position is equal to the new one set",
 									newPoint, positionPin.getGeoPoint());
