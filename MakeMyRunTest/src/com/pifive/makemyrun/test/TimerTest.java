@@ -31,7 +31,7 @@ public class TimerTest extends AndroidTestCase {
 	Timer testTimer;
 
 	/**
-	 * 
+	 * Test that we can get starttime
 	 */
 	public void testGetStartTime(){
 		testTimer = new Timer(new TextView(getContext()));

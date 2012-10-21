@@ -29,23 +29,38 @@ public class MMRLocationTest extends TestCase {
 
 	private MMRLocation testLoc = new MMRLocation(57.043, 31.32);
 	
-	public void testGetLng(){
+	/**
+	 * Passes if returned latitude equals argument latitude
+	 */
+	public void testGetLat() {
 		assertTrue(testLoc.getLat() == 57.043);
 	}
 	
-	public void testGetLat(){
+	/**
+	 * Passes if returned longitude equals argument longitude
+	 */
+	public void testGetLng() {
 		assertTrue(testLoc.getLng() == 31.32);
 	}
 	
-	public void testGetMicroLng(){
+	/**
+	 * Passes if returned micro latitude equals argument 1E6*latitude
+	 */
+	public void testGetMicroLat() {
 		assertTrue(testLoc.getMicroLat() == 57.043*1E6);
 	}
 	
-	public void testGetMicroLat(){
+	/**
+	 * Passes if returned micro longitude equals argument 1E6*longitude
+	 */
+	public void testGetMicroLng() {
 		assertTrue(testLoc.getMicroLng() == 31.32*1E6);
 	}
 	
-	public void testToString(){
+	/**
+	 * Test toString if it returns good string
+	 */
+	public void testToString() {
 		assertEquals(testLoc.toString(),"Location [lat=57.043, lng=31.32]");
 	}
 }
