@@ -32,6 +32,8 @@ public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivi
 	public void testGetSetGeoPoint() {
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
+
+
 		GeoPoint startPoint = new GeoPoint(testPoint, testPoint);
 		positionPin = new PositionPin(startPoint, pinBitmap);	
 		

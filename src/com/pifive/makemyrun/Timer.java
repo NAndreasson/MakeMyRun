@@ -72,7 +72,7 @@ public class Timer {
 		 */
 		@Override
 		public void run() {
-
+			// adds .5 to get more accurate time when casting to int
 			timeElapsed = (int) (((System.currentTimeMillis() - startTime) / 1000) + 0.5);
 			final int sec = timeElapsed % 60;
 			final int min = timeElapsed / 60;

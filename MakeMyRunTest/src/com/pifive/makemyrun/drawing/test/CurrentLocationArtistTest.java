@@ -138,7 +138,7 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 		private boolean drawRequested = false;
 		
 		/**
-		 * Returns true if the reDraw() methofd has been called since
+		 * Returns true if the reDraw() method has been called since
 		 * the last call on this method. Which then also resets request status.
 		 * @return Returns true if reDraw() has been called since last call of this method.
 		 */

@@ -20,6 +20,11 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 	private MapView mapView;
 	private MockDrawer drawer = new MockDrawer();
 	
+	private int startPointLat = 22;
+	private int startPointLong = 22;
+	private int endPointLat = 55;
+	private int endPointLong = 55;
+	
 	public PositionPlacerArtistTest() {
 		super(MainActivity.class);
 	}
@@ -32,10 +37,10 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 		}
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
-		GeoPoint startPoint = new GeoPoint(22, 22);
+		GeoPoint startPoint = new GeoPoint(startPointLat, startPointLong);
 		PositionPin startPin = new PositionPin(startPoint, pinBitmap);
 		
-		GeoPoint endPoint = new GeoPoint(55, 55);
+		GeoPoint endPoint = new GeoPoint(endPointLat, endPointLong);
 		PositionPin endPin = new PositionPin(endPoint, pinBitmap);
 		
 		positionPlacerArtist = new PositionPlacerArtist(startPin, endPin, drawer);
@@ -48,32 +53,45 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 	
 	
 	public void testGetSetPoint() {
-		GeoPoint startPoint = new GeoPoint(22, 22);
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		GeoPoint startPoint = new GeoPoint(startPointLat, startPointLong);
+		
+		String assertStartPointMessage = "Verify that the start GeoPoint is equal to the intial one";
+		assertEquals(assertStartPointMessage, 
 				startPoint.getLatitudeE6(), positionPlacerArtist.getStartPoint().getLatitudeE6());
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		assertEquals(assertStartPointMessage, 
 				startPoint.getLongitudeE6(), positionPlacerArtist.getStartPoint().getLongitudeE6());
 		
-		GeoPoint endPoint = new GeoPoint(55, 55);
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		GeoPoint endPoint = new GeoPoint(endPointLat, endPointLong);
+		
+		String assertEndPointMessage = "Verify that the end GeoPoint is equal to the intial one";
+		assertEquals(assertEndPointMessage, 
 				endPoint.getLatitudeE6(), positionPlacerArtist.getEndPoint().getLatitudeE6());
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		assertEquals(assertEndPointMessage, 
 				endPoint.getLongitudeE6(), positionPlacerArtist.getEndPoint().getLongitudeE6());
 	
-		GeoPoint newStartPoint = new GeoPoint(66, 55);
+		
+		int newStartPointLat = 66;
+		int newStartPointLong = 55;
+		GeoPoint newStartPoint = new GeoPoint(newStartPointLat, newStartPointLong);
 		positionPlacerArtist.setPinState(PinState.START);
 		positionPlacerArtist.onTap(newStartPoint, mapView);
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		
+		String assertNewStartPointMessage = "Verify that the start GeoPoint is equal to the new one that has been set";
+		assertEquals(assertNewStartPointMessage, 
 				newStartPoint.getLatitudeE6(), positionPlacerArtist.getStartPoint().getLatitudeE6());
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		assertEquals(assertNewStartPointMessage, 
 				newStartPoint.getLongitudeE6(), positionPlacerArtist.getStartPoint().getLongitudeE6());
 		
-		GeoPoint newEndPoint = new GeoPoint(77, 77);
+		int newEndPointLat = 77;
+		int newEndPointLong = 77;
+		GeoPoint newEndPoint = new GeoPoint(newEndPointLat, newEndPointLong);
 		positionPlacerArtist.setPinState(PinState.END);
 		positionPlacerArtist.onTap(newEndPoint, mapView);
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		
+		String assertNewEndPointMessage = "Verify that the end GeoPoint is equal to the new one that has been set";
+		assertEquals(assertNewEndPointMessage, 
 				newEndPoint.getLatitudeE6(), positionPlacerArtist.getEndPoint().getLatitudeE6());
-		assertEquals("Verify that the start GeoPoint is equal to the intial one", 
+		assertEquals(assertNewEndPointMessage, 
 				newEndPoint.getLongitudeE6(), positionPlacerArtist.getEndPoint().getLongitudeE6());
 	}
 	
