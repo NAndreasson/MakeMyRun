@@ -124,8 +124,7 @@ public class DirectionsTaskTest extends
 	}
 
 	/**
-	 * Make sure we can print a url_format_failed message (I.E. make sure
-	 * malformed URL does not crash on us)
+	 * Make sure we aren't allowed to 
 	 */
 	public void testMalformedURL() {
 		task = new DirectionsTask(activity, "\345DFSB://google.com?");
