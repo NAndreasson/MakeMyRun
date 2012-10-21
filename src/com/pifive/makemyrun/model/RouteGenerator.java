@@ -43,7 +43,8 @@ public abstract class RouteGenerator {
 	private static double oneFifth = 0.2;
 	private static int factorToWidenRoute = 10;
 	private static double minDiff = 0.0005;
-	private static double maxDiff = 0.001;
+	private static double minRanDiff = 0.005;
+	private static double maxRanDiff = 0.010;
 	private static double thirdOfCircle = 2.0/3.0;
 
 	/**
@@ -69,7 +70,7 @@ public abstract class RouteGenerator {
 		eLoc.setLatitude(endLoc.getLatitudeE6() / micro);
 		eLoc.setLongitude(endLoc.getLongitudeE6() / micro);
 		
-		if(sLoc.distanceTo(eLoc) < 100.0) {
+		if(sLoc.distanceTo(eLoc) < minDistForDiffPoints) {
 			return generateCircle(new MMRLocation
 					(sLoc.getLatitude(), sLoc.getLongitude()));
 			
@@ -282,7 +283,7 @@ public abstract class RouteGenerator {
 	private static MMRLocation generateRandomLocation(MMRLocation location) {
 		// create another location approx 0.005 - 0.010 from the current
 		Random random = new Random();
-		double randomNumber = minDiff + random.nextDouble() * maxDiff;
+		double randomNumber = minRanDiff + random.nextDouble() * maxRanDiff;
 		double latSign = random.nextBoolean() ? 1.0 : -1.0;
 		double longSign = random.nextBoolean() ? 1.0 : -1.0;
 		
