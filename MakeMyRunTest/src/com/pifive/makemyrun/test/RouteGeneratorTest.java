@@ -83,7 +83,9 @@ public class RouteGeneratorTest extends AndroidTestCase {
 		assertTrue(originLat.equals(destLat) && originLong.equals(destLong));
 	}
 	
-	
+	/**
+	 * Tests different kind of routes
+	 */
 	public void testDifferentRoutes() {
 		testStraight(new GeoPoint((int)(standardLat * micro), (int)(standardLong * micro)), 
 				new GeoPoint((int)(standardLat * micro), (int)(long2 * micro)));

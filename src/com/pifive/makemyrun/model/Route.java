@@ -67,7 +67,14 @@ public class Route {
 		polyline = sb.toString();
 		Log.d("MMR", "Route polyline: " + polyline);
 	}
-
+	
+	/**
+	 * Gets steps from a leg from a JSONObject
+	 * 
+	 * @param leg The JSONObject from which we want the steps
+	 * @return stepsArray An array with the steps
+	 * @throws JSONException
+	 */
 	private JSONArray getLegSteps(JSONObject leg) throws JSONException {
 		JSONArray stepsArray = leg.getJSONArray("steps");
 		return stepsArray;
@@ -82,15 +89,15 @@ public class Route {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Getter for the route polyline
+	 * @return polyline
 	 */
 	public String getPolyline() {
 		return polyline;
 	}
 
 	/**
-	 * 
+	 * Getter for the routes waypoints
 	 * @return The route's waypoint Locations
 	 */
 	public List<MMRLocation> getWaypoints() {
