@@ -26,13 +26,14 @@ import java.util.List;
 
 import android.graphics.Canvas;
 import android.graphics.Path;
+import android.location.Location;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.google.android.maps.MapView;
-import com.pifive.makemyrun.geo.Location;
 import com.pifive.makemyrun.MainActivity;
 import com.pifive.makemyrun.drawing.EmptyRouteException;
 import com.pifive.makemyrun.drawing.RouteArtist;
+import com.pifive.makemyrun.geo.MMRLocation;
 
 public class RouteArtistTest extends ActivityInstrumentationTestCase2<MainActivity>{
 
@@ -42,7 +43,7 @@ public class RouteArtistTest extends ActivityInstrumentationTestCase2<MainActivi
 
 	private RouteArtist routeArtist;
 	private MapView mapView;
-	private List<Location> list = new LinkedList<Location>();
+	private List<MMRLocation> list = new LinkedList<MMRLocation>();
 
 	/**
 	 * Sets up MapView with Overlays and mocks a location list.
@@ -54,8 +55,8 @@ public class RouteArtistTest extends ActivityInstrumentationTestCase2<MainActivi
 		mapView = (MapView) getActivity().findViewById(com.pifive.makemyrun.R.id.mapview);
 		
 		// Mock locations
-		list.add(new Location(1.0, 2.0));
-		list.add(new Location(1.1, 2.0));
+		list.add(new MMRLocation(1.0, 2.0));
+		list.add(new MMRLocation(1.1, 2.0));
 	}
 
 	/**
@@ -77,7 +78,7 @@ public class RouteArtistTest extends ActivityInstrumentationTestCase2<MainActivi
 	 */
 	public void testListConsistency() {
 		try {
-			routeArtist = new RouteArtist(new LinkedList<Location>());
+			routeArtist = new RouteArtist(new LinkedList<MMRLocation>());
 			fail("Verify that we throw an exception when trying to draw an empty route");
 		} catch (EmptyRouteException e) {
 			assertTrue("Verify that we can catch an EmptyRouteException", 

@@ -21,13 +21,13 @@
 
 package com.pifive.makemyrun.test;
 
-import com.pifive.makemyrun.geo.Location;
+import com.pifive.makemyrun.geo.MMRLocation;
 
 import junit.framework.TestCase;
 
-public class LocationTest extends TestCase {
+public class MMRLocationTest extends TestCase {
 
-	private Location testLoc = new Location(57.043, 31.32);
+	private MMRLocation testLoc = new MMRLocation(57.043, 31.32);
 	
 	public void testGetLng(){
 		assertTrue(testLoc.getLat() == 57.043);

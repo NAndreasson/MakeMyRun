@@ -27,13 +27,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import android.util.Log;
 
+import com.pifive.makemyrun.geo.MMRLocation;
 import com.pifive.makemyrun.model.Route;
 
 public class RouteTest extends android.test.InstrumentationTestCase{
@@ -92,7 +91,7 @@ public class RouteTest extends android.test.InstrumentationTestCase{
 	}
 	
 	public void testWaypoints(){
-		List<com.pifive.makemyrun.geo.Location> wps = testRoute.getWaypoints();
+		List<MMRLocation> wps = testRoute.getWaypoints();
 		assertTrue(wps.size() == 11);
 	}
 }
