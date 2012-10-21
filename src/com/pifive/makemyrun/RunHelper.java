@@ -128,8 +128,8 @@ public class RunHelper {
 
 	/**
 	 * Saves a run
-	 * @param completed
-	 * @return true if succeeded else false
+	 * @param completed if the run was completed
+	 * @return true if save was successful else false
 	 */
 	public boolean saveRun(boolean completed) {
 		Log.d("MMR", "Route distance: "+currentRoute.getDistance());
@@ -146,18 +146,34 @@ public class RunHelper {
 		return result; 
 	}
 	
+	/**
+	 * 
+	 * @return Activity's DistanceTracker.
+	 */
 	public DistanceTracker getDistanceTracker() {
 		return distanceTracker;
 	}
 
+	/**
+	 * Set a start point
+	 * @param startPoint GeoPoint where a route should start
+	 */
 	public void setStartPoint(GeoPoint startPoint) {
 		this.startPoint = startPoint;
 	}
 
+	/**
+	 * Set a end point
+	 * @param endPoint GeoPoint where a route should end
+	 */
 	public void setEndPoint(GeoPoint endPoint) {
 		this.endPoint = endPoint;
 	}
 
+	/**
+	 * 
+	 * @return a MapDrawer instance
+	 */
 	public MapDrawer getMapDrawer() {
 		return mapDrawer;
 	}
