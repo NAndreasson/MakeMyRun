@@ -25,20 +25,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.pifive.makemyrun.database.MMRDbAdapter;
 import com.pifive.makemyrun.model.RouteGenerationFailedException;
 
-import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * Automatically requests directions by a query, default through Google
@@ -48,14 +46,15 @@ import android.widget.Toast;
  */
 public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 
-	public final static String GOOGLE_URL = "http://maps.googleapis.com/maps/api/directions/json?";
-	public final static String TEST_QUERY = "origin=Friggagatan,Gothenburg,Sweden&destination=Ran%C3%A4ngsgatan,Gothenburg,Sweden&mode=walking&sensor=false";
-	public final static String GOOGLE_QUERY_ERROR = "REQUEST_DENIED";
-	public final static String GOOGLE_QUERY_SUCCESS = "OK";
-
+	public static final String GOOGLE_URL = "http://maps.googleapis.com/maps/api/directions/json?";
+	public static final String TEST_QUERY = "origin=Friggagatan,Gothenburg,Sweden&destination=Ran%C3%A4ngsgatan,Gothenburg,Sweden&mode=walking&sensor=false";
+	public static final String GOOGLE_QUERY_ERROR = "REQUEST_DENIED";
+	public static final String GOOGLE_QUERY_SUCCESS = "OK";
+	private static final String TAG = "MMR-"
+			+ DirectionsTask.class.getSimpleName();
+	
 	private final String loadingMessage;
 	private final String finishedMessage;
-	private Context context;
 	private final String restAPI;
 	private LoadingStatus loadingStatus;
 	
@@ -66,8 +65,6 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * @param restAPI The API to contact for each request.
 	 */
 	public DirectionsTask(Context context, String restAPI) {
-		
-		this.context = context;
 		this.restAPI = restAPI;
 		loadingMessage = context.getResources().getString(R.string.directions_loading_message);
 		finishedMessage = context.getResources().getString(R.string.directions_finished_message);
@@ -91,7 +88,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
-		updateLoadingStage(loadingMessage, false);
+		updateLoadingStage(false);
 	}
 	
 	/**
@@ -101,7 +98,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	 * @param finishedMessage
 	 * 				Set to true if the task is completed
 	 */
-	private void updateLoadingStage(String message, boolean finishedMessage) {
+	private void updateLoadingStage(boolean finishedMessage) {
 		if(loadingStatus != null){
 			loadingStatus.setLoadingStage(loadingMessage, finishedMessage);
 		}
@@ -116,8 +113,9 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	public JSONObject simpleGet(String query) {
 		execute(query);
 		JSONObject obj = new JSONObject();
+		int responseTimeout = 10;
 		try {
-        	obj = get(10, TimeUnit.SECONDS);
+        	obj = get(responseTimeout, TimeUnit.SECONDS);
         	
     	// We have already handled printing of user-errors. Flood the log!
         } catch (Exception e) {
@@ -167,9 +165,9 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		StringBuilder stringBuilder = new StringBuilder();
 		try {
 			// Send request to REST API
-			Log.d("MMR", url.getPath());
+			Log.d(TAG, url.getPath());
 			connection = (HttpURLConnection) url.openConnection();
-			Log.i("MMR",
+			Log.i(TAG,
 					"Google response HTTP status: "
 							+ connection.getResponseMessage());
 			in = new BufferedReader(new InputStreamReader(
@@ -177,7 +175,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 
 			// Parse response to string
 			String data;
-			Log.d("MMR", "Parsing Google response stream");
+			Log.d(TAG, "Parsing Google response stream");
 			while ((data = in.readLine()) != null) {
 				stringBuilder.append(data);
 			}
@@ -209,10 +207,10 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 		try {
 			JSONObject json = new JSONObject(string);
 
-			Log.i("MMR", "Google response stream parsed successfully to JSON");
+			Log.i(TAG, "Google response stream parsed successfully to JSON");
 
 			String status = json.getString("status");
-			Log.d("MMR", "Google response status: " + status);
+			Log.d(TAG, "Google response status: " + status);
 
 			// If google can't handle it we never want to send it forward
 			if (status.equals(GOOGLE_QUERY_ERROR)) {
@@ -229,7 +227,7 @@ public class DirectionsTask extends AsyncTask<String, Integer, JSONObject> {
 	@Override
 	protected void onPostExecute(JSONObject result) {
 		super.onPostExecute(result);
-		updateLoadingStage(finishedMessage, true);
+		updateLoadingStage(true);
 	}
 	
 	
