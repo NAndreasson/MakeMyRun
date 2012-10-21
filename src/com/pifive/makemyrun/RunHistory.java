@@ -75,7 +75,7 @@ public class RunHistory extends CursorAdapter {
 		int routeDistance = cursor.getInt(cursor.getColumnIndex(MMRDbAdapter.KEY_ROUTE_DISTANCE));
 		
 		view.setText(
-				new SimpleDateFormat("yyyy-mm-dd").format(startDate) + 
+				new SimpleDateFormat("yyyy-MM-dd").format(startDate) + 
 				" Distance: " +  
 				distanceRan +
 				" / " + routeDistance);
