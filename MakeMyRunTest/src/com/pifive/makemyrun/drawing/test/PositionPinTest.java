@@ -10,23 +10,20 @@ import com.pifive.makemyrun.R;
 import com.pifive.makemyrun.drawing.PositionPin;
 
 public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivity>  {
-
+	private int testPoint = 22;
+	private int testLat = 55;
+	private int testLong = 65;
+	
 	private PositionPin positionPin;
 	
 	public PositionPinTest() {
 		super(MainActivity.class);
 	}
 	
-	public void setUp() throws Exception {
-		super.setUp();
-	}
-	
 	public void testGetImage() {
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
-		int startPointLat = 22;
-		int startPointLong = 22;
-		GeoPoint startPoint = new GeoPoint(startPointLat, startPointLong);
+		GeoPoint startPoint = new GeoPoint(testPoint, testPoint);
 		positionPin = new PositionPin(startPoint, pinBitmap);	
 		
 		assertEquals("Verify that the bitmap is equal", pinBitmap, positionPin.getImage());
@@ -35,17 +32,15 @@ public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivi
 	public void testGetSetGeoPoint() {
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
-		int startPointLat = 22;
-		int startPointLong = 22;
-		GeoPoint startPoint = new GeoPoint(startPointLat, startPointLong);
+
+
+		GeoPoint startPoint = new GeoPoint(testPoint, testPoint);
 		positionPin = new PositionPin(startPoint, pinBitmap);	
 		
 		assertEquals("Verify that the position is equal to the one instantiated", 
 												startPoint, positionPin.getGeoPoint());
 		
-		int newPointLat = 55;
-		int newPointLong = 65;
-		GeoPoint newPoint = new GeoPoint(newPointLat, newPointLong);
+		GeoPoint newPoint = new GeoPoint(testLat, testLong);
 		positionPin.setGeoPoint(newPoint);
 		assertEquals("Verify that the position is equal to the new one set",
 									newPoint, positionPin.getGeoPoint());

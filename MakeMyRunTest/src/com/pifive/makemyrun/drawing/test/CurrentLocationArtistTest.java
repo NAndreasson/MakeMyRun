@@ -37,7 +37,14 @@ import com.pifive.makemyrun.drawing.Drawer;
  * Test file for CurrentLocationArtist
  */
 public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<MainActivity>{
-
+	private double micro = 1E6;
+	private double testDegree = 15.0;
+	private double testDegree2 = 15.00001;
+	private double testDegree3 = 100;
+	private double testDegree4 = 50;
+	private int testAccuracy = 50;
+	private int testAccuracy2 = 1;
+	
 	public CurrentLocationArtistTest() {
 		super(MainActivity.class);
 	}
@@ -50,8 +57,8 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 	public void setUp() throws Exception {
 		super.setUp();
 		
-		location.setLatitude(15);
-		location.setLongitude(15);
+		location.setLatitude(testDegree);
+		location.setLongitude(testDegree);
 		
 		artist = new CurrentLocationArtist(drawer);
 		artist.onLocationChanged(location);
@@ -69,10 +76,10 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 		GeoPoint geoPoint = CurrentLocationArtist.toGeoPoint(location);
 		assertEquals("Verify that the point converted is true to " +
 						"the format in latitude", 
-				geoPoint.getLatitudeE6() / 1E6, location.getLatitude());
+				geoPoint.getLatitudeE6() / micro, location.getLatitude());
 		assertEquals("Verify that the point converted is true " +
 						"to the format in longitude", 
-				geoPoint.getLongitudeE6() / 1E6, location.getLongitude());
+				geoPoint.getLongitudeE6() / micro, location.getLongitude());
 	}
 	
 	/**
@@ -84,17 +91,17 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 		
 		// Test an update which shall not render a redraw
 		Location newLoc = new Location(LocationManager.GPS_PROVIDER);
-		newLoc.setAccuracy(50);
-		newLoc.setLatitude(15.00001);
-		newLoc.setLongitude(15.00001);
+		newLoc.setAccuracy(testAccuracy);
+		newLoc.setLatitude(testDegree2);
+		newLoc.setLongitude(testDegree2);
 		artist.onLocationChanged(newLoc);
 		assertEquals("Verify that we do not update and redraw on bad location",
 				false, drawer.isDrawRequested());
 		
 		// Test an update which must render a redraw
-		newLoc.setAccuracy(1);
-		newLoc.setLatitude(100);
-		newLoc.setLongitude(100);
+		newLoc.setAccuracy(testAccuracy2);
+		newLoc.setLatitude(testDegree3);
+		newLoc.setLongitude(testDegree3);
 		artist.onLocationChanged(newLoc);
 		assertEquals("Verify that we DO update and redraw on acceptable location",
 				true, drawer.isDrawRequested());
@@ -107,8 +114,8 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 		Point point = artist.getPoint();
 		
 		// Change location
-		location.setLatitude(50);
-		location.setLongitude(50);
+		location.setLatitude(testDegree4);
+		location.setLongitude(testDegree4);
 		artist.onLocationChanged(location);
 
 		// Draw and assert changed screen position
@@ -127,7 +134,7 @@ public class CurrentLocationArtistTest extends ActivityInstrumentationTestCase2<
 		private boolean drawRequested = false;
 		
 		/**
-		 * Returns true if the reDraw() methofd has been called since
+		 * Returns true if the reDraw() method has been called since
 		 * the last call on this method. Which then also resets request status.
 		 * @return Returns true if reDraw() has been called since last call of this method.
 		 */

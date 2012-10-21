@@ -35,10 +35,14 @@ import android.util.Log;
 import com.pifive.makemyrun.geo.MMRLocation;
 import com.pifive.makemyrun.model.Route;
 
-public class RouteTest extends android.test.InstrumentationTestCase{
-	Route testObj;
+public class RouteTest extends android.test.InstrumentationTestCase {
+	private static final String TAG = "MMR-"
+			+ RouteTest.class.getSimpleName();
+	
 	private JSONObject testCase1;
 	private Route testRoute;
+	private int resultDistance = 351;
+	private int wpsSize = 11;
 	@Override
 
 	protected void setUp() throws Exception{
@@ -66,7 +70,7 @@ public class RouteTest extends android.test.InstrumentationTestCase{
 			try {
 				testCase1 = new JSONObject(strBuild.toString());
 			} catch (JSONException e) {
-				Log.d("MMR",e.getMessage());
+				Log.d(TAG,e.getMessage());
 			}
 			try {
 				testRoute = new Route(testCase1);
@@ -87,12 +91,12 @@ public class RouteTest extends android.test.InstrumentationTestCase{
 	}
 	
 	public void testDistance(){
-		assertTrue(testRoute != null && testRoute.getDistance() == 351);	
+		assertTrue(testRoute != null && testRoute.getDistance() == resultDistance);	
 	}
 	
 	public void testWaypoints(){
 		List<MMRLocation> wps = testRoute.getWaypoints();
-		assertTrue(wps.size() == 11);
+		assertTrue(wps.size() == wpsSize);
 	}
 }
 	
