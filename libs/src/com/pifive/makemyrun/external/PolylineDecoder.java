@@ -41,7 +41,7 @@ public abstract class PolylineDecoder {
 			} while (b >= 0x20);
 			int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
 			lng += dlng;
-			MMRLocation p = new MMRLocation((double)(lat/1E5),(double)(lng/1E5));
+			MMRLocation p = new MMRLocation(lat/1E5,lng/1E5);
 			poly.add(p);
 		}
 		return poly;

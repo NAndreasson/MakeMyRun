@@ -68,6 +68,7 @@ public class RouteArtist extends AbstractOverlayArtist {
 	/**
 	 * Draws a path calculated from our GeoPoints on the MapOverlay(s) we're attached to.
 	 */
+	@Override
 	public void draw(Canvas canvas, MapView mapView, boolean shadow) {
 		if (!shadow) {
 

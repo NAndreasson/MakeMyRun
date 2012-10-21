@@ -99,6 +99,7 @@ public class Timer {
 			final int min = timeElapsed / 60;
 			final int hour = timeElapsed / 3600;
 			clockText.post(new Runnable() {
+				@Override
 				public void run() {
 					clockText.setText((hour < 10 ? "0" + hour : hour) + ":"
 							+ (min < 10 ? "0" + min : min) + ":"
