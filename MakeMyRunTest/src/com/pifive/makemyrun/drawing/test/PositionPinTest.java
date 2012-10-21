@@ -30,6 +30,9 @@ import com.pifive.makemyrun.MainActivity;
 import com.pifive.makemyrun.R;
 import com.pifive.makemyrun.drawing.PositionPin;
 
+/**
+ * Test for PositionPin
+ */
 public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivity>  {
 	private int testPoint = 22;
 	private int testLat = 55;
@@ -41,6 +44,9 @@ public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivi
 		super(MainActivity.class);
 	}
 	
+	/**
+	 * Tests if the getImage method in a PositionPin works as expected
+	 */
 	public void testGetImage() {
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
@@ -50,11 +56,12 @@ public class PositionPinTest extends ActivityInstrumentationTestCase2<MainActivi
 		assertEquals("Verify that the bitmap is equal", pinBitmap, positionPin.getImage());
 	}
 	
+	/**
+	 * Testing geoPoint getters and setters. 
+	 */
 	public void testGetSetGeoPoint() {
 		Bitmap pinBitmap = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.pin);
 		
-
-
 		GeoPoint startPoint = new GeoPoint(testPoint, testPoint);
 		positionPin = new PositionPin(startPoint, pinBitmap);	
 		

@@ -35,6 +35,9 @@ import com.pifive.makemyrun.drawing.PositionPin;
 import com.pifive.makemyrun.drawing.PositionPlacerArtist;
 import com.pifive.makemyrun.drawing.PositionPlacerArtist.PinState;
 
+/**
+ * Test for the PositionPlacerArtist
+ */
 public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<MainActivity> {
 	
 	private PositionPlacerArtist positionPlacerArtist;
@@ -50,6 +53,9 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 		super(MainActivity.class);
 	}
 	
+	/**
+	 * Sets up a PositionPlacerArtist and gets the MapView
+	 */
 	public void setUp() {
 		try {
 			super.setUp();
@@ -73,6 +79,9 @@ public class PositionPlacerArtistTest  extends ActivityInstrumentationTestCase2<
 	}
 	
 	
+	/**
+	 * Tests getting and setting PositionPins
+	 */
 	public void testGetSetPoint() {
 		GeoPoint startPoint = new GeoPoint(startPointLat, startPointLong);
 		
