@@ -28,8 +28,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import android.util.Log;
 
+import com.pifive.makemyrun.external.PolylineDecoder;
 import com.pifive.makemyrun.geo.Location;
 
 public class Route {
