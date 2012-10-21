@@ -4,7 +4,7 @@ package com.pifive.makemyrun.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.pifive.makemyrun.geo.Location;
+import com.pifive.makemyrun.geo.MMRLocation;
 /**
  * Originally belongs to Ismail Habib @
  * http://www.geekyblogger.com/2010/12/decoding-polylines-from-google-maps.html
@@ -19,8 +19,8 @@ public abstract class PolylineDecoder {
 	 * @param encoded String containing an encoded polyline
 	 * @return Returns a list of Locations containing geographical points.
 	 */
-	public static List<Location> decodePoly(String encoded) {
-		List<Location> poly = new ArrayList<Location>();
+	public static List<MMRLocation> decodePoly(String encoded) {
+		List<MMRLocation> poly = new ArrayList<MMRLocation>();
 		int index = 0, len = encoded.length();
 		int lat = 0, lng = 0;
 		while (index < len) {
@@ -41,7 +41,7 @@ public abstract class PolylineDecoder {
 			} while (b >= 0x20);
 			int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
 			lng += dlng;
-			Location p = new Location((double)(lat/1E5),(double)(lng/1E5));
+			MMRLocation p = new MMRLocation((double)(lat/1E5),(double)(lng/1E5));
 			poly.add(p);
 		}
 		return poly;
