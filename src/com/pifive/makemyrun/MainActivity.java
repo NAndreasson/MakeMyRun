@@ -69,6 +69,8 @@ public class MainActivity extends MapActivity implements Observer {
 
         runController.displayCurrentLocation();
         showStartScreen();
+        
+        mapView.setBuiltInZoomControls(true);
     }
     
     /**
